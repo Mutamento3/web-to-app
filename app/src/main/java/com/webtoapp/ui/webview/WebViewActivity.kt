@@ -2740,64 +2740,58 @@ fun WebViewScreen(
                     },
                     actions = {
                         if (isTestMode || browserToolbarVisibility?.showBack == true) {
-                            IconButton(
+                            com.webtoapp.ui.design.WtaIconButton(
                                 onClick = {
                                     (context as? AppCompatActivity)?.let { activity ->
                                         ShellWebViewNavigation.goBackOrFinish(activity, webViewRef)
                                     }
                                 },
+                                icon = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "Back",
                                 enabled = canGoBack
-                            ) {
-                                Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back")
-                            }
+                            )
                         }
                         if (isTestMode || browserToolbarVisibility?.showForward == true) {
-                            IconButton(
+                            com.webtoapp.ui.design.WtaIconButton(
                                 onClick = { webViewRef?.goForward() },
+                                icon = Icons.AutoMirrored.Filled.ArrowForward,
+                                contentDescription = "Forward",
                                 enabled = canGoForward
-                            ) {
-                                Icon(Icons.AutoMirrored.Filled.ArrowForward, "Forward")
-                            }
+                            )
                         }
                         if (isTestMode || browserToolbarVisibility?.showRefresh == true) {
-                            IconButton(onClick = { reloadBrowser() }) {
-                                Icon(Icons.Default.Refresh, "Refresh")
-                            }
+                            com.webtoapp.ui.design.WtaIconButton(
+                                onClick = { reloadBrowser() },
+                                icon = Icons.Default.Refresh,
+                                contentDescription = "Refresh"
+                            )
                         }
 
                         if (isTestMode || browserToolbarVisibility?.showConsoleButton == true) {
-                            IconButton(
-                                onClick = { showConsole = !showConsole },
-                                modifier = Modifier.size(48.dp).offset(x = (-4).dp)
-                            ) {
-                                Box(modifier = Modifier.padding(start = 4.dp, top = 4.dp)) {
-                                    BadgedBox(
-                                        badge = {
-                                            val errorCount = consoleMessages.count { it.level == ConsoleLevel.ERROR }
-                                            if (errorCount > 0) {
-                                                Badge { Text("$errorCount") }
-                                            }
-                                        }
-                                    ) {
-                                        Icon(
-                                            if (showConsole) Icons.Filled.Terminal else Icons.Outlined.Terminal,
-                                            Strings.console
-                                        )
+                            val errorCount = consoleMessages.count { it.level == ConsoleLevel.ERROR }
+                            BadgedBox(
+                                badge = {
+                                    if (errorCount > 0) {
+                                        Badge { Text("$errorCount") }
                                     }
                                 }
+                            ) {
+                                com.webtoapp.ui.design.WtaIconButton(
+                                    onClick = { showConsole = !showConsole },
+                                    icon = if (showConsole) Icons.Filled.Terminal else Icons.Outlined.Terminal,
+                                    contentDescription = Strings.console
+                                )
                             }
                         }
                         // Page-zoom button: opens the zoom presets dialog directly (mirrors
                         // the shell/export toolbar so preview and export behave the same).
                         if (isTestMode || browserToolbarVisibility?.showOverflowButton == true) {
                             var zoomDialogOpen by remember { mutableStateOf(false) }
-                            IconButton(onClick = { zoomDialogOpen = true }) {
-                                Icon(
-                                    Icons.Outlined.ZoomIn,
-                                    Strings.pageZoomLabel,
-                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
+                            com.webtoapp.ui.design.WtaIconButton(
+                                onClick = { zoomDialogOpen = true },
+                                icon = Icons.Outlined.ZoomIn,
+                                contentDescription = Strings.pageZoomLabel
+                            )
                             if (zoomDialogOpen) {
                                 com.webtoapp.ui.shell.ZoomPresetsDialog(
                                     currentZoom = pageZoomPercent,

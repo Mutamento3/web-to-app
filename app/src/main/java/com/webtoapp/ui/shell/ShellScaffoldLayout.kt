@@ -351,34 +351,29 @@ private fun ShellTopAppBar(
             // Console / terminal button (hidden along with the other toolbar buttons,
             // so a stripped-down toolbar doesn't leave it as the only visible control)
             if (showConsoleButton) {
-                IconButton(onClick = onToggleConsole) {
-                    BadgedBox(
-                        badge = {
-                            if (consoleErrorCount > 0) {
-                                Badge { Text("$consoleErrorCount") }
-                            }
+                BadgedBox(
+                    badge = {
+                        if (consoleErrorCount > 0) {
+                            Badge { Text("$consoleErrorCount") }
                         }
-                    ) {
-                        Icon(
-                            if (showConsole) Icons.Default.Terminal
-                            else Icons.Outlined.Terminal,
-                            contentDescription = Strings.console,
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
                     }
+                ) {
+                    com.webtoapp.ui.design.WtaIconButton(
+                        onClick = onToggleConsole,
+                        icon = if (showConsole) Icons.Default.Terminal else Icons.Outlined.Terminal,
+                        contentDescription = Strings.console
+                    )
                 }
             }
             // Page-zoom button: opens the zoom presets dialog directly. When more page-level
             // actions (find-in-page, …) land, this can become a ⋮ overflow menu again.
             if (showOverflowButton) {
                 var zoomDialogOpen by remember { mutableStateOf(false) }
-                IconButton(onClick = { zoomDialogOpen = true }) {
-                    Icon(
-                        Icons.Outlined.ZoomIn,
-                        contentDescription = Strings.pageZoomLabel,
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
+                com.webtoapp.ui.design.WtaIconButton(
+                    onClick = { zoomDialogOpen = true },
+                    icon = Icons.Outlined.ZoomIn,
+                    contentDescription = Strings.pageZoomLabel
+                )
                 if (zoomDialogOpen) {
                     ZoomPresetsDialog(
                         currentZoom = currentZoomPercent,
