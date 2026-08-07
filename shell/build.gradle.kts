@@ -23,8 +23,8 @@ android {
         minSdk = 23
 
         targetSdk = 28
-        versionCode = 52
-        versionName = "2.4.1"
+        versionCode = 53
+        versionName = "2.4.2"
 
         buildConfigField("boolean", "SHELL_RUNTIME_ONLY", "true")
 
