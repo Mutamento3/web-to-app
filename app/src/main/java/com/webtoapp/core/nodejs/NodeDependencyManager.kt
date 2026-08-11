@@ -30,7 +30,9 @@ object NodeDependencyManager {
         "https://gh-proxy.com/"
     )
 
-    private val NODE_GITHUB_URL = "https://github.com/nodejs-mobile/nodejs-mobile/releases/download/v${NODE_VERSION}/nodejs-mobile-v${NODE_VERSION}-android.zip"
+    // capawesome-team fork: same Node 18.20.4 core, Android binaries pre-built with 16 KB page
+    // alignment (upstream `release18-20-4+16kb-fix` branch) — no runtime ELF rewrite needed.
+    private val NODE_GITHUB_URL = "https://github.com/capawesome-team/nodejs-mobile/releases/download/v18.20.4-capawesome.1/nodejs-mobile-v18.20.4-capawesome.1-android.zip"
 
     data class MirrorConfig(
 
