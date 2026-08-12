@@ -23,6 +23,12 @@
 </p>
 
 <p align="center">
+  <a href="https://trendshift.io/repositories/22597?utm_source=trendshift-badge&utm_medium=badge&utm_campaign=badge-trendshift-22597" target="_blank" rel="noopener noreferrer">
+    <img src="https://trendshift.io/api/badge/trendshift/repositories/22597/weekly?language=Kotlin" alt="shiaho777%2Fweb-to-app | Trendshift" width="250" height="55">
+  </a>
+</p>
+
+<p align="center">
   <a href="#what-makes-webtoapp-different">What's different</a> ·
   <a href="#what-you-can-build">What you can build</a> ·
   <a href="#capability-overview">Capability overview</a> ·
