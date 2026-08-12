@@ -324,7 +324,6 @@ Release 构建请通过 `local.properties` 和 `app/build.gradle.kts` 配置签�
 | 平台 | 链接 |
 | --- | --- |
 | GitHub | [github.com/shiaho777/web-to-app](https://github.com/shiaho777/web-to-app) |
-| Discord | [加入交流群](https://discord.gg/KUKEn4zPHQ) |
 | Telegram | [t.me/webtoapp777](https://t.me/webtoapp777) |
 | X (Twitter) | [@shiaho777](https://x.com/shiaho777) |
 | Bilibili | [b23.tv/8mGDo2N](https://b23.tv/8mGDo2N) |

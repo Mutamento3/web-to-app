@@ -31,7 +31,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Chat
 import androidx.compose.material.icons.outlined.Code
 import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.Download
@@ -422,9 +421,8 @@ private fun ContactGrid() {
     val authorLabel = authorLabel()
     val contactTitle = contactSectionTitle()
     val docsLabel = docsLabel()
-    val discordCommunityLabel = discordCommunityLabel()
 
-    val entries = remember(groupWord, qqCopied, authorLabel, docsLabel, discordCommunityLabel) {
+    val entries = remember(groupWord, qqCopied, authorLabel, docsLabel) {
         listOf(
             ContactEntry(
                 icon = Icons.Outlined.Code,
@@ -443,12 +441,6 @@ private fun ContactGrid() {
                 label = "Telegram",
                 value = "@webtoapp777",
                 action = ContactAction.OpenUrl("https://t.me/webtoapp777")
-            ),
-            ContactEntry(
-                icon = Icons.Outlined.Chat,
-                label = "Discord",
-                value = discordCommunityLabel,
-                action = ContactAction.OpenUrl("https://discord.gg/KUKEn4zPHQ")
             ),
             ContactEntry(
                 icon = Icons.Outlined.Tag,
@@ -1375,20 +1367,6 @@ private fun docsLabel(): String = when (Strings.currentLanguage.value) {
     AppLanguage.RUSSIAN -> "Документация"
     AppLanguage.JAPANESE -> "ドキュメント"
     AppLanguage.KOREAN -> "문서"
-}
-
-@Composable
-private fun discordCommunityLabel(): String = when (Strings.currentLanguage.value) {
-    AppLanguage.CHINESE -> "交流群"
-    AppLanguage.ENGLISH -> "Community"
-    AppLanguage.ARABIC -> "المجتمع"
-    AppLanguage.PORTUGUESE -> "Community"
-    AppLanguage.SPANISH -> "Community"
-    AppLanguage.FRENCH -> "Community"
-    AppLanguage.GERMAN -> "Community"
-    AppLanguage.RUSSIAN -> "Сообщество"
-    AppLanguage.JAPANESE -> "コミュニティ"
-    AppLanguage.KOREAN -> "커뮤니티"
 }
 
 @Composable
