@@ -45,17 +45,6 @@
 <img src=".github/assets/social-preview.png" width="90%" alt="WebToApp: My Apps home, the app list with the main toolbox (Agent, Extension Modules, Port Manager), per-app APK actions (Edit, Create Shortcut, Build/Share/Export APK), and the About screen — all running on an Android phone" />
 </div>
 
-### Demo
-
-<details>
-<summary><b>Watch: a quick walkthrough of building and packaging an app on-device</b></summary>
-
-<video src="https://github.com/user-attachments/assets/4e1a476d-2687-4d97-90a9-d077a15ebe31" controls muted loop playsinline>
-  Your browser does not support the video tag.
-</video>
-
-</details>
-
 ---
 
 ## What makes WebToApp different
