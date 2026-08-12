@@ -10,12 +10,17 @@
 
 **English** · [简体中文](.github/docs/README_CN.md)
 
-[![Stars](https://img.shields.io/github/stars/shiaho777/web-to-app?style=for-the-badge)](https://github.com/shiaho777/web-to-app/stargazers)
-[![Forks](https://img.shields.io/github/forks/shiaho777/web-to-app?style=for-the-badge)](https://github.com/shiaho777/web-to-app/network/members)
-[![License](https://img.shields.io/badge/License-Unlicense-blue?style=for-the-badge)](LICENSE)
-[![Android](https://img.shields.io/badge/Android-23%2B-3DDC84?style=for-the-badge&logo=android&logoColor=white)](#)
-
-</div>
+<p align="center">
+  <a href="https://github.com/shiaho777/web-to-app/stargazers">
+    <img src="https://img.shields.io/github/stars/shiaho777/web-to-app?style=for-the-badge" alt="Stars">
+  </a>
+  <a href="https://github.com/shiaho777/web-to-app/network/members">
+    <img src="https://img.shields.io/github/forks/shiaho777/web-to-app?style=for-the-badge" alt="Forks">
+  </a>
+  <a href="https://github.com/shiaho777/web-to-app/releases/latest">
+    <img src="https://img.shields.io/github/v/release/shiaho777/web-to-app" alt="Latest Version">
+  </a>
+</p>
 
 <p align="center">
   <a href="#what-makes-webtoapp-different">What's different</a> ·
