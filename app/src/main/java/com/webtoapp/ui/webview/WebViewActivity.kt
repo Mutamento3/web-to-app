@@ -1,6 +1,7 @@
 package com.webtoapp.ui.webview
 import com.webtoapp.core.engine.BrowserSurface
 import com.webtoapp.core.engine.EngineViewFactory
+import com.webtoapp.core.engine.EngineType
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.webtoapp.ui.components.PremiumButton
 import com.webtoapp.ui.components.AutoRefreshCountdownChip
@@ -90,6 +91,7 @@ import com.webtoapp.core.php.PhpAppRuntime
 import com.webtoapp.core.stats.AppUsageTracker
 import androidx.compose.ui.text.style.TextOverflow
 import com.webtoapp.ui.components.announcement.toUiTemplate
+import com.webtoapp.ui.design.WtaLoadingState
 
 class WebViewActivity : AppCompatActivity() {
 
@@ -99,6 +101,8 @@ class WebViewActivity : AppCompatActivity() {
         private const val EXTRA_TEST_URL = "test_url"
         private const val EXTRA_TEST_MODULE_IDS = "test_module_ids"
         private const val EXTRA_PREVIEW_APP_JSON = "preview_app_json"
+        private const val EXTRA_RESET_CLIENT_CERTIFICATE_DECISIONS =
+            "reset_client_certificate_decisions"
 
         fun start(context: Context, appId: Long) {
             context.startActivity(Intent(context, WebViewActivity::class.java).apply {
@@ -132,6 +136,7 @@ class WebViewActivity : AppCompatActivity() {
     private var customViewCallback: WebChromeClient.CustomViewCallback? = null
     private var filePathCallback: ValueCallback<Array<Uri>>? = null
     private var mediaSessionBridge: com.webtoapp.core.webview.MediaSessionBridge? = null
+    private var clientCertificateAuthEnabled = false
 
     private var pendingPermissionRequest: PermissionRequest? = null
     private var pendingGeolocationOrigin: String? = null
@@ -694,6 +699,38 @@ class WebViewActivity : AppCompatActivity() {
         } else null
 
         enableBackStatePreservation = previewApp?.webViewConfig?.enableBackStatePreservation ?: false
+        com.webtoapp.core.engine.GeckoViewEngine.applyEnterpriseRootsEnabled(
+            previewApp?.apkExportConfig?.networkTrustConfig?.trustUserCa == true
+        )
+        clientCertificateAuthEnabled =
+            previewApp?.webViewConfig?.clientCertificateAuthEnabled == true
+        val explicitClientCertificateReset =
+            intent.getBooleanExtra(EXTRA_RESET_CLIENT_CERTIFICATE_DECISIONS, false)
+        intent.removeExtra(EXTRA_RESET_CLIENT_CERTIFICATE_DECISIONS)
+        val shouldResetClientCertificateDecisions =
+            clientCertificateAuthEnabled && (savedInstanceState == null || explicitClientCertificateReset)
+        val previewUsesGeckoView =
+            previewApp?.apkExportConfig?.engineType == EngineType.GECKOVIEW.name
+        val clientCertificatePreferencesReady = mutableStateOf(
+            !shouldResetClientCertificateDecisions || previewUsesGeckoView
+        )
+        if (shouldResetClientCertificateDecisions) {
+            if (previewUsesGeckoView) {
+                com.webtoapp.core.engine.GeckoViewEngine.requestClientCertificateDecisionReset()
+            } else {
+                WebView.clearClientCertPreferences {
+                    runOnUiThread {
+                        if (!isDestroyed) {
+                            clientCertificatePreferencesReady.value = true
+                            AppLogger.i(
+                                "WebViewActivity",
+                                "Client certificate preferences cleared for preview"
+                            )
+                        }
+                    }
+                }
+            }
+        }
 
         setContent {
             WebToAppTheme { isDarkTheme ->
@@ -718,7 +755,8 @@ class WebViewActivity : AppCompatActivity() {
                     }
                 }
 
-                WebViewScreen(
+                if (clientCertificatePreferencesReady.value) {
+                    WebViewScreen(
                     appId = appId,
                     directUrl = directUrl,
                     previewApp = previewApp,
@@ -811,7 +849,10 @@ class WebViewActivity : AppCompatActivity() {
                             applyImmersiveFullscreen(enabled)
                         }
                     }
-                )
+                    )
+                } else {
+                    WtaLoadingState()
+                }
             }
         }
 
@@ -903,13 +944,12 @@ class WebViewActivity : AppCompatActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
-        // WebViewActivity is singleTask, so opening another shortcut/deep link reuses this
-        // instance and delivers the new intent here instead of creating a fresh activity.
-        // Recreate so the new target loads rather than keeping the previous app (issue #309 —
-        // users had to close one shortcut before the next would work). Re-opening the same app's
-        // shortcut (same app_id) just brings it to the foreground without restarting.
         val newAppId = intent.getLongExtra(EXTRA_APP_ID, -1)
-        if (newAppId <= 0 || newAppId != trackedAppId) {
+        if (newAppId <= 0 || newAppId != trackedAppId || clientCertificateAuthEnabled) {
+            if (clientCertificateAuthEnabled) {
+                intent.putExtra(EXTRA_RESET_CLIENT_CERTIFICATE_DECISIONS, true)
+                setIntent(intent)
+            }
             recreate()
         }
     }

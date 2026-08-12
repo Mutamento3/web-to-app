@@ -1,6 +1,7 @@
 package com.webtoapp.ui.shell
 
 import com.webtoapp.core.engine.BrowserSurface
+import com.webtoapp.core.engine.EngineType
 
 import com.webtoapp.core.logging.AppLogger
 import android.content.Intent
@@ -67,6 +68,9 @@ class ShellActivity : AppCompatActivity() {
 
     private var pendingFloatingWindowLaunch = false
     private var notificationPolyfillEnabled = false
+    private var clientCertificateAuthEnabled = false
+    private val clientCertificatePreferencesReady = mutableStateOf(true)
+    private val clientCertificateResetExtra = "reset_client_certificate_decisions"
     private var mediaSessionBridge: com.webtoapp.core.webview.MediaSessionBridge? = null
 
     // Screen-awake (ALWAYS/TIMED) timer management. The timed clear is tracked so it can be
@@ -291,7 +295,12 @@ class ShellActivity : AppCompatActivity() {
             return
         }
 
-        savedInstanceState?.let { webViewStateBundle = it }
+        val explicitClientCertificateReset =
+            intent.getBooleanExtra(clientCertificateResetExtra, false)
+        intent.removeExtra(clientCertificateResetExtra)
+        if (!explicitClientCertificateReset) {
+            savedInstanceState?.let { webViewStateBundle = it }
+        }
 
         if (WebToAppApplication.shellMode.requiresCustomPassword()) {
             showPasswordDialog()
@@ -310,6 +319,28 @@ class ShellActivity : AppCompatActivity() {
         com.webtoapp.core.shell.ShellLogger.i("ShellActivity", "配置加载成功: ${config.appName}")
         shellConfig = config
         notificationPolyfillEnabled = config.webViewConfig.enableNotificationPolyfill
+        com.webtoapp.core.engine.GeckoViewEngine.applyEnterpriseRootsEnabled(
+            config.networkTrustConfig.trustUserCa
+        )
+        clientCertificateAuthEnabled = config.webViewConfig.clientCertificateAuthEnabled
+        val shouldResetClientCertificateDecisions =
+            clientCertificateAuthEnabled && (savedInstanceState == null || explicitClientCertificateReset)
+        if (shouldResetClientCertificateDecisions) {
+            if (config.engineType == EngineType.GECKOVIEW.name) {
+                com.webtoapp.core.engine.GeckoViewEngine.requestClientCertificateDecisionReset()
+            } else {
+                clientCertificatePreferencesReady.value = false
+                WebView.clearClientCertPreferences {
+                    runOnUiThread {
+                        clientCertificatePreferencesReady.value = true
+                        com.webtoapp.core.shell.ShellLogger.i(
+                            "ShellActivity",
+                            "Client certificate preferences cleared for a new app launch"
+                        )
+                    }
+                }
+            }
+        }
         AppLogger.d("ShellActivity", "WebView UA config from shell: userAgentMode=${config.webViewConfig.userAgentMode}, customUserAgent=${config.webViewConfig.customUserAgent}, userAgent=${config.webViewConfig.userAgent}")
         clearBrowsingDataOnLaunch = config.webViewConfig.clearBrowsingDataOnLaunch
         if (clearBrowsingDataOnLaunch) {
@@ -447,7 +478,8 @@ class ShellActivity : AppCompatActivity() {
                     }
                 }
 
-                ShellScreen(
+                if (clientCertificatePreferencesReady.value) {
+                    ShellScreen(
                     config = config,
                     deepLinkUrl = deepLinkUrl.value,
                     onBrowserSurfaceCreated = { surface ->
@@ -615,7 +647,8 @@ class ShellActivity : AppCompatActivity() {
                     statusBarBackgroundColorDark = statusBarCustomColorDark,
                     statusBarBackgroundImageDark = statusBarBackgroundImageDark,
                     statusBarBackgroundAlphaDark = statusBarBackgroundAlphaDark
-                )
+                    )
+                }
             }
         }
 
@@ -741,9 +774,17 @@ class ShellActivity : AppCompatActivity() {
 
         val launcherRelaunch = intent?.action == Intent.ACTION_MAIN &&
             intent.hasCategory(Intent.CATEGORY_LAUNCHER)
-        if (clearBrowsingDataOnLaunch && launcherRelaunch) {
-            resetFreshBrowsingSession()
-            com.webtoapp.core.shell.ShellLogger.i("ShellActivity", "Fresh session reset after launcher relaunch")
+        if ((clearBrowsingDataOnLaunch || clientCertificateAuthEnabled) && launcherRelaunch) {
+            if (clearBrowsingDataOnLaunch) {
+                resetFreshBrowsingSession()
+                com.webtoapp.core.shell.ShellLogger.i("ShellActivity", "Fresh session reset after launcher relaunch")
+            }
+            if (clientCertificateAuthEnabled) {
+                intent?.let { relaunchIntent ->
+                    relaunchIntent.putExtra(clientCertificateResetExtra, true)
+                    setIntent(relaunchIntent)
+                }
+            }
             recreate()
             return
         }
@@ -894,7 +935,9 @@ class ShellActivity : AppCompatActivity() {
                         Toast.makeText(this, Strings.wrongPasswordCannotDecrypt, Toast.LENGTH_LONG).show()
                         finish()
                     } else {
-
+                        if (config.webViewConfig.clientCertificateAuthEnabled) {
+                            intent.putExtra(clientCertificateResetExtra, true)
+                        }
                         recreate()
                     }
                 } else {
