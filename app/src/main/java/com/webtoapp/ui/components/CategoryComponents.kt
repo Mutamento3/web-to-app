@@ -65,22 +65,13 @@ fun CategoryTabRow(
             Box {
                 com.webtoapp.ui.design.WtaChip(
                     selected = selectedCategoryId == category.id,
-                    onClick = { },
+                    onClick = { onCategorySelected(category.id) },
+                    onLongClick = { showCategoryMenu = category },
                     showSelectedCheck = false,
                     leadingIcon = com.webtoapp.util.SvgIconMapper.getIcon(category.icon)
                 ) {
                     Text(category.name, style = MaterialTheme.typography.labelLarge)
                 }
-
-                Box(
-                    modifier = Modifier
-                        .matchParentSize()
-                        .clip(MaterialTheme.shapes.small)
-                        .combinedClickable(
-                            onClick = { onCategorySelected(category.id) },
-                            onLongClick = { showCategoryMenu = category }
-                        )
-                )
 
                 DropdownMenu(
                     expanded = showCategoryMenu == category,

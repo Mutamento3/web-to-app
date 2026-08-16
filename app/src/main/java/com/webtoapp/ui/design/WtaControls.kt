@@ -4,8 +4,10 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.interaction.collectIsPressedAsState
@@ -175,6 +177,7 @@ fun WtaSwitch(
     )
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun WtaChip(
     selected: Boolean,
@@ -183,7 +186,8 @@ fun WtaChip(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     leadingIcon: ImageVector? = null,
-    showSelectedCheck: Boolean = true
+    showSelectedCheck: Boolean = true,
+    onLongClick: (() -> Unit)? = null
 ) {
     WtaChip(
         selected = selected,
@@ -191,12 +195,14 @@ fun WtaChip(
         modifier = modifier,
         enabled = enabled,
         leadingIcon = leadingIcon,
-        showSelectedCheck = showSelectedCheck
+        showSelectedCheck = showSelectedCheck,
+        onLongClick = onLongClick
     ) {
         Text(label, style = MaterialTheme.typography.labelLarge)
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun WtaChip(
     selected: Boolean,
@@ -205,6 +211,7 @@ fun WtaChip(
     enabled: Boolean = true,
     leadingIcon: ImageVector? = null,
     showSelectedCheck: Boolean = true,
+    onLongClick: (() -> Unit)? = null,
     label: @Composable () -> Unit
 ) {
     val colors = MaterialTheme.colorScheme
@@ -225,11 +232,12 @@ fun WtaChip(
     Surface(
         modifier = modifier
             .clip(RoundedCornerShape(WtaRadius.Chip))
-            .clickable(
+            .combinedClickable(
                 interactionSource = interactionSource,
                 indication = rememberWtaIndication(),
                 enabled = enabled,
-                onClick = hapticClick
+                onClick = hapticClick,
+                onLongClick = onLongClick
             ),
         shape = RoundedCornerShape(WtaRadius.Chip),
         color = containerColor
