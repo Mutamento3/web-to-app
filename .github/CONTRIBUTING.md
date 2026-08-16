@@ -6,7 +6,7 @@ rest.
 
 > **English** · [简体中文](#贡献-webtoapp中文)
 
-This guide targets **WebToApp 2.4.5** (`versionCode 55`).
+This guide targets **WebToApp 2.5.0** (`versionCode 56`).
 
 ---
 
