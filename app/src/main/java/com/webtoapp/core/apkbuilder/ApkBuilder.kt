@@ -57,6 +57,9 @@ class ApkBuilder(private val context: Context) {
         private val PACKAGE_NAME_REGEX = AppConstants.PACKAGE_NAME_REGEX
         private val CHARSET_REGEX = AppConstants.CHARSET_REGEX
         private const val FLOATING_WINDOW_MINIMIZED_ICON_ASSET = "floating_window_minimized_icon.png"
+
+        /** Adaptive icon canvas size (108dp @ xxxhdpi) used for foreground/background layers. */
+        private const val ADAPTIVE_ICON_PX = 432
         private val GECKOVIEW_RUNTIME_COMPONENTS = (0..39)
             .map { "org.mozilla.gecko.process.GeckoChildProcessServices\$tab$it" }
             .toSet() + setOf(
@@ -1061,7 +1064,7 @@ class ApkBuilder(private val context: Context) {
         }
     }
 
-    private suspend fun modifyApk(
+    internal suspend fun modifyApk(
         sourceApk: File,
         outputApk: File,
         config: ApkConfig,
@@ -1100,6 +1103,7 @@ class ApkBuilder(private val context: Context) {
         var strippedNativeLibSize = 0L
         val replacedIconPaths = mutableSetOf<String>()
         var discoveredOldIconPaths = emptySet<String>()
+        var discoveredIconSpecs = emptyList<ArscRebuilder.DiscoveredIconPath>()
 
         // Native libs the per-app-type injection step writes for the device ABI (16KB-aligned).
         // The template also ships them; skip the template's device-ABI copy in the loop below so
@@ -1199,6 +1203,7 @@ class ApkBuilder(private val context: Context) {
                             )
 
                             discoveredOldIconPaths = arscRebuilder.getLastDiscoveredIconPaths()
+                            discoveredIconSpecs = arscRebuilder.getLastDiscoveredIconSpecs()
                             logger.log("Discovered old icon paths from ARSC: $discoveredOldIconPaths")
                             writeEntryStored(zipOut, entry.name, modifiedData)
                         }
@@ -1210,10 +1215,22 @@ class ApkBuilder(private val context: Context) {
 
                         iconBitmap != null && (isIconEntry(entry.name) || discoveredOldIconPaths.contains(entry.name)) -> {
 
-                            val iconBytes = template.createAdaptiveForegroundIcon(iconBitmap, 432)
+                            // Template icon entries carry obfuscated names, so the ARSC scan is
+                            // what tells a legacy mipmap from the adaptive foreground — write
+                            // layer-appropriate, density-appropriate bitmaps per entry.
+                            val spec = discoveredIconSpecs.firstOrNull { it.path == entry.name }
+                            val iconBytes = when (spec?.kind) {
+                                ArscRebuilder.LauncherIconKind.FOREGROUND ->
+                                    template.createAdaptiveForegroundIcon(iconBitmap, ADAPTIVE_ICON_PX)
+                                ArscRebuilder.LauncherIconKind.ROUND ->
+                                    template.createRoundIcon(iconBitmap, iconPixelSizeForDensity(spec.densityDpi))
+                                ArscRebuilder.LauncherIconKind.LAUNCHER ->
+                                    template.scaleBitmapToPng(iconBitmap, iconPixelSizeForDensity(spec.densityDpi))
+                                null -> template.createAdaptiveForegroundIcon(iconBitmap, ADAPTIVE_ICON_PX)
+                            }
                             writeEntryDeflated(zipOut, entry.name, iconBytes)
                             replacedIconPaths.add(entry.name)
-                            AppLogger.d("ApkBuilder", "Replaced icon entry: ${entry.name} (${iconBytes.size} bytes)")
+                            AppLogger.d("ApkBuilder", "Replaced icon entry: ${entry.name} (kind=${spec?.kind}, ${iconBytes.size} bytes)")
                         }
 
                         entry.name in geckoRuntimeEntries -> {
@@ -1338,9 +1355,11 @@ class ApkBuilder(private val context: Context) {
                     if (iconBitmap != null) {
                         addAdaptiveIconPngs(zipOut, iconBitmap, entryNames)
 
-                        val bgBytes = template.createFullBleedBackgroundIcon(iconBitmap, 432)
+                        // Solid backing color — never the user image itself, or launchers
+                        // composite the picture twice (background + safe-zone foreground).
+                        val bgBytes = ApkTemplate.createSolidBackgroundIcon(iconBitmap, ADAPTIVE_ICON_PX)
                         writeEntryDeflated(zipOut, ArscRebuilder.LAUNCHER_BACKGROUND_DRAWABLE_PATH, bgBytes)
-                        logger.log("Added full-bleed launcher background drawable (${bgBytes.size} bytes)")
+                        logger.log("Added solid launcher background drawable (${bgBytes.size} bytes)")
                     }
                 }
 
@@ -3027,7 +3046,7 @@ builtins.__import__ = _w2a_import
             "res/drawable-anydpi-v24/ic_launcher_foreground_new"
         )
 
-        val iconBytes = template.createAdaptiveForegroundIcon(bitmap, 432)
+        val iconBytes = template.createAdaptiveForegroundIcon(bitmap, ADAPTIVE_ICON_PX)
 
         bases.forEach { base ->
             val pngPath = "${base}.png"
@@ -3038,17 +3057,13 @@ builtins.__import__ = _w2a_import
         }
     }
 
-    private fun addAdaptiveIconReplacementPngs(zipOut: ZipOutputStream, bitmap: Bitmap) {
-
-        val iconPng = template.scaleBitmapToPng(bitmap, 512)
-        writeEntryDeflated(zipOut, "res/mipmap-anydpi-v26/ic_launcher.png", iconPng)
-        AppLogger.d("ApkBuilder", "Added replacement icon: res/mipmap-anydpi-v26/ic_launcher.png (512px, ${iconPng.size} bytes)")
-
-        val roundPng = template.createRoundIcon(bitmap, 512)
-        writeEntryDeflated(zipOut, "res/mipmap-anydpi-v26/ic_launcher_round.png", roundPng)
-        AppLogger.d("ApkBuilder", "Added replacement icon: res/mipmap-anydpi-v26/ic_launcher_round.png (512px, ${roundPng.size} bytes)")
-
-        logger.log("Added PNG icons at mipmap-anydpi-v26 paths (512px, replacing adaptive icon XMLs)")
+    private fun iconPixelSizeForDensity(densityDpi: Int): Int = when (densityDpi) {
+        120 -> 36
+        160 -> 48
+        240 -> 72
+        320 -> 96
+        480 -> 144
+        else -> 192
     }
 
     private fun writeEntryDeflated(zipOut: ZipOutputStream, name: String, data: ByteArray) {
@@ -3181,41 +3196,6 @@ builtins.__import__ = _w2a_import
         return entryName.startsWith("res/mipmap-anydpi") &&
             (entryName.contains("ic_launcher") || entryName.contains("ic_launcher_round")) &&
             entryName.endsWith(".xml")
-    }
-
-    private fun replaceIconEntry(zipOut: ZipOutputStream, entryName: String, bitmap: Bitmap) {
-
-        var size = ApkTemplate.ICON_PATHS.find { it.first == entryName }?.second
-            ?: ApkTemplate.ROUND_ICON_PATHS.find { it.first == entryName }?.second
-
-        if (size == null) {
-            size = when {
-                entryName.contains("xxxhdpi") -> 192
-                entryName.contains("xxhdpi") -> 144
-                entryName.contains("xhdpi") -> 96
-                entryName.contains("hdpi") -> 72
-                entryName.contains("mdpi") -> 48
-                entryName.contains("ldpi") -> 36
-                else -> 96
-            }
-        }
-
-        val iconBytes = when {
-
-            entryName.contains("round") -> {
-                template.createRoundIcon(bitmap, size)
-            }
-
-            entryName.contains("foreground") -> {
-                template.createAdaptiveForegroundIcon(bitmap, size)
-            }
-
-            else -> {
-                template.scaleBitmapToPng(bitmap, size)
-            }
-        }
-
-        writeEntryDeflated(zipOut, entryName, iconBytes)
     }
 
     private fun copyEntry(zipIn: ZipFile, zipOut: ZipOutputStream, entry: ZipEntry) {

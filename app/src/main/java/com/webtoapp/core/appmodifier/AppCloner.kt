@@ -15,6 +15,7 @@ import androidx.core.content.pm.ShortcutInfoCompat
 import androidx.core.content.pm.ShortcutManagerCompat
 import androidx.core.graphics.drawable.IconCompat
 import com.webtoapp.core.apkbuilder.ArscEditor
+import com.webtoapp.core.apkbuilder.ApkTemplate
 import com.webtoapp.core.apkbuilder.AxmlEditor
 import com.webtoapp.core.apkbuilder.AxmlRebuilder
 import com.webtoapp.core.apkbuilder.JarSigner
@@ -590,6 +591,12 @@ class AppCloner(private val context: Context) {
                 createAdaptiveForegroundIcon(bitmap, size)
             }
 
+            entryName.contains("background") -> {
+                // Adaptive background layer: solid backing color, never the user image
+                // itself (launchers would composite the picture twice).
+                ApkTemplate.createSolidBackgroundIcon(bitmap, size)
+            }
+
             else -> {
                 scaleBitmapToPng(bitmap, size)
             }
@@ -654,15 +661,6 @@ class AppCloner(private val context: Context) {
     private fun createRoundIcon(bitmap: Bitmap, size: Int): ByteArray {
         val output = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(output)
-        val paint = android.graphics.Paint().apply {
-            isAntiAlias = true
-            isFilterBitmap = true
-        }
-
-        val rect = android.graphics.RectF(0f, 0f, size.toFloat(), size.toFloat())
-        canvas.drawOval(rect, paint)
-
-        paint.xfermode = android.graphics.PorterDuffXfermode(android.graphics.PorterDuff.Mode.SRC_IN)
 
         val scale = Math.min(size.toFloat() / bitmap.width, size.toFloat() / bitmap.height)
         val scaledWidth = (bitmap.width * scale).toInt()
@@ -671,8 +669,19 @@ class AppCloner(private val context: Context) {
         val left = (size - scaledWidth) / 2f
         val top = (size - scaledHeight) / 2f
 
-        val destRect = android.graphics.RectF(left, top, left + scaledWidth, top + scaledHeight)
-        canvas.drawBitmap(bitmap, null, destRect, paint)
+        val paint = android.graphics.Paint().apply {
+            isAntiAlias = true
+            isFilterBitmap = true
+        }
+        canvas.drawBitmap(bitmap, null, android.graphics.RectF(left, top, left + scaledWidth, top + scaledHeight), paint)
+
+        // Mask with DST_IN over the full canvas: an SRC_IN composite against a pre-drawn
+        // circle would leave the circle visible wherever the letterboxed content didn't cover.
+        val maskPaint = android.graphics.Paint().apply {
+            isAntiAlias = true
+            xfermode = android.graphics.PorterDuffXfermode(android.graphics.PorterDuff.Mode.DST_IN)
+        }
+        canvas.drawOval(android.graphics.RectF(0f, 0f, size.toFloat(), size.toFloat()), maskPaint)
 
         val baos = ByteArrayOutputStream()
         output.compress(Bitmap.CompressFormat.PNG, 100, baos)
