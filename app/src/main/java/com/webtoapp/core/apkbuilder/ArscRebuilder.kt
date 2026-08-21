@@ -18,6 +18,10 @@ class ArscRebuilder {
         const val LAUNCHER_BACKGROUND_DRAWABLE_PATH = "res/ic_launcher_bg.png"
     }
 
+    enum class LauncherIconKind { FOREGROUND, LAUNCHER, ROUND }
+
+    data class DiscoveredIconPath(val path: String, val kind: LauncherIconKind, val densityDpi: Int)
+
     fun rebuildWithNewAppName(arscData: ByteArray, targetAppName: String): ByteArray {
         return rebuildWithNewAppNameAndIcons(arscData, targetAppName, replaceIcons = false)
     }
@@ -84,7 +88,8 @@ class ArscRebuilder {
 
             if (replaceIcons) {
                 val iconPaths = findIconPathIndices(remainingData, strings)
-                _lastDiscoveredIconPaths = iconPaths.map { (idx, _) -> strings[idx] }.toSet()
+                _lastDiscoveredIconSpecs = iconPaths
+                _lastDiscoveredIconPaths = iconPaths.map { it.path }.toSet()
                 AppLogger.d(TAG, "Discovered old icon paths (for ZIP replacement): $_lastDiscoveredIconPaths")
 
                 convertLauncherBackgroundToDrawable(remainingData, strings)
@@ -159,6 +164,9 @@ class ArscRebuilder {
 
     private var _lastDiscoveredIconPaths = emptySet<String>()
     fun getLastDiscoveredIconPaths(): Set<String> = _lastDiscoveredIconPaths
+
+    private var _lastDiscoveredIconSpecs: List<DiscoveredIconPath> = emptyList()
+    fun getLastDiscoveredIconSpecs(): List<DiscoveredIconPath> = _lastDiscoveredIconSpecs
 
     private fun convertLauncherBackgroundToDrawable(
         packageData: ByteArray,
@@ -266,8 +274,8 @@ class ArscRebuilder {
     private fun findIconPathIndices(
         packageData: ByteArray,
         globalStrings: List<String>
-    ): List<Pair<Int, String>> {
-        val result = mutableListOf<Pair<Int, String>>()
+    ): List<DiscoveredIconPath> {
+        val result = mutableListOf<DiscoveredIconPath>()
 
         try {
             val buf = ByteBuffer.wrap(packageData).order(ByteOrder.LITTLE_ENDIAN)
@@ -337,11 +345,15 @@ class ArscRebuilder {
                     val entryCount = buf.int
                     val entriesStart = buf.int
 
+                    // ResTable_config density sits at config offset 14; the config itself
+                    // starts right after the fixed 20-byte type chunk header.
+                    val densityDpi = readU16(packageData, pos + 34)
+
                     val isInteresting = typeId == mipmapTypeId || typeId == drawableTypeId
                     if (isInteresting) {
                         if (typeId == mipmapTypeId) mipmapTypeChunkCount++
                         if (typeId == drawableTypeId) drawableTypeChunkCount++
-                        AppLogger.d(TAG, "Type chunk #$typeChunkCount: typeId=$typeId, entryCount=$entryCount, entriesStart=$entriesStart, chunkHeaderSize=$chunkHeaderSize, pos=$pos")
+                        AppLogger.d(TAG, "Type chunk #$typeChunkCount: typeId=$typeId, density=$densityDpi, entryCount=$entryCount, entriesStart=$entriesStart, chunkHeaderSize=$chunkHeaderSize, pos=$pos")
                     }
 
                     buf.position(pos + chunkHeaderSize)
@@ -396,21 +408,24 @@ class ArscRebuilder {
                         val globalStrIdx = valueData
                         if (globalStrIdx < 0 || globalStrIdx >= globalStrings.size) continue
 
-                        if (typeId == mipmapTypeId) {
-                            if (entryKeyIndex == icLauncherKeyIdx || entryKeyIndex == icLauncherRoundKeyIdx) {
-                                val oldPath = globalStrings[globalStrIdx]
-                                val keyName = if (entryKeyIndex >= 0 && entryKeyIndex < keyStrings.size) keyStrings[entryKeyIndex] else "?"
-                                AppLogger.d(TAG, "Found mipmap/$keyName → '$oldPath' (adaptive icon XML, KEEPING)")
-                            }
+                        val oldPath = globalStrings[globalStrIdx]
+                        val kind = when {
+                            typeId == drawableTypeId && entryKeyIndex == icLauncherFgKeyIdx -> LauncherIconKind.FOREGROUND
+                            typeId == mipmapTypeId && entryKeyIndex == icLauncherKeyIdx -> LauncherIconKind.LAUNCHER
+                            typeId == mipmapTypeId && entryKeyIndex == icLauncherRoundKeyIdx -> LauncherIconKind.ROUND
+                            else -> null
                         }
 
-                        if (typeId == drawableTypeId) {
-                            if (entryKeyIndex == icLauncherFgKeyIdx) {
-                                val oldPath = globalStrings[globalStrIdx]
-                                AppLogger.d(TAG, "Found drawable/ic_launcher_foreground → '$oldPath' (foreground image, REPLACING)")
-                                result.add(globalStrIdx to oldPath)
-                            }
+                        if (kind == null) continue
+
+                        // Adaptive-icon XML definitions must stay; only bitmap files are replaced.
+                        if (!oldPath.endsWith(".png")) {
+                            AppLogger.d(TAG, "Found icon path '$oldPath' (kind=$kind, non-bitmap, KEEPING)")
+                            continue
                         }
+
+                        AppLogger.d(TAG, "Found icon path '$oldPath' (kind=$kind, density=$densityDpi, REPLACING)")
+                        result.add(DiscoveredIconPath(oldPath, kind, densityDpi))
                     }
                 }
 
@@ -422,7 +437,7 @@ class ArscRebuilder {
             AppLogger.e(TAG, "Failed to find icon path indices", e)
         }
 
-        return result.distinctBy { it.first }
+        return result.distinctBy { it.path }
     }
 
     private fun readStringPool(buf: ByteBuffer, fullData: ByteArray): List<String> {
