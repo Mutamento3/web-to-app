@@ -13,6 +13,7 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import com.webtoapp.core.logging.AppLogger
 import com.webtoapp.core.i18n.Strings
+import com.webtoapp.core.webview.DocumentDownloadPolicy
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -284,6 +285,17 @@ object DownloadHelper {
             return
         }
 
+        // Downloads from the app's own loopback webserver skip the system DownloadManager:
+        // it runs out-of-process and adds OEM failure modes (disabled/throttled provider),
+        // while the in-app client reaches the embedded server directly with cookies and
+        // headers attached. Generated shells keep targetSdk 28 (legacy storage), so the
+        // in-app writer can still place files in the public Downloads directory.
+        if (DocumentDownloadPolicy.isLoopbackUrl(safeUrl) && runsAsGeneratedApp(context)) {
+            AppLogger.d(TAG, "Loopback URL routed to in-app downloader: $safeUrl")
+            downloadInApp(context, safeUrl, userAgent, fileName, mimeType, scope, downloadLocationMode, customDownloadDirUri)
+            return
+        }
+
         val downloadId = try {
             val request = buildDownloadManagerRequest(
                 context = context,
@@ -398,6 +410,10 @@ object DownloadHelper {
             "android.permission.DOWNLOAD_WITHOUT_NOTIFICATION"
         ) == PackageManager.PERMISSION_GRANTED
     }
+
+    /** Generated shells always target SDK 28 (fork+exec runtimes); the host app targets 35+. */
+    private fun runsAsGeneratedApp(context: Context): Boolean =
+        context.applicationInfo.targetSdkVersion <= 28
 
     private fun downloadInApp(
         context: Context,
