@@ -3626,6 +3626,8 @@ object Strings {
     val pyDepsInstallFailedCode: String get() = StringsD.pyDepsInstallFailedCode
     val pyDepsNoWheelHint: String get() = StringsD.pyDepsNoWheelHint
     val pyDepsSourceBuildHint: String get() = StringsD.pyDepsSourceBuildHint
+    val pyDepsKilledBySignal: String get() = StringsD.pyDepsKilledBySignal
+    val pyDepsSeccompHint: String get() = StringsD.pyDepsSeccompHint
     val pyDownloadSourceLabel: String get() = StringsD.pyDownloadSourceLabel
     val pyExtractNoBinary: String get() = StringsD.pyExtractNoBinary
     val pyExtractFailed: String get() = StringsD.pyExtractFailed
@@ -50275,6 +50277,30 @@ object StringsD {
         AppLanguage.RUSSIAN -> "Нет готового wheel для Python %s на этом устройстве, а сборка из исходного кода требует компилятор, который недоступен на устройстве. Попробуйте обновить пакет или убрать фиксацию версии."
         AppLanguage.JAPANESE -> "このデバイスの Python %s 向けにプリビルド wheel がなく、ソースビルドにはデバイス上にないコンパイラが必要です。パッケージをアップグレードするか、バージョン固定を解除してみてください。"
         AppLanguage.KOREAN -> "이 기기의 Python %s용 사전 빌드 wheel이 없으며, 소스 빌드에는 기기에 없는 컴파일러가 필요합니다. 패키지를 업그레이드하거나 버전 고정을 제거해 보세요."
+    }
+    val pyDepsKilledBySignal: String get() = when (Strings.lang) {
+        AppLanguage.CHINESE -> "依赖安装进程被系统终止(信号 %d / %s)"
+        AppLanguage.ENGLISH -> "The dependency install process was killed by the system (signal %d / %s)"
+        AppLanguage.ARABIC -> "تم إنهاء عملية تثبيت التبعيات بواسطة النظام (الإشارة %d / %s)"
+        AppLanguage.PORTUGUESE -> "O processo de instalação de dependências foi encerrado pelo sistema (sinal %d / %s)"
+        AppLanguage.SPANISH -> "El proceso de instalación de dependencias fue terminado por el sistema (señal %d / %s)"
+        AppLanguage.FRENCH -> "Le processus d'installation des dépendances a été tué par le système (signal %d / %s)"
+        AppLanguage.GERMAN -> "Der Abhängigkeitsinstallationsprozess wurde vom System beendet (Signal %d / %s)"
+        AppLanguage.RUSSIAN -> "Процесс установки зависимостей был завершён системой (сигнал %d / %s)"
+        AppLanguage.JAPANESE -> "依存関係のインストールプロセスがシステムによって強制終了されました (シグナル %d / %s)"
+        AppLanguage.KOREAN -> "의존성 설치 프로세스가 시스템에 의해 종료되었습니다 (시그널 %d / %s)"
+    }
+    val pyDepsSeccompHint: String get() = when (Strings.lang) {
+        AppLanguage.CHINESE -> "内置 Python %s 运行时被本 Android 版本的系统调用过滤器(SIGSYS)终止，这是系统层面的不兼容：Python 功能需要 Android 9.0 或更高版本。"
+        AppLanguage.ENGLISH -> "The bundled Python %s runtime was killed by this Android version's system-call filter (SIGSYS). This is an OS-level incompatibility: Python features require Android 9.0 or newer."
+        AppLanguage.ARABIC -> "تم إنهاء بيئة Python %s المدمجة بواسطة مرشح استدعاءات النظام في إصدار Android هذا (SIGSYS). هذا تعارض على مستوى النظام: تتطلب ميزات Python نظام Android 9.0 أو أحدث."
+        AppLanguage.PORTUGUESE -> "O runtime Python %s integrado foi encerrado pelo filtro de chamadas de sistema desta versão do Android (SIGSYS). Esta é uma incompatibilidade no nível do sistema: os recursos de Python exigem o Android 9.0 ou mais recente."
+        AppLanguage.SPANISH -> "El runtime de Python %s incluido fue terminado por el filtro de llamadas al sistema de esta versión de Android (SIGSYS). Es una incompatibilidad a nivel del sistema operativo: las funciones de Python requieren Android 9.0 o superior."
+        AppLanguage.FRENCH -> "L'environnement Python %s intégré a été tué par le filtre d'appels système de cette version d'Android (SIGSYS). Il s'agit d'une incompatibilité au niveau du système : les fonctionnalités Python nécessitent Android 9.0 ou plus récent."
+        AppLanguage.GERMAN -> "Die integrierte Python-%s-Laufzeit wurde vom Systemaufruf-Filter dieser Android-Version beendet (SIGSYS). Dies ist eine Inkompatibilität auf Betriebssystemebene: Python-Funktionen erfordern Android 9.0 oder neuer."
+        AppLanguage.RUSSIAN -> "Встроенная среда Python %s была завершена фильтром системных вызовов этой версии Android (SIGSYS). Это несовместимость на уровне ОС: функции Python требуют Android 9.0 или новее."
+        AppLanguage.JAPANESE -> "内蔵の Python %s ランタイムが、この Android バージョンのシステムコールフィルター (SIGSYS) によって強制終了されました。これは OS レベルの非互換性であり、Python 機能には Android 9.0 以降が必要です。"
+        AppLanguage.KOREAN -> "내장된 Python %s 런타임이 이 Android 버전의 시스템 콜 필터(SIGSYS)에 의해 종료되었습니다. 이는 OS 수준의 비호환성이며, Python 기능에는 Android 9.0 이상이 필요합니다."
     }
     val pyDownloadSourceLabel: String get() = when (Strings.lang) {
         AppLanguage.CHINESE -> "%s [源%d/%d]"
