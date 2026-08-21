@@ -134,25 +134,7 @@ class WebViewManager(
             "funcaptcha.com"
         )
 
-        private val OAUTH_HOST_SUFFIXES = setOf(
-
-            "accounts.google.com",
-            "accounts.youtube.com",
-            "myaccount.google.com",
-
-            "www.facebook.com",
-            "m.facebook.com",
-
-            "appleid.apple.com",
-
-            "login.microsoftonline.com",
-            "login.live.com",
-
-            "github.com",
-
-            "api.twitter.com",
-            "api.x.com"
-        )
+        private val OAUTH_HOST_SUFFIXES get() = OAuthProviderHosts.HOST_SUFFIXES
 
         private val MAP_TILE_HOST_SUFFIXES = setOf(
             "tile.openstreetmap.org",
@@ -1146,6 +1128,10 @@ class WebViewManager(
     private var lastDownloadInterceptedAtMs = 0L
     private val DOWNLOAD_INTERCEPT_RETRY_SUPPRESS_MS = 10_000L
 
+    // Set once an auth/challenge provider is visited; third-party cookies stay on for
+    // this WebView session so embedded sign-in frames can complete (#601).
+    private var thirdPartyCookiesForceEnabled = false
+
     private fun noteDownloadInterceptedUrl(url: String) {
         lastDownloadInterceptedUrl = url
         lastDownloadInterceptedAtMs = android.os.SystemClock.elapsedRealtime()
@@ -2014,6 +2000,14 @@ class WebViewManager(
                     }
                 }
 
+                // OAuth sign-in must complete inside this WebView: the site session lives
+                // in this WebView's cookie jar, so handing the login navigation to an
+                // external browser (openExternalLinks) can never sign the app in (#601).
+                if (request.isForMainFrame && isOAuthServiceRequest(url)) {
+                    AppLogger.d("WebViewManager", "Keeping OAuth navigation in-app: $url")
+                    return false
+                }
+
                 if (config.openExternalLinks && isExternalUrl(url, view?.url)) {
                     // For local-file apps, only open externally on a genuine user gesture.
                     // Otherwise an automatic entry/redirect navigation gets hijacked and the
@@ -2055,6 +2049,19 @@ class WebViewManager(
                     userscriptInjectionState.remove(it)
                     pagePhaseExecutionState.remove(it)
                     cancelDeferredExtensionModuleInjection(it)
+                }
+
+                // Embedded sign-in frames ("Sign in with Google" buttons, captcha
+                // challenges) are cross-origin iframes that need third-party cookies,
+                // which WebView disables by default. Once the user reaches a login or
+                // challenge provider, enable them for this WebView's session so the
+                // flow can complete even under the default privacy config (#601).
+                if (view != null && url != null && !thirdPartyCookiesForceEnabled &&
+                    (isOAuthServiceRequest(url) || isCaptchaServiceRequest(url))
+                ) {
+                    thirdPartyCookiesForceEnabled = true
+                    CookieManager.getInstance().setAcceptThirdPartyCookies(view, true)
+                    AppLogger.d("WebViewManager", "Third-party cookies enabled for auth/challenge flow: $url")
                 }
 
                 view?.let { wv ->
@@ -3040,10 +3047,7 @@ class WebViewManager(
     }
 
     private fun isOAuthServiceRequest(url: String): Boolean {
-        val host = extractHostFromUrl(url) ?: return false
-        return OAUTH_HOST_SUFFIXES.any { suffix ->
-            host == suffix || host.endsWith(".$suffix")
-        }
+        return OAuthProviderHosts.isOAuthHost(url)
     }
 
     private fun shouldUseConservativeScriptMode(pageUrl: String?): Boolean {
@@ -3460,29 +3464,38 @@ class WebViewManager(
 
                 val originalWebView = view
 
-                return when (config.newWindowBehavior) {
-                    NewWindowBehavior.SAME_WINDOW -> {
+                // Load the popup URL into the main WebView through a transport.
+                fun openInSameWindow(): Boolean {
+                    val transport = resultMsg?.obj as? WebView.WebViewTransport
+                    if (transport != null) {
 
-                        val transport = resultMsg?.obj as? WebView.WebViewTransport
-                        if (transport != null) {
-
-                            val tempWebView = WebView(context)
-                            tempWebView.webViewClient = object : WebViewClient() {
-                                override fun shouldOverrideUrlLoading(tempView: WebView?, request: WebResourceRequest?): Boolean {
-                                    val url = request?.url?.toString()
-                                    if (url != null) {
-                                        val safeUrl = normalizeHttpUrlForSecurity(url)
-                                        originalWebView.loadUrl(safeUrl)
-                                        tempView?.destroy()
-                                    }
-                                    return true
+                        val tempWebView = WebView(context)
+                        tempWebView.webViewClient = object : WebViewClient() {
+                            override fun shouldOverrideUrlLoading(tempView: WebView?, request: WebResourceRequest?): Boolean {
+                                val url = request?.url?.toString()
+                                if (url != null) {
+                                    val safeUrl = normalizeHttpUrlForSecurity(url)
+                                    originalWebView.loadUrl(safeUrl)
+                                    tempView?.destroy()
                                 }
+                                return true
                             }
-                            transport.webView = tempWebView
-                            resultMsg.sendToTarget()
                         }
-                        true
+                        transport.webView = tempWebView
+                        resultMsg.sendToTarget()
                     }
+                    return true
+                }
+
+                // A sign-in popup must stay attached to this WebView's session: opening it
+                // in an external browser or dropping it breaks the OAuth round-trip (#601).
+                if (href != null && isOAuthServiceRequest(href)) {
+                    AppLogger.d("WebViewManager", "OAuth popup kept in-app: $href")
+                    return openInSameWindow()
+                }
+
+                return when (config.newWindowBehavior) {
+                    NewWindowBehavior.SAME_WINDOW -> openInSameWindow()
                     NewWindowBehavior.EXTERNAL_BROWSER -> {
 
                         val transport = resultMsg?.obj as? WebView.WebViewTransport
@@ -3511,9 +3524,13 @@ class WebViewManager(
                         true
                     }
                     NewWindowBehavior.POPUP_WINDOW -> {
-
-                        callbacks.onNewWindow(resultMsg)
-                        true
+                        // No host currently renders a real popup window; fall back to the
+                        // same-window transport instead of silently swallowing the popup.
+                        if (callbacks.onNewWindow(resultMsg)) {
+                            true
+                        } else {
+                            openInSameWindow()
+                        }
                     }
                     NewWindowBehavior.BLOCK -> {
 

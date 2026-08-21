@@ -71,8 +71,8 @@ class SystemWebViewEngine(
                 callback.onConsoleMessage(level, message, sourceId, lineNumber)
             }
 
-            override fun onNewWindow(resultMsg: android.os.Message?) {
-                callback.onNewWindow(resultMsg)
+            override fun onNewWindow(resultMsg: android.os.Message?): Boolean {
+                return callback.onNewWindow(resultMsg)
             }
         }
 

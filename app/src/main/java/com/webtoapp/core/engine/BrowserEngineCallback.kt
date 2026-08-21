@@ -46,7 +46,11 @@ interface BrowserEngineCallback {
 
     fun onConsoleMessage(level: Int, message: String, sourceId: String, lineNumber: Int) {}
 
-    fun onNewWindow(resultMsg: android.os.Message?) {}
+    /**
+     * A popup window was requested. Return true when the host renders the popup transport;
+     * false lets the WebViewManager fall back to loading the popup URL in the same window.
+     */
+    fun onNewWindow(resultMsg: android.os.Message?): Boolean = false
 
     /**
      * Request Android runtime permissions on behalf of the engine. GeckoView surfaces these via
