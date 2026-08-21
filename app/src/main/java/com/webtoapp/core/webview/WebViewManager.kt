@@ -1140,6 +1140,24 @@ class WebViewManager(
     private val LOOPBACK_MAIN_FRAME_MAX_RETRIES = 3
     private val LOOPBACK_MAIN_FRAME_RETRY_DELAY_MS = 150L
 
+    // A download-intercepted navigation surfaces as an aborted main-frame load; remember
+    // the URL so the loopback auto-retry does not re-navigate into the same download.
+    private var lastDownloadInterceptedUrl: String? = null
+    private var lastDownloadInterceptedAtMs = 0L
+    private val DOWNLOAD_INTERCEPT_RETRY_SUPPRESS_MS = 10_000L
+
+    private fun noteDownloadInterceptedUrl(url: String) {
+        lastDownloadInterceptedUrl = url
+        lastDownloadInterceptedAtMs = android.os.SystemClock.elapsedRealtime()
+    }
+
+    private fun wasRecentlyInterceptedForDownload(url: String): Boolean {
+        val intercepted = lastDownloadInterceptedUrl ?: return false
+        return url == intercepted &&
+            android.os.SystemClock.elapsedRealtime() - lastDownloadInterceptedAtMs <
+                DOWNLOAD_INTERCEPT_RETRY_SUPPRESS_MS
+    }
+
     private fun cancelLoopbackMainFrameRetry() {
         val pending = loopbackMainFrameRetryRunnable
         val view = loopbackMainFrameRetryView
@@ -1587,6 +1605,7 @@ class WebViewManager(
 
             if (config.downloadEnabled) {
                 setDownloadListener { url, userAgent, contentDisposition, mimeType, contentLength ->
+                    noteDownloadInterceptedUrl(url)
                     callbacks.onDownloadStart(url, userAgent, contentDisposition, mimeType, contentLength)
                 }
 
@@ -2003,6 +2022,25 @@ class WebViewManager(
                         return false
                     }
                     callbacks.onExternalLink(url)
+                    return true
+                }
+
+                // Chromium cannot render documents like PDF inline; letting the main frame
+                // navigate there yields a black page and never fires the download listener.
+                // Hand the navigation straight to the download pipeline instead (#601).
+                if (request.isForMainFrame &&
+                    config.downloadEnabled &&
+                    DocumentDownloadPolicy.isUnrenderableDocumentUrl(url)
+                ) {
+                    AppLogger.d("WebViewManager", "Intercepting unrenderable document as download: $url")
+                    noteDownloadInterceptedUrl(url)
+                    callbacks.onDownloadStart(
+                        url,
+                        view?.settings?.userAgentString ?: "",
+                        "",
+                        DocumentDownloadPolicy.mimeTypeFor(url),
+                        -1L
+                    )
                     return true
                 }
 
@@ -2945,6 +2983,10 @@ class WebViewManager(
     ): Boolean {
         if (!isLocalRuntimeUrl(failedUrl)) return false
         if (isCleartextBlockedError(errorCode, rawDescription, normalizedDescription)) return false
+        // An aborted load of a document URL (or of a URL the download pipeline just took)
+        // is a download interception, not a server that failed to come up — never re-navigate.
+        if (wasRecentlyInterceptedForDownload(failedUrl)) return false
+        if (DocumentDownloadPolicy.isUnrenderableDocumentUrl(failedUrl)) return false
 
         val merged = "$rawDescription $normalizedDescription".uppercase()
         return errorCode == WebViewClient.ERROR_UNKNOWN ||
