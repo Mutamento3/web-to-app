@@ -326,7 +326,7 @@ object LocalBuildEnvironment {
             return@withContext ExecutionResult(0, "no requirements.txt", "", 0)
         }
         if (!isPythonReady(context)) {
-            return@withContext ExecutionResult(-1, "", "Python 运行时未就绪", 0)
+            return@withContext ExecutionResult(-1, "", Strings.pythonRuntimeNotReady, 0)
         }
         val start = System.currentTimeMillis()
         val ok = com.webtoapp.core.python.PythonDependencyManager.installRequirements(
@@ -339,7 +339,7 @@ object LocalBuildEnvironment {
         ExecutionResult(
             exitCode = if (ok) 0 else -1,
             stdout = "",
-            stderr = if (ok) "" else "pip install 失败",
+            stderr = if (ok) "" else Strings.pyDepsInstallFailed,
             duration = duration,
         )
     }

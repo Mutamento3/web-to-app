@@ -767,6 +767,17 @@ sys.exit(main())
 
         if (firstResult.exitCode == 0) return true
 
+        // A seccomp kill (SIGSYS, wrapper-reported as exitCode 159) is a deterministic
+        // OS-level incompatibility: an identical retry only repeats the failure (#600).
+        if (PythonProcessDiagnostics.isDeterministicEnvironmentFailure(firstResult.exitCode)) {
+            AppLogger.w(
+                TAG,
+                "pip install killed by the OS (exitCode=${firstResult.exitCode}); skipping retry — environment incompatibility"
+            )
+            sitePackages.deleteRecursively()
+            return false
+        }
+
         val noWheelPackage = findNoWheelPackage(firstResult.output)
         if (noWheelPackage != null && shouldSkipSourceBuildRetry(firstResult.output)) {
             // A source build needs a compiler, which does not exist on-device.
@@ -928,6 +939,23 @@ sys.exit(main())
             val lastOutput = capturedOutput.lines().takeLast(5).joinToString("\n")
             AppLogger.e(TAG, "pip install failed, exitCode=$exitCode, output=$lastOutput")
             onOutput?.invoke(String.format(com.webtoapp.core.i18n.Strings.pyDepsInstallFailedCode, exitCode))
+
+            val signal = PythonProcessDiagnostics.signalForExitCode(exitCode)
+            if (signal != null) {
+                onOutput?.invoke(
+                    String.format(
+                        com.webtoapp.core.i18n.Strings.pyDepsKilledBySignal,
+                        signal,
+                        PythonProcessDiagnostics.signalName(signal)
+                    )
+                )
+                if (signal == PythonProcessDiagnostics.SIGSYS) {
+                    // Seccomp kill: the bundled musl Python issued a system call this
+                    // Android version's filter forbids — deterministic, not transient (#600).
+                    AppLogger.e(TAG, "pip install died from SIGSYS (seccomp); Python $PYTHON_VERSION is incompatible with this OS level")
+                    onOutput?.invoke(String.format(com.webtoapp.core.i18n.Strings.pyDepsSeccompHint, PYTHON_VERSION))
+                }
+            }
         }
         return CommandResult(exitCode, capturedOutput)
     }
