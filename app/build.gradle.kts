@@ -57,8 +57,8 @@ android {
         minSdk = 23
 
         targetSdk = 35
-        versionCode = 58
-        versionName = "2.5.2"
+        versionCode = 59
+        versionName = "2.5.3"
         buildConfigField("boolean", "SHELL_RUNTIME_ONLY", "false")
 
         vectorDrawables {
