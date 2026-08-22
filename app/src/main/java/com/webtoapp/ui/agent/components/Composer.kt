@@ -16,11 +16,11 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Send
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.AttachFile
-import androidx.compose.material.icons.outlined.AutoAwesome
 import androidx.compose.material.icons.outlined.Bolt
 import androidx.compose.material.icons.outlined.BookmarkBorder
 import androidx.compose.material.icons.outlined.Cancel
@@ -31,8 +31,9 @@ import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material.icons.outlined.Image
 import androidx.compose.material.icons.outlined.InsertDriveFile
 import androidx.compose.material.icons.outlined.Lock
-import androidx.compose.material.icons.outlined.Stop
 import androidx.compose.material.icons.outlined.SmartToy
+import androidx.compose.material.icons.outlined.Stop
+import androidx.compose.material.icons.outlined.Terminal
 import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -41,6 +42,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -61,10 +63,10 @@ import com.webtoapp.ui.design.WtaButtonVariant
 import com.webtoapp.ui.design.WtaCard
 import com.webtoapp.ui.design.WtaCardTone
 import com.webtoapp.ui.design.WtaIconButton
+import com.webtoapp.ui.design.WtaRadius
 import com.webtoapp.ui.design.WtaSettingRow
 import com.webtoapp.ui.design.WtaSize
 import com.webtoapp.ui.design.WtaSpacing
-import com.webtoapp.ui.design.WtaTextField
 
 @Composable
 fun Composer(
@@ -130,15 +132,13 @@ fun Composer(
                 onAttachFolder = onAttachFolder
             )
             Spacer(Modifier.width(WtaSpacing.Small))
-            WtaTextField(
+            ComposerPillField(
                 value = state.composerText,
                 onValueChange = onTextChange,
+                placeholder = composerPlaceholder(state),
                 modifier = Modifier
                     .weight(1f)
-                    .heightIn(min = WtaSize.TextFieldHeight, max = 220.dp),
-                placeholder = composerPlaceholder(state),
-                singleLine = false,
-                maxLines = 6
+                    .heightIn(max = 220.dp)
             )
             Spacer(Modifier.width(WtaSpacing.Small))
             SendButton(
@@ -162,6 +162,47 @@ fun Composer(
             onCompactContext = onCompactContext,
             selectedContextCount = state.contextAppIds.size + state.contextModuleIds.size,
             onOpenContextPicker = onOpenContextPicker
+        )
+    }
+}
+
+/**
+ * Capsule-shaped composer input. Rendered as a pill Surface with a borderless
+ * M3 TextField inside (all chrome transparent) so the focused state never
+ * draws its underline across the rounded capsule.
+ */
+@Composable
+private fun ComposerPillField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    placeholder: String,
+    modifier: Modifier = Modifier
+) {
+    val pillShape = RoundedCornerShape(WtaRadius.Pill)
+    Surface(
+        shape = pillShape,
+        color = MaterialTheme.colorScheme.surfaceContainerHighest,
+        modifier = modifier
+    ) {
+        TextField(
+            value = value,
+            onValueChange = onValueChange,
+            modifier = Modifier.fillMaxWidth(),
+            placeholder = { Text(placeholder) },
+            singleLine = false,
+            maxLines = 6,
+            shape = pillShape,
+            colors = androidx.compose.material3.TextFieldDefaults.colors(
+                focusedContainerColor = androidx.compose.ui.graphics.Color.Transparent,
+                unfocusedContainerColor = androidx.compose.ui.graphics.Color.Transparent,
+                disabledContainerColor = androidx.compose.ui.graphics.Color.Transparent,
+                errorContainerColor = androidx.compose.ui.graphics.Color.Transparent,
+                focusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
+                unfocusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
+                disabledIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
+                errorIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
+                cursorColor = MaterialTheme.colorScheme.primary
+            )
         )
     }
 }
@@ -469,7 +510,7 @@ private fun ModeChipRow(
 
         ModeChip(
             label = Strings.agentSlashChipLabel,
-            icon = Icons.Outlined.AutoAwesome,
+            icon = Icons.Outlined.Terminal,
             primary = false,
             onClick = onTriggerSlash
         )
@@ -526,6 +567,12 @@ private fun formatTokenUsage(used: Int, capacity: Int): String {
     return "$usedK / $capK"
 }
 
+/**
+ * Current-model chip at the trailing edge of the composer mode row. The model
+ * name lives in an inner horizontally scrollable lane (capped, never
+ * ellipsized), so long provider/model ids stay fully readable by swiping the
+ * chip itself instead of truncating the label.
+ */
 @Composable
 private fun ModelChip(
     label: String,
@@ -547,15 +594,20 @@ private fun ModelChip(
                 modifier = Modifier.size(WtaSize.IconSmall - 2.dp)
             )
             Spacer(Modifier.width(WtaSpacing.Tiny + 2.dp))
-            Text(
-                text = label,
-                style = MaterialTheme.typography.labelMedium,
-                fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onPrimaryContainer,
-                maxLines = 1,
-                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
-                modifier = Modifier.widthIn(max = 140.dp)
-            )
+            Box(
+                modifier = Modifier
+                    .widthIn(max = 200.dp)
+                    .horizontalScroll(rememberScrollState())
+            ) {
+                Text(
+                    text = label,
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    maxLines = 1,
+                    softWrap = false
+                )
+            }
         }
     }
 }
@@ -571,7 +623,7 @@ private fun ContextChip(
         onClick = onClick,
         tone = com.webtoapp.ui.design.WtaCardTone.Surface,
         contentPadding = androidx.compose.foundation.layout.PaddingValues(
-            horizontal = WtaSpacing.Small,
+            horizontal = WtaSpacing.Small + 2.dp,
             vertical = WtaSpacing.Tiny + 2.dp
         )
     ) {
