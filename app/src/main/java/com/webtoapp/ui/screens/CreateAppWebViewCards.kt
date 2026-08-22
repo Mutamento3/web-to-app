@@ -9,12 +9,14 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -1112,6 +1114,7 @@ fun BrowserAdvancedConfigCard(
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
+                                    .horizontalScroll(rememberScrollState())
                                     .padding(
                                         horizontal = WtaSpacing.RowHorizontal,
                                         vertical = WtaSpacing.ContentGap
@@ -1161,6 +1164,7 @@ fun BrowserAdvancedConfigCard(
                                     Row(
                                         modifier = Modifier
                                             .fillMaxWidth()
+                                            .horizontalScroll(rememberScrollState())
                                             .padding(horizontal = WtaSpacing.RowHorizontal),
                                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                                     ) {
@@ -2440,7 +2444,9 @@ fun FullscreenModeCard(
 
                             var statusBarModeTab by remember { mutableStateOf(0) }
                             Row(
-                                modifier = Modifier.fillMaxWidth(),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .horizontalScroll(rememberScrollState()),
                                 horizontalArrangement = Arrangement.Center
                             ) {
                                 FilterChip(
@@ -2818,7 +2824,9 @@ fun KeepScreenOnCard(
                             )
 
                             Row(
-                                modifier = Modifier.fillMaxWidth(),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .horizontalScroll(rememberScrollState()),
                                 horizontalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
                                 listOf(10, 30, 60, 120).forEach { minutes ->
@@ -2831,8 +2839,7 @@ fun KeepScreenOnCard(
                                                 text = Strings.screenAwakeTimeoutValue(minutes),
                                                 style = MaterialTheme.typography.labelSmall
                                             )
-                                        },
-                                        modifier = Modifier.weight(1f)
+                                        }
                                     )
                                 }
                             }
@@ -2854,7 +2861,9 @@ fun KeepScreenOnCard(
                     }
 
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         val isAuto = screenBrightness < 0
@@ -2870,8 +2879,7 @@ fun KeepScreenOnCard(
                                         modifier = Modifier.size(16.dp)
                                     )
                                 }
-                            } else null,
-                            modifier = Modifier.weight(1f)
+                            } else null
                         )
                         FilterChip(
                             selected = !isAuto,
@@ -2885,8 +2893,7 @@ fun KeepScreenOnCard(
                                         modifier = Modifier.size(16.dp)
                                     )
                                 }
-                            } else null,
-                            modifier = Modifier.weight(1f)
+                            } else null
                         )
                     }
 

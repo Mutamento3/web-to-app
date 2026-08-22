@@ -367,6 +367,7 @@ fun WtaCodeEditorDialog(
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
+                                    .horizontalScroll(rememberScrollState())
                                     .padding(top = 4.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
@@ -383,7 +384,7 @@ fun WtaCodeEditorDialog(
                                         )
                                     }
                                 )
-                                Spacer(Modifier.weight(1f))
+                                Spacer(Modifier.width(8.dp))
                                 if (searchQuery.isNotBlank() && matches.isEmpty()) {
                                     Text(
                                         Strings.codeEditorNoMatches,
