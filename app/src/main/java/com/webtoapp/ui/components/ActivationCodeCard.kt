@@ -1390,37 +1390,12 @@ private fun BatchGenerateDialog(
                 )
 
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .horizontalScroll(rememberScrollState()),
                     horizontalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
-                    ActivationCodeType.values().take(3).forEach { type ->
-                        val theme = getCodeTypeTheme(type)
-                        val isSelected = codeType == type
-                        FilterChip(
-                            selected = isSelected,
-                            onClick = { codeType = type },
-                            label = {
-                                Text(
-                                    getActivationTypeName(type),
-                                    style = MaterialTheme.typography.labelSmall
-                                )
-                            },
-                            leadingIcon = {
-                                Icon(theme.icon, null, modifier = Modifier.size(14.dp))
-                            },
-                            colors = FilterChipDefaults.filterChipColors(
-                                selectedContainerColor = theme.labelBg,
-                                selectedLabelColor = theme.color,
-                                selectedLeadingIconColor = theme.color
-                            )
-                        )
-                    }
-                }
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(6.dp)
-                ) {
-                    ActivationCodeType.values().drop(3).forEach { type ->
+                    ActivationCodeType.values().forEach { type ->
                         val theme = getCodeTypeTheme(type)
                         val isSelected = codeType == type
                         FilterChip(
