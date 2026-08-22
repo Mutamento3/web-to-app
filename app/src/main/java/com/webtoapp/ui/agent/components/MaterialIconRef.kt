@@ -7,7 +7,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.FactCheck
-import androidx.compose.material.icons.outlined.AutoAwesome
 import androidx.compose.material.icons.outlined.Code
 import androidx.compose.material.icons.outlined.Construction
 import androidx.compose.material.icons.outlined.DataObject
@@ -134,5 +133,5 @@ private fun resolveIcon(name: String?): ImageVector = when (name) {
     "compress" -> Icons.Outlined.Construction
     "logout" -> Icons.Outlined.PlayArrow
     "help" -> Icons.Outlined.QuestionMark
-    else -> Icons.Outlined.AutoAwesome
+    else -> Icons.Outlined.Extension
 }

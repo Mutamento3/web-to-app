@@ -9,13 +9,13 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -30,18 +30,23 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Apps
 import androidx.compose.material.icons.outlined.ArrowDownward
-import androidx.compose.material.icons.outlined.AutoAwesome
 import androidx.compose.material.icons.outlined.Bolt
+import androidx.compose.material.icons.outlined.Checklist
+import androidx.compose.material.icons.outlined.Code
 import androidx.compose.material.icons.outlined.History
 import androidx.compose.material.icons.outlined.Logout
 import androidx.compose.material.icons.outlined.Menu
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material.icons.outlined.PlayArrow
+import androidx.compose.material.icons.outlined.RocketLaunch
 import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material.icons.outlined.Smartphone
+import androidx.compose.material.icons.outlined.Web
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -63,6 +68,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -90,6 +96,7 @@ import com.webtoapp.ui.design.WtaAlpha
 import com.webtoapp.ui.design.WtaCard
 import com.webtoapp.ui.design.WtaCardTone
 import com.webtoapp.ui.design.WtaIconButton
+import com.webtoapp.ui.design.WtaRadius
 import com.webtoapp.ui.design.WtaScreen
 import com.webtoapp.ui.design.WtaSize
 import com.webtoapp.ui.design.WtaSpacing
@@ -99,11 +106,13 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.style.TextOverflow
 import com.webtoapp.ui.design.WtaButton
 import com.webtoapp.ui.design.WtaButtonSize
 import com.webtoapp.ui.design.WtaButtonVariant
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @Composable
 fun AgentScreen(
@@ -656,9 +665,10 @@ private fun JumpToLatestPill(onClick: () -> Unit) {
     WtaCard(
         onClick = onClick,
         tone = WtaCardTone.Highlighted,
+        shape = RoundedCornerShape(WtaRadius.Pill),
         contentPadding = PaddingValues(
-            horizontal = WtaSpacing.Medium,
-            vertical = WtaSpacing.Small
+            horizontal = WtaSpacing.Medium + 2.dp,
+            vertical = WtaSpacing.Small + 2.dp
         )
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -695,10 +705,10 @@ private fun EmptyConversationHint(
     }
     val starterPrompts = remember {
         listOf(
-            Strings.agentStarterPrompt1,
-            Strings.agentStarterPrompt2,
-            Strings.agentStarterPrompt3,
-            Strings.agentStarterPrompt4
+            Strings.agentStarterPrompt1 to Icons.Outlined.Checklist,
+            Strings.agentStarterPrompt2 to Icons.Outlined.Web,
+            Strings.agentStarterPrompt3 to Icons.Outlined.Code,
+            Strings.agentStarterPrompt4 to Icons.Outlined.Smartphone
         )
     }
 
@@ -712,13 +722,21 @@ private fun EmptyConversationHint(
     ) {
         item("hero") {
             Column {
-                Icon(
-                    imageVector = Icons.Outlined.AutoAwesome,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(WtaSize.IconLarge)
-                )
-                Spacer(Modifier.height(WtaSpacing.Small + 2.dp))
+                Box(
+                    modifier = Modifier
+                        .size(52.dp)
+                        .clip(RoundedCornerShape(16.dp))
+                        .background(MaterialTheme.colorScheme.primaryContainer),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.RocketLaunch,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                        modifier = Modifier.size(26.dp)
+                    )
+                }
+                Spacer(Modifier.height(WtaSpacing.Medium + 2.dp))
                 Text(
                     text = Strings.agentHomeTitle,
                     style = MaterialTheme.typography.headlineSmall,
@@ -742,7 +760,23 @@ private fun EmptyConversationHint(
             )
         }
         item("starters-grid") {
-            StarterPromptsRow(prompts = starterPrompts, onPick = onFillComposer)
+            Column(verticalArrangement = Arrangement.spacedBy(WtaSpacing.Small)) {
+                starterPrompts.chunked(2).forEachIndexed { rowIndex, rowPrompts ->
+                    Row(horizontalArrangement = Arrangement.spacedBy(WtaSpacing.Small)) {
+                        rowPrompts.forEach { (prompt, icon) ->
+                            StarterCard(
+                                prompt = prompt,
+                                icon = icon,
+                                onPick = onFillComposer,
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+                        if (rowPrompts.size == 1) {
+                            Spacer(Modifier.weight(1f))
+                        }
+                    }
+                }
+            }
         }
 
         if (recentSessions.isNotEmpty()) {
@@ -756,6 +790,48 @@ private fun EmptyConversationHint(
             items(recentSessions, key = { "session-${it.id}" }) { session ->
                 RecentSessionRow(session = session, onClick = { onPickSession(session.id) })
             }
+        }
+    }
+}
+
+@Composable
+private fun StarterCard(
+    prompt: String,
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    onPick: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    WtaCard(
+        onClick = { onPick(prompt) },
+        tone = WtaCardTone.Elevated,
+        contentPadding = PaddingValues(
+            horizontal = WtaSpacing.Medium - 2.dp,
+            vertical = WtaSpacing.Small + 4.dp
+        ),
+        modifier = modifier
+    ) {
+        Column {
+            Box(
+                modifier = Modifier
+                    .size(30.dp)
+                    .clip(RoundedCornerShape(WtaRadius.Chip))
+                    .background(MaterialTheme.colorScheme.primary.copy(alpha = WtaAlpha.MutedContainer)),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(17.dp)
+                )
+            }
+            Spacer(Modifier.height(WtaSpacing.Small))
+            Text(
+                text = prompt,
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurface,
+                maxLines = 2
+            )
         }
     }
 }
@@ -783,33 +859,6 @@ private fun SectionHeader(title: String, actionLabel: String?, onAction: (() -> 
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
-@Composable
-private fun StarterPromptsRow(prompts: List<String>, onPick: (String) -> Unit) {
-    androidx.compose.foundation.layout.FlowRow(
-        horizontalArrangement = Arrangement.spacedBy(WtaSpacing.Small),
-        verticalArrangement = Arrangement.spacedBy(WtaSpacing.Small)
-    ) {
-        prompts.forEach { prompt ->
-            WtaCard(
-                onClick = { onPick(prompt) },
-                tone = WtaCardTone.Elevated,
-                contentPadding = PaddingValues(
-                    horizontal = WtaSpacing.Medium,
-                    vertical = WtaSpacing.Small + 2.dp
-                )
-            ) {
-                Text(
-                    text = prompt,
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    maxLines = 2
-                )
-            }
-        }
-    }
-}
-
 @Composable
 private fun RecentSessionRow(
     session: com.webtoapp.core.agent.session.AgentSession,
@@ -833,11 +882,14 @@ private fun RecentSessionRow(
                     color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 1
                 )
-                val parts = buildList {
-                    add(Strings.agentSessionMessagesShort.format(session.messages.size))
+                val timeText = remember(session.updatedAt) {
+                    SESSION_TIME_FORMAT.format(Date(session.updatedAt))
                 }
                 Text(
-                    text = parts.joinToString(" · "),
+                    text = listOf(
+                        Strings.agentSessionMessagesShort.format(session.messages.size),
+                        timeText
+                    ).joinToString(" · "),
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -851,3 +903,5 @@ private fun RecentSessionRow(
         }
     }
 }
+
+private val SESSION_TIME_FORMAT = SimpleDateFormat("MM-dd HH:mm", Locale.getDefault())

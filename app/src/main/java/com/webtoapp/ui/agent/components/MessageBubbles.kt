@@ -414,13 +414,16 @@ fun StreamingBubble(
                 )
             }
             if (text.isBlank() && pendingTools.isEmpty() && thinkingSegments.isEmpty()) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
+                Row(
+                    modifier = Modifier.padding(vertical = WtaSpacing.Tiny),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     CircularProgressIndicator(
-                        modifier = Modifier.size(12.dp),
-                        strokeWidth = 1.5.dp,
+                        modifier = Modifier.size(14.dp),
+                        strokeWidth = 1.6.dp,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
-                    Spacer(Modifier.width(WtaSpacing.Small))
+                    Spacer(Modifier.width(WtaSpacing.Small + 2.dp))
                     Text(
                         text = activity ?: Strings.agentPhaseThinking,
                         style = MaterialTheme.typography.labelMedium,
