@@ -4,10 +4,13 @@ import android.content.Intent
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.produceState
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.lifecycleScope
 import com.webtoapp.WebToAppApplication
 import com.webtoapp.core.activation.ActivationResult
+import com.webtoapp.core.activation.ActivationStatus
 import com.webtoapp.core.shell.ShellConfig
 import com.webtoapp.data.model.Announcement
 import com.webtoapp.ui.components.announcement.toUiTemplate
@@ -20,6 +23,14 @@ fun ShellActivationDialog(
     onActivated: (String?) -> Unit
 ) {
     val activation = WebToAppApplication.activation
+
+    val activationStatus by produceState<ActivationStatus?>(initialValue = null) {
+        value = try {
+            activation.getActivationStatus(-1L)
+        } catch (e: Exception) {
+            null
+        }
+    }
 
     com.webtoapp.ui.components.EnhancedActivationDialog(
         onDismiss = onDismiss,
@@ -49,6 +60,7 @@ fun ShellActivationDialog(
             }
             result
         },
+        activationStatus = activationStatus,
         customTitle = config.activationDialogTitle,
         customSubtitle = config.activationDialogSubtitle,
         customInputLabel = config.activationDialogInputLabel,
