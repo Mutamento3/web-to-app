@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Send
 import androidx.compose.material.icons.outlined.Add
@@ -42,7 +43,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -50,6 +50,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.webtoapp.core.agent.session.UserAttachment
@@ -167,9 +168,11 @@ fun Composer(
 }
 
 /**
- * Capsule-shaped composer input. Rendered as a pill Surface with a borderless
- * M3 TextField inside (all chrome transparent) so the focused state never
- * draws its underline across the rounded capsule.
+ * Composer input matching the trailing send button: same 10dp corner radius
+ * ([WtaRadius.Button]) and the same resting height ([WtaSize.ButtonHeightMedium]).
+ * Built on foundation [BasicTextField] inside a Surface — an M3 TextField would
+ * enforce its own 56dp minimum, so height parity with the button is impossible
+ * there; BasicTextField also keeps focus chrome invisible by construction.
  */
 @Composable
 private fun ComposerPillField(
@@ -178,31 +181,37 @@ private fun ComposerPillField(
     placeholder: String,
     modifier: Modifier = Modifier
 ) {
-    val pillShape = RoundedCornerShape(WtaRadius.Pill)
     Surface(
-        shape = pillShape,
+        shape = RoundedCornerShape(WtaRadius.Button),
         color = MaterialTheme.colorScheme.surfaceContainerHighest,
         modifier = modifier
     ) {
-        TextField(
+        BasicTextField(
             value = value,
             onValueChange = onValueChange,
-            modifier = Modifier.fillMaxWidth(),
-            placeholder = { Text(placeholder) },
-            singleLine = false,
-            maxLines = 6,
-            shape = pillShape,
-            colors = androidx.compose.material3.TextFieldDefaults.colors(
-                focusedContainerColor = androidx.compose.ui.graphics.Color.Transparent,
-                unfocusedContainerColor = androidx.compose.ui.graphics.Color.Transparent,
-                disabledContainerColor = androidx.compose.ui.graphics.Color.Transparent,
-                errorContainerColor = androidx.compose.ui.graphics.Color.Transparent,
-                focusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
-                unfocusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
-                disabledIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
-                errorIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
-                cursorColor = MaterialTheme.colorScheme.primary
-            )
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(min = WtaSize.ButtonHeightMedium),
+            textStyle = MaterialTheme.typography.bodyLarge.copy(
+                color = MaterialTheme.colorScheme.onSurface
+            ),
+            cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
+            decorationBox = { innerField ->
+                Box(
+                    modifier = Modifier.padding(horizontal = 14.dp),
+                    contentAlignment = Alignment.CenterStart
+                ) {
+                    if (value.isEmpty()) {
+                        Text(
+                            text = placeholder,
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            maxLines = 1
+                        )
+                    }
+                    innerField()
+                }
+            }
         )
     }
 }
@@ -308,7 +317,8 @@ private fun SendButton(
         WtaButton(
             onClick = onCancel,
             variant = WtaButtonVariant.Destructive,
-            size = WtaButtonSize.Medium
+            size = WtaButtonSize.Medium,
+            shape = RoundedCornerShape(WtaRadius.Pill)
         ) {
             Icon(
                 Icons.Outlined.Stop,
@@ -321,7 +331,8 @@ private fun SendButton(
             onClick = onSend,
             variant = WtaButtonVariant.Primary,
             size = WtaButtonSize.Medium,
-            enabled = enabled
+            enabled = enabled,
+            shape = RoundedCornerShape(WtaRadius.Pill)
         ) {
             Icon(
                 Icons.AutoMirrored.Outlined.Send,
