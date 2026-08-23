@@ -20,6 +20,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 
@@ -33,7 +34,8 @@ fun WtaButton(
     enabled: Boolean = true,
     leadingIcon: ImageVector? = null,
     trailingIcon: ImageVector? = null,
-    contentPadding: PaddingValues? = null
+    contentPadding: PaddingValues? = null,
+    shape: Shape = RoundedCornerShape(WtaRadius.Button)
 ) {
     WtaButton(
         onClick = onClick,
@@ -41,7 +43,8 @@ fun WtaButton(
         variant = variant,
         size = size,
         enabled = enabled,
-        contentPadding = contentPadding
+        contentPadding = contentPadding,
+        shape = shape
     ) {
         if (leadingIcon != null) {
             Icon(leadingIcon, contentDescription = null, modifier = Modifier.size(WtaSize.IconSmall))
@@ -63,6 +66,7 @@ fun WtaButton(
     size: WtaButtonSize = WtaButtonSize.Medium,
     enabled: Boolean = true,
     contentPadding: PaddingValues? = null,
+    shape: Shape = RoundedCornerShape(WtaRadius.Button),
     content: @Composable RowScope.() -> Unit
 ) {
     val hapticClick = rememberHapticClick(onClick)
@@ -76,7 +80,6 @@ fun WtaButton(
         WtaButtonSize.Medium -> PaddingValues(horizontal = 24.dp, vertical = 10.dp)
         WtaButtonSize.Large -> PaddingValues(horizontal = 24.dp, vertical = 14.dp)
     }
-    val shape = RoundedCornerShape(WtaRadius.Button)
     val btnModifier = modifier.heightIn(min = heightMin)
     val colors = MaterialTheme.colorScheme
 
