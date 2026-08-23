@@ -130,4 +130,37 @@ class ToolbarVisibilityTest {
         assertThat(visibility.showConsoleButton).isTrue()
         assertThat(visibility.showZoom).isTrue()
     }
+
+    @Test
+    fun `slim toolbar with only console and zoom enabled still has content`() {
+        // Regression: the slim-toolbar gate in both the preview and the exported shell
+        // used to count only the five navigation items, so a toolbar customized down
+        // to just the console and zoom buttons rendered as a completely hidden top bar.
+        val hasContent = hasAnySlimToolbarItem(
+            toolbarShowTitle = false,
+            toolbarShowUrl = false,
+            toolbarShowBack = false,
+            toolbarShowForward = false,
+            toolbarShowRefresh = false,
+            toolbarShowConsole = true,
+            toolbarShowZoom = true
+        )
+
+        assertThat(hasContent).isTrue()
+    }
+
+    @Test
+    fun `slim toolbar with every item off is empty`() {
+        val hasContent = hasAnySlimToolbarItem(
+            toolbarShowTitle = false,
+            toolbarShowUrl = false,
+            toolbarShowBack = false,
+            toolbarShowForward = false,
+            toolbarShowRefresh = false,
+            toolbarShowConsole = false,
+            toolbarShowZoom = false
+        )
+
+        assertThat(hasContent).isFalse()
+    }
 }
