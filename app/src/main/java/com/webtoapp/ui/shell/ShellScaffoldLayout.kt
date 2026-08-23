@@ -28,6 +28,7 @@ import com.webtoapp.core.shell.ShellConfig
 import com.webtoapp.core.webview.PageZoomStore
 import com.webtoapp.core.webview.WebViewCallbacks
 import com.webtoapp.data.model.WebViewConfig
+import com.webtoapp.data.model.hasAnySlimToolbarItem
 import com.webtoapp.data.model.resolveToolbarButtons
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -100,9 +101,15 @@ fun BoxScope.ShellScaffoldLayout(
     }
 
     val toolbarCfg = config.webViewConfig
-    val hasAnyToolbarItem = toolbarCfg.toolbarShowTitle || toolbarCfg.toolbarShowUrl ||
-        toolbarCfg.toolbarShowBack || toolbarCfg.toolbarShowForward || toolbarCfg.toolbarShowRefresh
-    val showSlimToolbar = hideBrowserToolbar && toolbarCfg.browserToolbarCustomized && hasAnyToolbarItem
+    val showSlimToolbar = hideBrowserToolbar && toolbarCfg.browserToolbarCustomized && hasAnySlimToolbarItem(
+        toolbarShowTitle = toolbarCfg.toolbarShowTitle,
+        toolbarShowUrl = toolbarCfg.toolbarShowUrl,
+        toolbarShowBack = toolbarCfg.toolbarShowBack,
+        toolbarShowForward = toolbarCfg.toolbarShowForward,
+        toolbarShowRefresh = toolbarCfg.toolbarShowRefresh,
+        toolbarShowConsole = toolbarCfg.toolbarShowConsole,
+        toolbarShowZoom = toolbarCfg.toolbarShowZoom
+    )
     val showToolbar = (!hideToolbar || config.webViewConfig.showToolbarInFullscreen) &&
         (!hideBrowserToolbar || showSlimToolbar)
 

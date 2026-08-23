@@ -67,6 +67,7 @@ import com.webtoapp.data.model.HtmlLoadMode
 import com.webtoapp.data.model.SplashOrientation
 import com.webtoapp.data.model.SplashType
 import com.webtoapp.data.model.WebApp
+import com.webtoapp.data.model.hasAnySlimToolbarItem
 import com.webtoapp.data.model.resolveToolbarButtons
 import com.webtoapp.core.webview.PageZoomStore
 import android.content.pm.ActivityInfo
@@ -2713,8 +2714,17 @@ fun WebViewScreen(
     val showToolbarInPreview = !hideToolbar || webApp?.webViewConfig?.showToolbarInFullscreen == true
 
     val toolbarCfg = webApp?.webViewConfig
-    val hasAnyToolbarItem = toolbarCfg?.toolbarShowTitle == true || toolbarCfg?.toolbarShowUrl == true ||
-        toolbarCfg?.toolbarShowBack == true || toolbarCfg?.toolbarShowForward == true || toolbarCfg?.toolbarShowRefresh == true
+    val hasAnyToolbarItem = toolbarCfg?.let {
+        hasAnySlimToolbarItem(
+            toolbarShowTitle = it.toolbarShowTitle,
+            toolbarShowUrl = it.toolbarShowUrl,
+            toolbarShowBack = it.toolbarShowBack,
+            toolbarShowForward = it.toolbarShowForward,
+            toolbarShowRefresh = it.toolbarShowRefresh,
+            toolbarShowConsole = it.toolbarShowConsole,
+            toolbarShowZoom = it.toolbarShowZoom
+        )
+    } == true
     val showSlimToolbar = hideBrowserToolbar && toolbarCfg?.browserToolbarCustomized == true && hasAnyToolbarItem
     val shouldShowTopBar = showToolbarInPreview && (!hideBrowserToolbar || showSlimToolbar)
 

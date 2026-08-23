@@ -22,6 +22,24 @@ data class ToolbarButtonVisibility(
 )
 
 /**
+ * Whether the customized slim toolbar has at least one item to render. Console and
+ * zoom are toolbar items in their own right: a toolbar customized down to only
+ * those two buttons must still render. Both the host preview and the exported
+ * shell gate the slim toolbar on this predicate — keep them on the shared
+ * function so the two paths cannot drift apart again.
+ */
+fun hasAnySlimToolbarItem(
+    toolbarShowTitle: Boolean,
+    toolbarShowUrl: Boolean,
+    toolbarShowBack: Boolean,
+    toolbarShowForward: Boolean,
+    toolbarShowRefresh: Boolean,
+    toolbarShowConsole: Boolean,
+    toolbarShowZoom: Boolean
+): Boolean = toolbarShowTitle || toolbarShowUrl || toolbarShowBack || toolbarShowForward ||
+    toolbarShowRefresh || toolbarShowConsole || toolbarShowZoom
+
+/**
  * Resolves which toolbar buttons are visible given the hide-toggle state and the
  * customized toolbar content flags. See [ToolbarButtonVisibility] for the contract.
  */
