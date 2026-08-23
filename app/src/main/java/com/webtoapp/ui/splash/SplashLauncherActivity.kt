@@ -135,7 +135,10 @@ fun SplashLauncherScreen(
                 val remoteRequest = activation.buildRemoteRequest(
                     verifyUrl = remoteConfig.verifyUrl,
                     publicKeyBase64 = remoteConfig.publicKeyBase64,
-                    offlinePolicy = remoteConfig.offlinePolicy
+                    offlinePolicy = remoteConfig.offlinePolicy,
+                    deliverUrl = remoteConfig.deliverUrl,
+                    encryptUrl = remoteConfig.encryptUrl,
+                    aesKeyBase64 = remoteConfig.aesKeyBase64
                 )
                 if (activationRequireEveryTime) {
                     val result = activation.reverifyRemoteWithCachedCode(activationAppId, remoteRequest)
@@ -268,7 +271,10 @@ fun SplashLauncherScreen(
                         activation.buildRemoteRequest(
                             verifyUrl = remoteConfig.verifyUrl,
                             publicKeyBase64 = remoteConfig.publicKeyBase64,
-                            offlinePolicy = remoteConfig.offlinePolicy
+                            offlinePolicy = remoteConfig.offlinePolicy,
+                            deliverUrl = remoteConfig.deliverUrl,
+                            encryptUrl = remoteConfig.encryptUrl,
+                            aesKeyBase64 = remoteConfig.aesKeyBase64
                         )
                     )
                 } else {

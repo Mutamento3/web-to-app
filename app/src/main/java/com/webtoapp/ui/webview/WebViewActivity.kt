@@ -1060,6 +1060,10 @@ fun WebViewScreen(
     var showActivationDialog by remember { mutableStateOf(false) }
     var showAnnouncementDialog by remember { mutableStateOf(false) }
 
+    // URL delivered by the remote activation server (dynamic URL mode). Takes precedence over
+    // the configured app URL for plain WEB apps, mirroring ShellScreen.dynamicUrl.
+    var remoteDeliveredUrl by remember { mutableStateOf<String?>(null) }
+
     var isActivated by remember { mutableStateOf(false) }
 
     var isActivationChecked by remember { mutableStateOf(false) }
@@ -1322,13 +1326,28 @@ fun WebViewScreen(
                         isActivationChecked = true
                         showActivationDialog = true
                     } else {
-                        val activated = if (app.activationRemoteConfig?.enabled == true) {
-                            activation.isActivated(appId).first()
+                        val remote = app.activationRemoteConfig?.takeIf { it.enabled }
+                        val activated = if (remote != null) {
+                            activation.isActivated(appId).first() &&
+                                activation.isRemoteStartupAllowed(
+                                    appId,
+                                    activation.buildRemoteRequest(
+                                        verifyUrl = remote.verifyUrl,
+                                        publicKeyBase64 = remote.publicKeyBase64,
+                                        offlinePolicy = remote.offlinePolicy,
+                                        deliverUrl = remote.deliverUrl,
+                                        encryptUrl = remote.encryptUrl,
+                                        aesKeyBase64 = remote.aesKeyBase64
+                                    )
+                                )
                         } else {
                             activation.resolveStartupActivation(appId)
                         }
                         isActivated = activated
                         isActivationChecked = true
+                        if (activated && remote != null && remote.deliverUrl) {
+                            remoteDeliveredUrl = activation.getCachedRemoteUrl(appId)
+                        }
                         if (!activated) {
                             showActivationDialog = true
                         }
@@ -2584,7 +2603,7 @@ fun WebViewScreen(
 
     val localHttpServer = remember { LocalHttpServer.getInstance(context) }
 
-    val targetResolution = remember(directUrl, webApp, testUrl) {
+    val targetResolution = remember(directUrl, webApp, testUrl, remoteDeliveredUrl) {
         val app = webApp
         when {
 
@@ -2693,7 +2712,7 @@ fun WebViewScreen(
                     "" to null
                 }
             }
-            else -> normalizeWebUrlForSecurity(app?.url) to null
+            else -> normalizeWebUrlForSecurity(remoteDeliveredUrl ?: app?.url) to null
         }
     }
     val targetUrl = targetResolution.first
@@ -3462,17 +3481,24 @@ fun WebViewScreen(
         com.webtoapp.ui.components.EnhancedActivationDialog(
             onDismiss = { showActivationDialog = false },
             onActivate = { code ->
-                val remote = webApp?.activationRemoteConfig
-                if (remote?.enabled == true) {
-                    return@EnhancedActivationDialog activation.verifyRemoteActivation(
+                val remote = webApp?.activationRemoteConfig?.takeIf { it.enabled }
+                if (remote != null) {
+                    val result = activation.verifyRemoteActivation(
                         appId,
                         code,
                         activation.buildRemoteRequest(
                             verifyUrl = remote.verifyUrl,
                             publicKeyBase64 = remote.publicKeyBase64,
-                            offlinePolicy = remote.offlinePolicy
+                            offlinePolicy = remote.offlinePolicy,
+                            deliverUrl = remote.deliverUrl,
+                            encryptUrl = remote.encryptUrl,
+                            aesKeyBase64 = remote.aesKeyBase64
                         )
                     )
+                    if (result is com.webtoapp.core.activation.ActivationResult.Success && remote.deliverUrl) {
+                        remoteDeliveredUrl = result.url
+                    }
+                    return@EnhancedActivationDialog result
                 }
                 val allCodes = webApp?.activationCodeList ?: emptyList()
                 return@EnhancedActivationDialog activation.verifyActivationCodeWithObjects(appId, code, allCodes)

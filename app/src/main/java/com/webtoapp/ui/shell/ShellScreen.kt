@@ -24,6 +24,7 @@ import com.webtoapp.data.model.Announcement
 import com.webtoapp.util.TvUtils
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 
 @SuppressLint("SetJavaScriptEnabled")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -442,7 +443,9 @@ fun ShellScreen(
                         linkUrl = config.announcementLink.ifEmpty { null },
                         showOnce = config.announcementShowOnce
                     )
-                    showAnnouncementDialog = kotlinx.coroutines.runBlocking { announcement.shouldShowAnnouncement(-1L, ann) }
+                    scope.launch {
+                        showAnnouncementDialog = announcement.shouldShowAnnouncement(-1L, ann)
+                    }
                 }
             }
         )
