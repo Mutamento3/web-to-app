@@ -160,6 +160,8 @@ fun SplashLauncherScreen(
 
     var showAnnouncementDialog by remember { mutableStateOf(false) }
 
+    val scope = rememberCoroutineScope()
+
     var showSplash by remember { mutableStateOf(false) }
     var countdown by remember { mutableIntStateOf(
         if (splashType == SplashType.VIDEO) ((videoEndMs - videoStartMs) / 1000).toInt() else splashDuration
@@ -168,7 +170,11 @@ fun SplashLauncherScreen(
     LaunchedEffect(isActivated) {
         if (isActivated) {
 
-            if (announcementEnabled && announcement.title.isNotEmpty()) {
+            // Respect showOnce/version pinning like the in-app announcement paths; without
+            // this gate the dialog re-appeared on every clone launch.
+            val announceNow = announcementEnabled && announcement.title.isNotEmpty() &&
+                com.webtoapp.WebToAppApplication.announcement.shouldShowAnnouncement(activationAppId, announcement)
+            if (announceNow) {
                 showAnnouncementDialog = true
             } else {
 
@@ -183,6 +189,9 @@ fun SplashLauncherScreen(
 
     fun onAnnouncementDismiss() {
         showAnnouncementDialog = false
+        scope.launch {
+            com.webtoapp.WebToAppApplication.announcement.markAnnouncementShown(activationAppId, announcement.version)
+        }
         if (hasValidSplash && splashPath != null) {
             showSplash = true
         } else {

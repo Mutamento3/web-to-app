@@ -128,8 +128,11 @@ fun ShellScreen(
         } else false
     }
 
-    var showSplash by remember { mutableStateOf(config.splashEnabled && splashMediaExists) }
-    var splashCountdown by remember { mutableIntStateOf(if (config.splashEnabled && splashMediaExists) config.splashDuration else 0) }
+    // Splash starts only once activation has resolved (preview parity): an activation-gated
+    // app must not play its splash behind the activation gate. Apps without an activation
+    // requirement keep the old immediate start.
+    var showSplash by remember { mutableStateOf(config.splashEnabled && splashMediaExists && !config.activationEnabled) }
+    var splashCountdown by remember { mutableIntStateOf(if (showSplash) config.splashDuration else 0) }
     var originalOrientation by remember { mutableIntStateOf(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED) }
 
     LaunchedEffect(showSplash) {
@@ -259,6 +262,13 @@ fun ShellScreen(
             }
         }
 
+        if (isActivated) {
+            showSplash = config.splashEnabled && splashMediaExists
+            if (showSplash) {
+                splashCountdown = config.splashDuration
+            }
+        }
+
         AppLogger.d("ShellActivity", "LaunchedEffect: showSplash=$showSplash, splashCountdown=$splashCountdown")
 
     }
@@ -351,7 +361,7 @@ fun ShellScreen(
         }
     }
 
-    val bgmState = rememberBgmPlayerState(context, config)
+    val bgmState = rememberBgmPlayerState(context, config, enabled = isActivated)
 
     val webViewCallbacks = remember {
         createShellWebViewCallbacks(

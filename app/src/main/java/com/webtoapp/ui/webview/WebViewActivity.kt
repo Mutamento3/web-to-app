@@ -145,6 +145,15 @@ class WebViewActivity : AppCompatActivity() {
 
     internal var enableBackStatePreservation: Boolean = false
 
+    // Follow-system dark mode of the app currently being previewed, resolved from the
+    // intent-carried preview app or (after load) the saved app; consumed by
+    // onConfigurationChanged because uiMode changes do not recreate this activity.
+    private var activeFollowSystemDarkMode: Boolean? = null
+
+    // Saved app resolved by WebViewScreen for app-id launches (null for preview/test intents);
+    // lets Activity-level handlers (back behavior) see the effective config.
+    private var resolvedSavedApp: WebApp? = null
+
     private var immersiveFullscreenEnabled: Boolean = false
     private var showStatusBarInFullscreen: Boolean = false
     internal var showNavigationBarInFullscreen: Boolean = false
@@ -741,6 +750,7 @@ class WebViewActivity : AppCompatActivity() {
         } else null
 
         enableBackStatePreservation = previewApp?.webViewConfig?.enableBackStatePreservation ?: false
+        activeFollowSystemDarkMode = previewApp?.webViewConfig?.followSystemDarkMode
         com.webtoapp.core.engine.GeckoViewEngine.applyEnterpriseRootsEnabled(
             previewApp?.apkExportConfig?.networkTrustConfig?.trustUserCa == true
         )
@@ -792,17 +802,32 @@ class WebViewActivity : AppCompatActivity() {
                     statusBarAutoColor = color
                     refreshStatusBarAppearance()
                 },
+                onSavedAppLoaded = { app ->
+                    resolvedSavedApp = app
+                    // App-id launches resolve these from the saved config; the onCreate pass
+                    // only covers intent-carried preview apps.
+                    if (previewApp == null) {
+                        enableBackStatePreservation = app.webViewConfig.enableBackStatePreservation
+                        activeFollowSystemDarkMode = app.webViewConfig.followSystemDarkMode
+                        com.webtoapp.core.engine.GeckoViewEngine.applyEnterpriseRootsEnabled(
+                            app.apkExportConfig?.networkTrustConfig?.trustUserCa == true
+                        )
+                    }
+                },
                 onWebViewCreated = { wv, loadedApp ->
                     webView = wv
 
                     wv.onResume()
                     wv.resumeTimers()
 
+                    // Download location config follows the same preview/intent-vs-appid
+                    // sourcing as the bridges below.
+                    val effectiveDownloadConfig = previewApp?.webViewConfig ?: loadedApp?.webViewConfig
                     val downloadBridge = com.webtoapp.core.webview.DownloadBridge(
                         this@WebViewActivity,
                         lifecycleScope,
-                        previewApp?.webViewConfig?.downloadLocationMode ?: com.webtoapp.data.model.DownloadLocationMode.SYSTEM_DOWNLOAD,
-                        previewApp?.webViewConfig?.customDownloadDirUri ?: ""
+                        effectiveDownloadConfig?.downloadLocationMode ?: com.webtoapp.data.model.DownloadLocationMode.SYSTEM_DOWNLOAD,
+                        effectiveDownloadConfig?.customDownloadDirUri ?: ""
                     )
                     wv.addJavascriptInterface(downloadBridge, com.webtoapp.core.webview.DownloadBridge.JS_INTERFACE_NAME)
 
@@ -842,7 +867,7 @@ class WebViewActivity : AppCompatActivity() {
                         mediaSessionBridge = mediaBridge
                     }
 
-                    if (previewApp?.translateEnabled == true) {
+                    if (previewApp?.translateEnabled == true || loadedApp?.translateEnabled == true) {
                         val translateBridge = com.webtoapp.core.webview.TranslateBridge(wv, lifecycleScope)
                         wv.addJavascriptInterface(
                             translateBridge,
@@ -880,7 +905,8 @@ class WebViewActivity : AppCompatActivity() {
                         val wv = webView
                         // "Exit app" back behavior (#151): leave immediately instead of walking
                         // web history (preview parity with the generated shell).
-                        if (previewApp?.webViewConfig?.backButtonBehavior == "EXIT") {
+                        val backBehaviorConfig = previewApp ?: resolvedSavedApp
+                        if (backBehaviorConfig?.webViewConfig?.backButtonBehavior == "EXIT") {
                             finish()
                             return
                         }
@@ -965,6 +991,22 @@ class WebViewActivity : AppCompatActivity() {
         }
     }
 
+    override fun onConfigurationChanged(newConfig: android.content.res.Configuration) {
+        super.onConfigurationChanged(newConfig)
+        // The manifest declares uiMode in configChanges, so switching the system dark/light
+        // theme does NOT recreate this activity. The WebView's dark-mode switch must be
+        // re-derived explicitly (parity with ShellActivity / WebViewManager.refreshSystemDarkMode).
+        try {
+            val wv = webView
+            val follow = activeFollowSystemDarkMode
+            if (wv != null && follow != null) {
+                com.webtoapp.core.webview.WebViewManager.refreshSystemDarkMode(wv, follow)
+            }
+        } catch (e: Exception) {
+            AppLogger.w("WebViewActivity", "onConfigurationChanged: refresh dark mode failed", e)
+        }
+    }
+
     override fun onResume() {
         super.onResume()
         webView?.onResume()
@@ -1036,6 +1078,7 @@ fun WebViewScreen(
     testModuleIds: List<String>? = null,
     onStatusBarConfigChanged: ((com.webtoapp.data.model.StatusBarColorMode, String?, Boolean?, Boolean, com.webtoapp.data.model.StatusBarBackgroundType, com.webtoapp.data.model.StatusBarColorMode, String?, Boolean, com.webtoapp.data.model.StatusBarBackgroundType) -> Unit)? = null,
     onStatusBarAutoColorChanged: ((String?) -> Unit)? = null,
+    onSavedAppLoaded: ((WebApp) -> Unit)? = null,
     onWebViewCreated: (WebView, WebApp?) -> Unit,
     onFileChooser: (ValueCallback<Array<Uri>>?, WebChromeClient.FileChooserParams?) -> Boolean,
     onShowCustomView: (View, WebChromeClient.CustomViewCallback?) -> Unit,
@@ -1318,6 +1361,8 @@ fun WebViewScreen(
                     subscriptionUrls = app.adBlockSubscriptions
                 )
 
+                onSavedAppLoaded?.invoke(app)
+
                 if (app.activationEnabled) {
 
                     if (app.activationRequireEveryTime) {
@@ -1405,7 +1450,8 @@ fun WebViewScreen(
                     }
                     com.webtoapp.data.model.OrientationMode.AUTO -> {
 
-                        activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR
+                        // USER (not SENSOR) to match ShellScreen's AUTO handling.
+                        activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER
                     }
                     com.webtoapp.data.model.OrientationMode.PORTRAIT -> {
                         if (com.webtoapp.util.TvUtils.isTv(context)) {
@@ -1427,7 +1473,9 @@ fun WebViewScreen(
                     com.webtoapp.data.model.ScreenAwakeMode.TIMED -> {
                         activity.window.addFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
-                        val timeoutMs = app.webViewConfig.screenAwakeTimeoutMinutes * 60 * 1000L
+                        // Unset minutes fall back to 30 like the exported shell does.
+                        val timeoutMinutes = app.webViewConfig.screenAwakeTimeoutMinutes
+                        val timeoutMs = (if (timeoutMinutes > 0) timeoutMinutes else 30) * 60 * 1000L
                         kotlinx.coroutines.MainScope().launch {
                             kotlinx.coroutines.delay(timeoutMs)
                             activity.window.clearFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
@@ -2989,6 +3037,7 @@ fun WebViewScreen(
                     val shellConfig = com.webtoapp.core.shell.ShellConfig(
                         appName = mwApp.name,
                         appType = "MULTI_WEB",
+                        engineType = mwApp.apkExportConfig?.engineType ?: "SYSTEM_WEBVIEW",
                         multiWebConfig = com.webtoapp.core.shell.MultiWebShellConfig(
                             sites = multiWebConfig.sites.map { site ->
                                 val siteShellConfig = if (site.sourceAppId > 0) {
