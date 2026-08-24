@@ -141,6 +141,15 @@ internal fun normalizeExternalUrlForIntent(rawUrl: String): String {
     return normalizeShellTargetUrlForSecurity(safeUrl)
 }
 
+/** Safely parse a stored port-conflict-mode string (from ShellConfig JSON) into the enum. */
+internal fun resolveShellPortConflictMode(name: String?): com.webtoapp.data.model.PortConflictMode {
+    return try {
+        com.webtoapp.data.model.PortConflictMode.valueOf(name ?: "AUTO_KILL")
+    } catch (_: Exception) {
+        com.webtoapp.data.model.PortConflictMode.AUTO_KILL
+    }
+}
+
 internal fun shouldReextractAssets(marker: File, expectedToken: String): Boolean {
     if (!marker.exists()) return true
     return try {

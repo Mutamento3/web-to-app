@@ -126,7 +126,7 @@ fun createShellWebViewCallbacks(
         }
 
         override fun onSslError(error: String) {
-            updateError("SSL安全错误")
+            updateError(Strings.sslError)
             com.webtoapp.core.shell.ShellLogger.logWebView("SSL错误", currentUrlProvider(), error)
         }
 

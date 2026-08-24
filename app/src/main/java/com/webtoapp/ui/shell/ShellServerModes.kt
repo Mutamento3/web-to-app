@@ -83,7 +83,11 @@ fun WordPressShellMode(
 
                 phase = "starting"
                 val requestPort = config.wordpressConfig.phpPort
-                val port = phpRuntime.startServer(wpDir.absolutePath, requestPort)
+                val port = phpRuntime.startServer(
+                    wpDir.absolutePath,
+                    requestPort,
+                    resolveShellPortConflictMode(config.wordpressConfig.portConflictMode)
+                )
 
                 if (port > 0) {
                     serverUrl = "http://127.0.0.1:$port"
@@ -240,11 +244,15 @@ fun HtmlFrontendShellMode(
                 )
 
                 val assetBase = config.siteAssetBase.ifBlank { "html" }
-                val hasBundledAssets = try { context.assets.list(assetBase)?.isNotEmpty() == true } catch (_: Exception) { false }
+                // Multi-web per-site projects are embedded under assets/multiweb_sites/<siteId>/<assetBase>
+                // (AppContentEmbedder.MultiWebContentEmbedder); plain HTML/FRONTEND shells embed at
+                // the top-level assets/<assetBase>.
+                val embeddedAssetRoot = if (config.siteId.isNotBlank()) "multiweb_sites/${config.siteId}/$assetBase" else assetBase
+                val hasBundledAssets = try { context.assets.list(embeddedAssetRoot)?.isNotEmpty() == true } catch (_: Exception) { false }
                 if (hasBundledAssets && shouldReextractAssets(marker, extractionToken)) {
                     AppLogger.i("HtmlShell", "Extracting HTML assets to ${siteDir.absolutePath}")
                     siteDir.deleteRecursively()
-                    extractAssetsRecursive(context, assetBase, siteDir)
+                    extractAssetsRecursive(context, embeddedAssetRoot, siteDir)
                     writeExtractionMarker(marker, extractionToken)
                 }
 
@@ -579,6 +587,7 @@ fun NodeJsShellMode(
                     projectDir = projectDir.absolutePath,
                     entryFile = entryFile,
                     port = requestPort ?: 0,
+                    portConflictMode = resolveShellPortConflictMode(config.nodejsConfig.portConflictMode),
                     envVars = envVars
                 )
 
@@ -717,7 +726,9 @@ fun PhpAppShellMode(
                     documentRoot = docRoot,
                     entryFile = entryFile,
                     port = config.phpAppConfig.port,
-                    envVars = config.phpAppConfig.envVars
+                    portConflictMode = resolveShellPortConflictMode(config.phpAppConfig.portConflictMode),
+                    envVars = config.phpAppConfig.envVars,
+                    phpExtensions = config.phpAppConfig.phpExtensions
                 )
 
                 if (port > 0) {
@@ -887,6 +898,7 @@ fun PythonAppShellMode(
                     entryFile = entryFile,
                     framework = framework,
                     port = pyConfig.port,
+                    portConflictMode = resolveShellPortConflictMode(pyConfig.portConflictMode),
                     envVars = pyConfig.envVars,
                     installDeps = true
                 )
@@ -1039,6 +1051,7 @@ fun GoAppShellMode(
                     projectDir = projectDir.absolutePath,
                     binaryName = binaryName,
                     port = goConfig.port,
+                    portConflictMode = resolveShellPortConflictMode(goConfig.portConflictMode),
                     envVars = goConfig.envVars
                 )
 

@@ -90,7 +90,10 @@ fun buildWebViewConfig(config: ShellConfig): WebViewConfig {
         decodeBase64Mode = try {
             com.webtoapp.data.model.Base64DeepLinkMode.valueOf(config.webViewConfig.decodeBase64Mode)
         } catch (e: Exception) { com.webtoapp.data.model.Base64DeepLinkMode.GESTURE_ONLY },
-        mediaAutoplayEnabled = config.webViewConfig.mediaAutoplayEnabled,
+        // Local HTML/FRONTEND projects always allow gesture-free playback in the host preview
+        // (WebViewActivity forces mediaPlaybackRequiresUserGesture=false); mirror that here so
+        // exported shells behave identically.
+        mediaAutoplayEnabled = config.webViewConfig.mediaAutoplayEnabled || isLocalFileApp,
         mediaAutoplayScope = try {
             com.webtoapp.data.model.MediaAutoplayScope.valueOf(config.webViewConfig.mediaAutoplayScope)
         } catch (e: Exception) { com.webtoapp.data.model.MediaAutoplayScope.VIDEO_ONLY },
