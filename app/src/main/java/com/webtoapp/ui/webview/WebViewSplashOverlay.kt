@@ -81,15 +81,15 @@ fun SplashOverlay(
 
                 LaunchedEffect(isPlayerReady) {
                     if (!isPlayerReady) return@LaunchedEffect
-                    mediaPlayer?.let { mp ->
-
-                        while (!mp.isPlaying) {
-                            delay(50)
-
-                            if (mediaPlayer == null) return@LaunchedEffect
-                        }
-
-                        while (mp.isPlaying) {
+                    while (true) {
+                        // Re-read the live player each iteration: a back press during the
+                        // splash releases it and nulls the state mid-poll.
+                        val mp = mediaPlayer ?: return@LaunchedEffect
+                        try {
+                            if (!mp.isPlaying) {
+                                delay(50)
+                                continue
+                            }
                             val currentPos = mp.currentPosition
 
                             videoRemainingMs = (videoEndMs - currentPos).coerceAtLeast(0L)
@@ -99,8 +99,11 @@ fun SplashOverlay(
                                 onComplete?.invoke()
                                 break
                             }
-                            delay(100)
+                        } catch (e: IllegalStateException) {
+                            // Player released between iterations; the splash is going away.
+                            return@LaunchedEffect
                         }
+                        delay(100)
                     }
                 }
 
@@ -117,13 +120,23 @@ fun SplashOverlay(
                                             val volume = if (splashConfig.enableAudio) 1f else 0f
                                             setVolume(volume, volume)
                                             isLooping = false
-                                            setOnPreparedListener {
-
-                                                seekTo(videoStartMs.toInt())
-                                                start()
-                                                isPlayerReady = true
+                                            setOnPreparedListener { mp ->
+                                                // prepareAsync may still be in flight when a
+                                                // back press releases the player; skip stale
+                                                // callbacks instead of touching a released
+                                                // instance (issue #612).
+                                                if (mediaPlayer !== mp) return@setOnPreparedListener
+                                                try {
+                                                    seekTo(videoStartMs.toInt())
+                                                    start()
+                                                    isPlayerReady = true
+                                                } catch (e: IllegalStateException) {
+                                                    AppLogger.e("WebViewActivity", "Splash player released before prepared", e)
+                                                }
                                             }
-                                            setOnCompletionListener { onComplete?.invoke() }
+                                            setOnCompletionListener { mp ->
+                                                if (mediaPlayer === mp) onComplete?.invoke()
+                                            }
                                             prepareAsync()
                                         }
                                     } catch (e: Exception) {
@@ -133,6 +146,11 @@ fun SplashOverlay(
                                 }
                                 override fun surfaceChanged(h: android.view.SurfaceHolder, f: Int, w: Int, ht: Int) {}
                                 override fun surfaceDestroyed(h: android.view.SurfaceHolder) {
+                                    // Detach callbacks before releasing so in-flight
+                                    // prepare/completion notifications cannot touch a
+                                    // released player.
+                                    mediaPlayer?.setOnPreparedListener(null)
+                                    mediaPlayer?.setOnCompletionListener(null)
                                     mediaPlayer?.release()
                                     mediaPlayer = null
                                 }
@@ -144,6 +162,8 @@ fun SplashOverlay(
 
                 DisposableEffect(Unit) {
                     onDispose {
+                        mediaPlayer?.setOnPreparedListener(null)
+                        mediaPlayer?.setOnCompletionListener(null)
                         mediaPlayer?.release()
                         mediaPlayer = null
                     }
