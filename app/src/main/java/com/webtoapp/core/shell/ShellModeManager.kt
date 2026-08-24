@@ -1589,10 +1589,10 @@ data class FloatingWindowShellConfig(
     val heightPercent: Int = 80,
 
     @SerializedName("lockAspectRatio")
-    val lockAspectRatio: Boolean = true,
+    val lockAspectRatio: Boolean = false,
 
     @SerializedName("aspectRatioMode")
-    val aspectRatioMode: String = "SCREEN",
+    val aspectRatioMode: String = "FREE",
 
     @SerializedName("customAspectRatioWidth")
     val customAspectRatioWidth: Int = 16,

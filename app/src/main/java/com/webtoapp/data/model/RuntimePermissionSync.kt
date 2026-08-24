@@ -68,7 +68,13 @@ fun featureRequiredRuntimePermissions(
         required = required.copy(bootCompleted = true)
     }
     if (webView.floatingWindowConfig.enabled) {
-        required = required.copy(systemAlertWindow = true)
+        // FloatingWindowService is a specialUse foreground service: without FOREGROUND_SERVICE
+        // (plus FOREGROUND_SERVICE_SPECIAL_USE, bundled in ApkBuilder) startForeground throws
+        // SecurityException and the exported app crashes on launch.
+        required = required.copy(
+            systemAlertWindow = true,
+            foregroundService = true
+        )
     }
     if (webView.enableNativeBridge && webView.nativeBridgeCapabilities.notification) {
         required = required.copy(notifications = true)
@@ -192,6 +198,7 @@ fun featurePermissionReasons(
     }
     if (webView.floatingWindowConfig.enabled) {
         add("systemAlertWindow", PermissionFeatureReason.FLOATING_WINDOW)
+        add("foregroundService", PermissionFeatureReason.FLOATING_WINDOW)
     }
     if (webView.enableNativeBridge && webView.nativeBridgeCapabilities.notification) {
         add("notifications", PermissionFeatureReason.NATIVE_BRIDGE_NOTIFICATION)

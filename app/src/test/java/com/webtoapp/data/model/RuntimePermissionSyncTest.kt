@@ -111,6 +111,31 @@ class RuntimePermissionSyncTest {
     }
 
     @Test
+    fun `floating window auto enables overlay and foreground service permissions`() {
+        // FloatingWindowService is a specialUse foreground service; missing
+        // FOREGROUND_SERVICE made startForeground throw SecurityException and the
+        // exported app crashed on launch.
+        val app = WebApp(
+            name = "Fw",
+            url = "https://example.com",
+            webViewConfig = WebViewConfig(
+                floatingWindowConfig = FloatingWindowConfig(enabled = true)
+            )
+        )
+        val required = app.featureRequiredRuntimePermissions()
+        assertThat(required.systemAlertWindow).isTrue()
+        assertThat(required.foregroundService).isTrue()
+
+        val synced = app.withRuntimePermissionsSyncedFromFeatures()
+        assertThat(synced.apkExportConfig?.runtimePermissions?.systemAlertWindow).isTrue()
+        assertThat(synced.apkExportConfig?.runtimePermissions?.foregroundService).isTrue()
+
+        val reasons = app.featurePermissionReasons()
+        assertThat(reasons["systemAlertWindow"]).contains(PermissionFeatureReason.FLOATING_WINDOW)
+        assertThat(reasons["foregroundService"]).contains(PermissionFeatureReason.FLOATING_WINDOW)
+    }
+
+    @Test
     fun `location permission implies geolocation enabled`() {
         val app = WebApp(
             name = "Loc",
