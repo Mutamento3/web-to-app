@@ -59,7 +59,8 @@ internal fun parseLrcText(text: String): LrcData? {
 @Composable
 fun rememberBgmPlayerState(
     context: Context,
-    config: ShellConfig
+    config: ShellConfig,
+    enabled: Boolean = true
 ): BgmPlayerState {
 
     val bgmPlayerState = remember { mutableStateOf<MediaPlayer?>(null) }
@@ -126,7 +127,10 @@ fun rememberBgmPlayerState(
         }
     }
 
-    LaunchedEffect(config.bgmEnabled) {
+    LaunchedEffect(config.bgmEnabled, enabled) {
+        // Gated on activation resolution by the caller: an activation-gated app must not
+        // autoplay BGM behind the activation gate.
+        if (!enabled) return@LaunchedEffect
         if (config.bgmEnabled && config.bgmPlaylist.isNotEmpty()) {
             try {
 
