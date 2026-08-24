@@ -16,6 +16,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.webtoapp.WebToAppApplication
 import com.webtoapp.core.logging.AppLogger
 import com.webtoapp.core.shell.ShellConfig
@@ -25,6 +26,22 @@ import com.webtoapp.util.TvUtils
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+
+/**
+ * Model-level Announcement built from the shell payload for gating decisions. Rendering uses
+ * ShellAnnouncementDialog's own construction (template/custom-icon mapping); this one carries
+ * the trigger and version fields the show/hide gate must honor.
+ */
+internal fun buildShellAnnouncement(config: ShellConfig): Announcement = Announcement(
+    title = config.announcementTitle,
+    content = config.announcementContent,
+    linkUrl = config.announcementLink.ifEmpty { null },
+    showOnce = config.announcementShowOnce,
+    version = config.announcementVersion,
+    triggerOnLaunch = config.announcementTriggerOnLaunch,
+    triggerOnNoNetwork = config.announcementTriggerOnNoNetwork,
+    triggerIntervalMinutes = config.announcementTriggerIntervalMinutes
+)
 
 @SuppressLint("SetJavaScriptEnabled")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -183,14 +200,16 @@ fun ShellScreen(
             }
         }
 
-        if (config.announcementEnabled && isActivated && config.announcementTitle.isNotEmpty()) {
-            val ann = Announcement(
-                title = config.announcementTitle,
-                content = config.announcementContent,
-                linkUrl = config.announcementLink.ifEmpty { null },
-                showOnce = config.announcementShowOnce
+        if (config.announcementEnabled && isActivated &&
+            (config.announcementTitle.isNotEmpty() || config.announcementContent.isNotEmpty())
+        ) {
+            // Trigger-aware gate: honors triggerOnLaunch=false, version-pinned showOnce, and the
+            // no-network / interval modes driven by the effects below.
+            showAnnouncementDialog = announcement.shouldShowAnnouncementForTrigger(
+                -1L,
+                buildShellAnnouncement(config),
+                isLaunch = true
             )
-            showAnnouncementDialog = announcement.shouldShowAnnouncement(-1L, ann)
         }
 
         val validOrientationModes = setOf("PORTRAIT", "LANDSCAPE", "REVERSE_PORTRAIT", "REVERSE_LANDSCAPE", "SENSOR_PORTRAIT", "SENSOR_LANDSCAPE", "AUTO")
@@ -242,6 +261,58 @@ fun ShellScreen(
 
         AppLogger.d("ShellActivity", "LaunchedEffect: showSplash=$showSplash, splashCountdown=$splashCountdown")
 
+    }
+
+    // Announcement no-network trigger: monitor connectivity while the shell is up (preview parity
+    // with WebViewActivity's monitoring for triggerOnNoNetwork announcements).
+    DisposableEffect(Unit) {
+        if (config.announcementEnabled && config.announcementTriggerOnNoNetwork) {
+            announcement.startNetworkMonitoring()
+        }
+        onDispose { announcement.stopNetworkMonitoring() }
+    }
+
+    val networkAvailable by announcement.isNetworkAvailable.collectAsStateWithLifecycle()
+    var lastNetworkState by remember { mutableStateOf(true) }
+
+    LaunchedEffect(networkAvailable, isActivated) {
+        if (lastNetworkState && !networkAvailable && isActivated &&
+            config.announcementEnabled && config.announcementTriggerOnNoNetwork
+        ) {
+            val shouldShow = announcement.shouldShowAnnouncementForTrigger(
+                -1L,
+                buildShellAnnouncement(config),
+                isNoNetwork = true
+            )
+            if (shouldShow && !showAnnouncementDialog) {
+                showAnnouncementDialog = true
+            }
+        }
+        lastNetworkState = networkAvailable
+    }
+
+    // Announcement interval trigger: re-show periodically while the app stays open.
+    LaunchedEffect(isActivated) {
+        val intervalMinutes = config.announcementTriggerIntervalMinutes
+        if (!isActivated || !config.announcementEnabled || intervalMinutes <= 0) return@LaunchedEffect
+
+        if (config.announcementTriggerIntervalIncludeLaunch) {
+            announcement.resetIntervalTrigger(-1L)
+        }
+
+        val ann = buildShellAnnouncement(config)
+        while (true) {
+            val nextDelay = announcement.getMillisUntilNextIntervalAnnouncement(-1L, ann)
+            delay(nextDelay.coerceIn(1_000L, intervalMinutes * 60_000L))
+
+            if (announcement.shouldTriggerIntervalAnnouncement(-1L, ann)) {
+                val shouldShow = announcement.shouldShowAnnouncementForTrigger(-1L, ann, isInterval = true)
+                if (shouldShow && !showAnnouncementDialog) {
+                    showAnnouncementDialog = true
+                    announcement.markIntervalTrigger(-1L)
+                }
+            }
+        }
     }
 
     fun usesPageTopStatusBarColor(): Boolean {
@@ -436,15 +507,11 @@ fun ShellScreen(
                     dynamicUrl = url
                 }
 
-                if (config.announcementEnabled && config.announcementTitle.isNotEmpty()) {
-                    val ann = Announcement(
-                        title = config.announcementTitle,
-                        content = config.announcementContent,
-                        linkUrl = config.announcementLink.ifEmpty { null },
-                        showOnce = config.announcementShowOnce
-                    )
+                if (config.announcementEnabled &&
+                    (config.announcementTitle.isNotEmpty() || config.announcementContent.isNotEmpty())
+                ) {
                     scope.launch {
-                        showAnnouncementDialog = announcement.shouldShowAnnouncement(-1L, ann)
+                        showAnnouncementDialog = announcement.shouldShowAnnouncement(-1L, buildShellAnnouncement(config))
                     }
                 }
             }

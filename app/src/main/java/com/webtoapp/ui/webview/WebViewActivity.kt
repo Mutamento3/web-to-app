@@ -2000,16 +2000,22 @@ fun WebViewScreen(
         }
 
         try {
-            val candidates = listOf("dist", "build", "public", "static", "www", "")
+            // Honor the configured build mode the way the exported shell does
+            // (ShellContentRouter branches on nodejsConfig.mode): only STATIC projects get the
+            // doc-root sniff; API_BACKEND always goes to the Node runtime.
+            val staticMode = config.buildMode == com.webtoapp.data.model.NodeJsBuildMode.STATIC
             var foundDocRoot: File? = null
-            for (dir in candidates) {
-                val candidate = if (dir.isEmpty()) projectDir else File(projectDir, dir)
-                val hasIndex = File(candidate, "index.html").exists()
-                AppLogger.d("NodeJsAppPreview", "Checking candidate: '$dir' -> ${candidate.absolutePath}, isDir=${candidate.isDirectory}, hasIndex=$hasIndex")
-                if (candidate.isDirectory && hasIndex) {
-                    foundDocRoot = candidate
-                    AppLogger.i("NodeJsAppPreview", "Found docRoot: ${candidate.absolutePath}")
-                    break
+            if (staticMode) {
+                val candidates = listOf("dist", "build", "public", "static", "www", "")
+                for (dir in candidates) {
+                    val candidate = if (dir.isEmpty()) projectDir else File(projectDir, dir)
+                    val hasIndex = File(candidate, "index.html").exists()
+                    AppLogger.d("NodeJsAppPreview", "Checking candidate: '$dir' -> ${candidate.absolutePath}, isDir=${candidate.isDirectory}, hasIndex=$hasIndex")
+                    if (candidate.isDirectory && hasIndex) {
+                        foundDocRoot = candidate
+                        AppLogger.i("NodeJsAppPreview", "Found docRoot: ${candidate.absolutePath}")
+                        break
+                    }
                 }
             }
 
@@ -2020,7 +2026,7 @@ fun WebViewScreen(
                 nodeJsAppPreviewState = NodeJsAppPreviewState.Ready(url)
                 delay(200)
                 loadInBrowser(url)
-            } else if (nodeRuntime.isNodeAvailable()) {
+            } else if (!staticMode && nodeRuntime.isNodeAvailable()) {
 
                 AppLogger.i("NodeJsAppPreview", "Node.js runtime available, starting backend server")
                 nodeJsAppPreviewState = NodeJsAppPreviewState.StartingServer

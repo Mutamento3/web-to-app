@@ -11,6 +11,7 @@ import androidx.lifecycle.lifecycleScope
 import com.webtoapp.WebToAppApplication
 import com.webtoapp.core.activation.ActivationResult
 import com.webtoapp.core.activation.ActivationStatus
+import com.webtoapp.core.i18n.Strings
 import com.webtoapp.core.shell.ShellConfig
 import com.webtoapp.data.model.Announcement
 import com.webtoapp.ui.components.announcement.toUiTemplate
@@ -119,12 +120,22 @@ fun ShellAnnouncementDialog(
             onDismiss()
             val scope = (context as? AppCompatActivity)?.lifecycleScope
             scope?.launch {
-                announcement.markAnnouncementShown(-1L, 1)
+                announcement.markAnnouncementShown(-1L, config.announcementVersion)
             }
         },
         onLinkClick = { url ->
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(normalizeExternalUrlForIntent(url)))
-            context.startActivity(intent)
+            // Guarded like the preview's announcement dialog: normalize, reject blank targets,
+            // and survive a missing browser app instead of crashing inside composition.
+            try {
+                val safeUrl = normalizeExternalUrlForIntent(url)
+                if (safeUrl.isBlank()) {
+                    android.widget.Toast.makeText(context, Strings.cannotOpenLink, android.widget.Toast.LENGTH_SHORT).show()
+                } else {
+                    context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(safeUrl)))
+                }
+            } catch (e: Exception) {
+                android.widget.Toast.makeText(context, Strings.cannotOpenLink, android.widget.Toast.LENGTH_SHORT).show()
+            }
         },
         onNeverShowChecked = { checked ->
             if (checked) {
