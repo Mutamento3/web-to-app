@@ -2504,13 +2504,13 @@ object Strings {
     val editApiKey: String get() = StringsC.editApiKey
     val addApiKey: String get() = StringsC.addApiKey
     val getApiKey: String get() = StringsC.getApiKey
-    val openAiCompatibleHint: String get() = StringsC.openAiCompatibleHint
+    val customBaseUrlHint: String get() = StringsC.customBaseUrlHint
     val apiFormat: String get() = StringsC.apiFormat
     val apiKeyAliasPlaceholder: String get() = StringsC.apiKeyAliasPlaceholder
     val modelsEndpoint: String get() = StringsC.modelsEndpoint
     val modelsEndpointHint: String get() = StringsC.modelsEndpointHint
     val chatEndpoint: String get() = StringsC.chatEndpoint
-    val chatEndpointHint: String get() = StringsC.chatEndpointHint
+    fun chatEndpointDefaultHint(defaultEndpoint: String): String = StringsC.chatEndpointDefaultHint(defaultEndpoint)
     val selectApiKey: String get() = StringsC.selectApiKey
     val batchSelectModels: String get() = StringsC.batchSelectModels
     val selectedModelsCount: String get() = StringsC.selectedModelsCount
@@ -36287,17 +36287,30 @@ object StringsC {
         AppLanguage.KOREAN -> "API 키 받기"
     }
 
-    val openAiCompatibleHint: String get() = when (Strings.lang) {
-        AppLanguage.CHINESE -> "OpenAI 兼容接口地址"
-        AppLanguage.ENGLISH -> "OpenAI compatible endpoint"
-        AppLanguage.ARABIC -> "نقطة نهاية متوافقة مع OpenAI"
-        AppLanguage.PORTUGUESE -> "Endpoint compatível com OpenAI"
-        AppLanguage.SPANISH -> "Endpoint compatible con OpenAI"
-        AppLanguage.FRENCH -> "Endpoint compatible OpenAI"
-        AppLanguage.GERMAN -> "OpenAI-kompatibler Endpoint"
-        AppLanguage.RUSSIAN -> "Endpoint, совместимый с OpenAI"
-        AppLanguage.JAPANESE -> "OpenAI互換エンドポイント"
-        AppLanguage.KOREAN -> "OpenAI 호환 엔드포인트"
+    val customBaseUrlHint: String get() = when (Strings.lang) {
+        AppLanguage.CHINESE -> "API 根地址，不含 /v1 等路径"
+        AppLanguage.ENGLISH -> "API base URL, without the /v1 path"
+        AppLanguage.ARABIC -> "عنوان URL الأساسي لواجهة برمجة التطبيقات، بدون المسار /v1"
+        AppLanguage.PORTUGUESE -> "URL base da API, sem o caminho /v1"
+        AppLanguage.SPANISH -> "URL base de la API, sin la ruta /v1"
+        AppLanguage.FRENCH -> "URL de base de l'API, sans le chemin /v1"
+        AppLanguage.GERMAN -> "API-Basis-URL ohne den /v1-Pfad"
+        AppLanguage.RUSSIAN -> "Базовый URL API без пути /v1"
+        AppLanguage.JAPANESE -> "APIのベースURL（/v1 などのパスは含めない）"
+        AppLanguage.KOREAN -> "API 기본 URL, /v1 경로 제외"
+    }
+
+    fun chatEndpointDefaultHint(defaultEndpoint: String): String = when (Strings.lang) {
+        AppLanguage.CHINESE -> "默认：$defaultEndpoint"
+        AppLanguage.ENGLISH -> "Default: $defaultEndpoint"
+        AppLanguage.ARABIC -> "الافتراضي: $defaultEndpoint"
+        AppLanguage.PORTUGUESE -> "Padrão: $defaultEndpoint"
+        AppLanguage.SPANISH -> "Predeterminado: $defaultEndpoint"
+        AppLanguage.FRENCH -> "Par défaut : $defaultEndpoint"
+        AppLanguage.GERMAN -> "Standard: $defaultEndpoint"
+        AppLanguage.RUSSIAN -> "По умолчанию: $defaultEndpoint"
+        AppLanguage.JAPANESE -> "デフォルト: $defaultEndpoint"
+        AppLanguage.KOREAN -> "기본값: $defaultEndpoint"
     }
 
     val apiFormat: String get() = when (Strings.lang) {
@@ -36365,18 +36378,6 @@ object StringsC {
         AppLanguage.KOREAN -> "채팅 엔드포인트"
     }
 
-    val chatEndpointHint: String get() = when (Strings.lang) {
-        AppLanguage.CHINESE -> "默认: /v1/chat/completions"
-        AppLanguage.ENGLISH -> "Default: /v1/chat/completions"
-        AppLanguage.ARABIC -> "الافتراضي: /v1/chat/completions"
-        AppLanguage.PORTUGUESE -> "Padrão: /v1/chat/completions"
-        AppLanguage.SPANISH -> "Predeterminado: /v1/chat/completions"
-        AppLanguage.FRENCH -> "Par défaut : /v1/chat/completions"
-        AppLanguage.GERMAN -> "Standard: /v1/chat/completions"
-        AppLanguage.RUSSIAN -> "По умолчанию: /v1/chat/completions"
-        AppLanguage.JAPANESE -> "デフォルト: /v1/chat/completions"
-        AppLanguage.KOREAN -> "기본값: /v1/chat/completions"
-    }
 
     val selectApiKey: String get() = when (Strings.lang) {
         AppLanguage.CHINESE -> "选择 API Key"

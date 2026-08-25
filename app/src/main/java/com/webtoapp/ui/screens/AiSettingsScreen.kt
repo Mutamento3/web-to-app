@@ -559,6 +559,13 @@ private fun AddApiKeyDialog(
     var customModelsEndpoint by remember { mutableStateOf(initialConfig?.customModelsEndpoint ?: "") }
     var customChatEndpoint by remember { mutableStateOf(initialConfig?.customChatEndpoint ?: "") }
     var selectedApiFormat by remember { mutableStateOf(initialConfig?.apiFormat ?: ApiFormat.OPENAI_COMPATIBLE) }
+    // Default chat endpoint for CUSTOM endpoints follows the selected wire format and
+    // mirrors ApiKeyConfig.getEffectiveChatEndpoint()'s CUSTOM branch.
+    val customDefaultChatEndpoint = when (selectedApiFormat) {
+        ApiFormat.ANTHROPIC -> "/v1/messages"
+        ApiFormat.OPENAI_RESPONSES -> "/v1/responses"
+        else -> "/v1/chat/completions"
+    }
     var alias by remember { mutableStateOf(initialConfig?.alias ?: "") }
     var showApiKey by remember { mutableStateOf(false) }
     var testResult by remember { mutableStateOf<String?>(null) }
@@ -700,7 +707,7 @@ private fun AddApiKeyDialog(
                         label = { Text("Base URL") },
                         placeholder = { Text("https://api.example.com") },
                         singleLine = true,
-                        supportingText = { Text(Strings.openAiCompatibleHint) },
+                        supportingText = { Text(Strings.customBaseUrlHint) },
                         modifier = Modifier.fillMaxWidth()
                     )
 
@@ -767,9 +774,9 @@ private fun AddApiKeyDialog(
                                 value = customChatEndpoint,
                                 onValueChange = { customChatEndpoint = it },
                                 label = { Text(Strings.chatEndpoint) },
-                                placeholder = { Text("/v1/chat/completions") },
+                                placeholder = { Text(customDefaultChatEndpoint) },
                                 singleLine = true,
-                                supportingText = { Text(Strings.chatEndpointHint) },
+                                supportingText = { Text(Strings.chatEndpointDefaultHint(customDefaultChatEndpoint)) },
                                 modifier = Modifier.fillMaxWidth()
                             )
                         }
