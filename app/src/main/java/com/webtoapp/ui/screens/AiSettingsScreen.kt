@@ -723,15 +723,18 @@ private fun AddApiKeyDialog(
                             expanded = formatExpanded,
                             onDismissRequest = { formatExpanded = false }
                         ) {
-                            ApiFormat.entries.forEach { format ->
-                                DropdownMenuItem(
-                                    text = { Text(format.displayName) },
-                                    onClick = {
-                                        selectedApiFormat = format
-                                        formatExpanded = false
-                                    }
-                                )
-                            }
+                            // CUSTOM endpoints support the three wire formats; the Gemini
+                            // format is internal to the GOOGLE provider entry.
+                            listOf(ApiFormat.OPENAI_COMPATIBLE, ApiFormat.ANTHROPIC, ApiFormat.OPENAI_RESPONSES)
+                                .forEach { format ->
+                                    DropdownMenuItem(
+                                        text = { Text(format.displayName) },
+                                        onClick = {
+                                            selectedApiFormat = format
+                                            formatExpanded = false
+                                        }
+                                    )
+                                }
                         }
                     }
 

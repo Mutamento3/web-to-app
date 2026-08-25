@@ -9,6 +9,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.google.gson.JsonElement
 import com.google.gson.JsonParser
 import com.webtoapp.util.GsonProvider
 import com.webtoapp.core.logging.AppLogger
@@ -302,11 +303,68 @@ class AiConfigManager(private val context: Context) {
     }
 
     internal fun parseApiKeyConfigs(json: String): List<ApiKeyConfig>? {
-        return parseJsonArray(json, ApiKeyConfig::class.java)
+        val parsed = parseJsonArray(json, ApiKeyConfig::class.java) ?: return null
+        val raw = runCatching { JsonParser.parseString(json).asJsonArray }.getOrNull()
+        return parsed.mapIndexed { index, config ->
+            val element = raw?.get(index)
+            val legacyName = if (config.provider == null && element != null) {
+                element.asJsonObject?.get("provider")?.takeIf { it.isJsonPrimitive }?.asString
+            } else {
+                null
+            }
+            if (legacyName != null) {
+                AppLogger.i(TAG, "Migrating removed provider '$legacyName' to CUSTOM")
+            }
+            // Rebuild via the constructor: Gson leaves absent fields null and the data
+            // class copy()/constructor reject nulls on non-null params.
+            ApiKeyConfig(
+                id = config.id,
+                provider = config.provider ?: AiProvider.CUSTOM,
+                apiKey = config.apiKey,
+                baseUrl = config.baseUrl?.takeIf { it.isNotBlank() }
+                    ?: (if (config.provider == null) legacyName?.let { AiProvider.REMOVED_PROVIDER_BASE_URLS[it] } else null),
+                customModelsEndpoint = config.customModelsEndpoint,
+                customChatEndpoint = config.customChatEndpoint,
+                apiFormat = config.apiFormat ?: ApiFormat.OPENAI_COMPATIBLE,
+                alias = config.alias,
+                isActive = config.isActive,
+                createdAt = config.createdAt
+            )
+        }
     }
 
     internal fun parseSavedModels(json: String): List<SavedModel>? {
-        return parseJsonArray(json, SavedModel::class.java)
+        val parsed = parseJsonArray(json, SavedModel::class.java) ?: return null
+        val raw = runCatching { JsonParser.parseString(json).asJsonArray }.getOrNull()
+        return parsed.mapIndexed { index, saved ->
+            val element = raw?.get(index)
+            val providerRemoved = saved.model.provider == null && element != null
+            if (providerRemoved) {
+                val legacyName = element?.asJsonObject?.get("model")?.asJsonObject
+                    ?.get("provider")?.takeIf { it.isJsonPrimitive }?.asString
+                AppLogger.i(TAG, "Migrating saved model on removed provider '${legacyName ?: "?"}' to CUSTOM")
+            }
+            SavedModel(
+                id = saved.id,
+                model = AiModel(
+                    id = saved.model.id,
+                    name = saved.model.name,
+                    provider = saved.model.provider ?: AiProvider.CUSTOM,
+                    capabilities = saved.model.capabilities ?: listOf(ModelCapability.TEXT),
+                    contextLength = saved.model.contextLength,
+                    inputPrice = saved.model.inputPrice,
+                    outputPrice = saved.model.outputPrice,
+                    isCustom = saved.model.isCustom || saved.model.provider == null
+                ),
+                apiKeyId = saved.apiKeyId,
+                alias = saved.alias,
+                capabilities = saved.capabilities ?: listOf(ModelCapability.TEXT),
+                featureMappings = saved.featureMappings ?: emptyMap(),
+                isDefault = saved.isDefault,
+                userContextLength = saved.userContextLength,
+                createdAt = saved.createdAt
+            )
+        }
     }
 
     private fun <T> parseJsonArray(json: String, clazz: Class<T>): List<T>? {

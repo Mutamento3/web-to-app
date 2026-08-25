@@ -59,43 +59,6 @@ enum class AiProvider(
         apiKeyUrl = "https://console.x.ai/",
         category = ProviderCategory.INTERNATIONAL
     ),
-    MISTRAL(
-        baseUrl = "https://api.mistral.ai",
-        modelsEndpoint = "/v1/models",
-        apiKeyUrl = "https://console.mistral.ai/api-keys/",
-        category = ProviderCategory.INTERNATIONAL
-    ),
-    COHERE(
-        baseUrl = "https://api.cohere.com",
-        modelsEndpoint = "/v2/models",
-        apiKeyUrl = "https://dashboard.cohere.com/api-keys",
-        category = ProviderCategory.INTERNATIONAL
-    ),
-    AI21(
-        baseUrl = "https://api.ai21.com",
-        modelsEndpoint = "/v1/models",
-        apiKeyUrl = "https://studio.ai21.com/account/api-key",
-        category = ProviderCategory.INTERNATIONAL
-    ),
-
-    GROQ(
-        baseUrl = "https://api.groq.com/openai",
-        modelsEndpoint = "/v1/models",
-        apiKeyUrl = "https://console.groq.com/keys",
-        category = ProviderCategory.INTERNATIONAL
-    ),
-    CEREBRAS(
-        baseUrl = "https://api.cerebras.ai",
-        modelsEndpoint = "/v1/models",
-        apiKeyUrl = "https://cloud.cerebras.ai/",
-        category = ProviderCategory.INTERNATIONAL
-    ),
-    SAMBANOVA(
-        baseUrl = "https://api.sambanova.ai",
-        modelsEndpoint = "/v1/models",
-        apiKeyUrl = "https://cloud.sambanova.ai/apis",
-        category = ProviderCategory.INTERNATIONAL
-    ),
 
     TOGETHER(
         baseUrl = "https://api.together.xyz",
@@ -115,18 +78,6 @@ enum class AiProvider(
         apiKeyUrl = "https://fireworks.ai/api-keys",
         category = ProviderCategory.AGGREGATOR
     ),
-    DEEPINFRA(
-        baseUrl = "https://api.deepinfra.com",
-        modelsEndpoint = "/v1/models",
-        apiKeyUrl = "https://deepinfra.com/dash/api_keys",
-        category = ProviderCategory.AGGREGATOR
-    ),
-    NOVITA(
-        baseUrl = "https://api.novita.ai",
-        modelsEndpoint = "/v1/models",
-        apiKeyUrl = "https://novita.ai/settings#key-management",
-        category = ProviderCategory.AGGREGATOR
-    ),
 
     DEEPSEEK(
         baseUrl = "https://api.deepseek.com",
@@ -144,60 +95,6 @@ enum class AiProvider(
         baseUrl = "https://open.bigmodel.cn/api/paas",
         modelsEndpoint = "/v4/models",
         apiKeyUrl = "https://open.bigmodel.cn/usercenter/apikeys",
-        category = ProviderCategory.CHINESE
-    ),
-    VOLCANO(
-        baseUrl = "https://ark.cn-beijing.volces.com/api",
-        modelsEndpoint = "/v3/models",
-        apiKeyUrl = "https://console.volcengine.com/ark/region:ark+cn-beijing/apiKey",
-        category = ProviderCategory.CHINESE
-    ),
-    MOONSHOT(
-        baseUrl = "https://api.moonshot.cn",
-        modelsEndpoint = "/v1/models",
-        apiKeyUrl = "https://platform.moonshot.cn/console/api-keys",
-        category = ProviderCategory.CHINESE
-    ),
-    MINIMAX(
-        baseUrl = "https://api.minimax.chat",
-        modelsEndpoint = "/v1/models",
-        apiKeyUrl = "https://platform.minimaxi.com/user-center/basic-information/interface-key",
-        category = ProviderCategory.CHINESE
-    ),
-    SILICONFLOW(
-        baseUrl = "https://api.siliconflow.cn",
-        modelsEndpoint = "/v1/models",
-        apiKeyUrl = "https://cloud.siliconflow.cn/account/ak",
-        category = ProviderCategory.CHINESE
-    ),
-    BAICHUAN(
-        baseUrl = "https://api.baichuan-ai.com",
-        modelsEndpoint = "/v1/models",
-        apiKeyUrl = "https://platform.baichuan-ai.com/console/apikey",
-        category = ProviderCategory.CHINESE
-    ),
-    YI(
-        baseUrl = "https://api.lingyiwanwu.com",
-        modelsEndpoint = "/v1/models",
-        apiKeyUrl = "https://platform.lingyiwanwu.com/apikeys",
-        category = ProviderCategory.CHINESE
-    ),
-    STEPFUN(
-        baseUrl = "https://api.stepfun.com",
-        modelsEndpoint = "/v1/models",
-        apiKeyUrl = "https://platform.stepfun.com/interface-key",
-        category = ProviderCategory.CHINESE
-    ),
-    HUNYUAN(
-        baseUrl = "https://api.hunyuan.cloud.tencent.com",
-        modelsEndpoint = "/v1/models",
-        apiKeyUrl = "https://console.cloud.tencent.com/hunyuan/start",
-        category = ProviderCategory.CHINESE
-    ),
-    SPARK(
-        baseUrl = "https://spark-api-open.xf-yun.com",
-        modelsEndpoint = "/v1/models",
-        apiKeyUrl = "https://console.xfyun.cn/services/bm35",
         category = ProviderCategory.CHINESE
     ),
 
@@ -227,35 +124,45 @@ enum class AiProvider(
         category = ProviderCategory.CUSTOM
     );
 
+    companion object {
+        /**
+         * Base URLs of providers removed in the catalog trim. Persisted ApiKeyConfigs
+         * referencing a removed provider migrate to CUSTOM with this base URL so the
+         * user's endpoint/key setup keeps working (see AiConfigManager).
+         */
+        val REMOVED_PROVIDER_BASE_URLS: Map<String, String> = mapOf(
+            "MISTRAL" to "https://api.mistral.ai",
+            "COHERE" to "https://api.cohere.com",
+            "AI21" to "https://api.ai21.com",
+            "GROQ" to "https://api.groq.com/openai",
+            "CEREBRAS" to "https://api.cerebras.ai",
+            "SAMBANOVA" to "https://api.sambanova.ai",
+            "DEEPINFRA" to "https://api.deepinfra.com",
+            "NOVITA" to "https://api.novita.ai",
+            "VOLCANO" to "https://ark.cn-beijing.volces.com/api",
+            "MOONSHOT" to "https://api.moonshot.cn",
+            "MINIMAX" to "https://api.minimax.chat",
+            "SILICONFLOW" to "https://api.siliconflow.cn",
+            "BAICHUAN" to "https://api.baichuan-ai.com",
+            "YI" to "https://api.lingyiwanwu.com",
+            "STEPFUN" to "https://api.stepfun.com",
+            "HUNYUAN" to "https://api.hunyuan.cloud.tencent.com",
+            "SPARK" to "https://spark-api-open.xf-yun.com"
+        )
+    }
+
     val displayName: String get() = when (this) {
         GOOGLE -> Strings.providerGoogle
         OPENROUTER -> Strings.providerOpenRouter
         OPENAI -> Strings.providerOpenAI
         ANTHROPIC -> Strings.providerAnthropic
         GROK -> Strings.providerGrok
-        MISTRAL -> Strings.providerMistral
-        COHERE -> Strings.providerCohere
-        AI21 -> Strings.providerAI21
-        GROQ -> Strings.providerGroq
-        CEREBRAS -> Strings.providerCerebras
-        SAMBANOVA -> Strings.providerSambanova
         TOGETHER -> Strings.providerTogether
         PERPLEXITY -> Strings.providerPerplexity
         FIREWORKS -> Strings.providerFireworks
-        DEEPINFRA -> Strings.providerDeepInfra
-        NOVITA -> Strings.providerNovita
         DEEPSEEK -> Strings.providerDeepSeek
         QWEN -> Strings.providerQwen
         GLM -> Strings.providerGLM
-        VOLCANO -> Strings.providerVolcano
-        MOONSHOT -> Strings.providerMoonshot
-        MINIMAX -> Strings.providerMiniMax
-        SILICONFLOW -> Strings.providerSiliconFlow
-        BAICHUAN -> Strings.providerBaichuan
-        YI -> Strings.providerYi
-        STEPFUN -> Strings.providerStepfun
-        HUNYUAN -> Strings.providerHunyuan
-        SPARK -> Strings.providerSpark
         OLLAMA -> Strings.providerOllama
         LM_STUDIO -> Strings.providerLmStudio
         VLLM -> Strings.providerVllm
@@ -268,29 +175,12 @@ enum class AiProvider(
         OPENAI -> Strings.providerOpenAIDesc
         ANTHROPIC -> Strings.providerAnthropicDesc
         GROK -> Strings.providerGrokDesc
-        MISTRAL -> Strings.providerMistralDesc
-        COHERE -> Strings.providerCohereDesc
-        AI21 -> Strings.providerAI21Desc
-        GROQ -> Strings.providerGroqDesc
-        CEREBRAS -> Strings.providerCerebrasDesc
-        SAMBANOVA -> Strings.providerSambanovaDesc
         TOGETHER -> Strings.providerTogetherDesc
         PERPLEXITY -> Strings.providerPerplexityDesc
         FIREWORKS -> Strings.providerFireworksDesc
-        DEEPINFRA -> Strings.providerDeepInfraDesc
-        NOVITA -> Strings.providerNovitaDesc
         DEEPSEEK -> Strings.providerDeepSeekDesc
         QWEN -> Strings.providerQwenDesc
         GLM -> Strings.providerGLMDesc
-        VOLCANO -> Strings.providerVolcanoDesc
-        MOONSHOT -> Strings.providerMoonshotDesc
-        MINIMAX -> Strings.providerMiniMaxDesc
-        SILICONFLOW -> Strings.providerSiliconFlowDesc
-        BAICHUAN -> Strings.providerBaichuanDesc
-        YI -> Strings.providerYiDesc
-        STEPFUN -> Strings.providerStepfunDesc
-        HUNYUAN -> Strings.providerHunyuanDesc
-        SPARK -> Strings.providerSparkDesc
         OLLAMA -> Strings.providerOllamaDesc
         LM_STUDIO -> Strings.providerLmStudioDesc
         VLLM -> Strings.providerVllmDesc
@@ -303,29 +193,12 @@ enum class AiProvider(
         OPENAI -> Strings.providerOpenAIPricing
         ANTHROPIC -> Strings.providerAnthropicPricing
         GROK -> Strings.providerGrokPricing
-        MISTRAL -> Strings.providerMistralPricing
-        COHERE -> Strings.providerCoherePricing
-        AI21 -> Strings.providerAI21Pricing
-        GROQ -> Strings.providerGroqPricing
-        CEREBRAS -> Strings.providerCerebrasPricing
-        SAMBANOVA -> Strings.providerSambanovaPricing
         TOGETHER -> Strings.providerTogetherPricing
         PERPLEXITY -> Strings.providerPerplexityPricing
         FIREWORKS -> Strings.providerFireworksPricing
-        DEEPINFRA -> Strings.providerDeepInfraPricing
-        NOVITA -> Strings.providerNovitaPricing
         DEEPSEEK -> Strings.providerDeepSeekPricing
         QWEN -> Strings.providerQwenPricing
         GLM -> Strings.providerGLMPricing
-        VOLCANO -> Strings.providerVolcanoPricing
-        MOONSHOT -> Strings.providerMoonshotPricing
-        MINIMAX -> Strings.providerMiniMaxPricing
-        SILICONFLOW -> Strings.providerSiliconFlowPricing
-        BAICHUAN -> Strings.providerBaichuanPricing
-        YI -> Strings.providerYiPricing
-        STEPFUN -> Strings.providerStepfunPricing
-        HUNYUAN -> Strings.providerHunyuanPricing
-        SPARK -> Strings.providerSparkPricing
         OLLAMA -> Strings.providerOllamaPricing
         LM_STUDIO -> Strings.providerLmStudioPricing
         VLLM -> Strings.providerVllmPricing
@@ -443,11 +316,13 @@ data class AiModel(
 enum class ApiFormat {
     OPENAI_COMPATIBLE,
     ANTHROPIC,
+    OPENAI_RESPONSES,
     GOOGLE_GEMINI;
 
     val displayName: String get() = when (this) {
-        OPENAI_COMPATIBLE -> "OpenAI 兼容"
-        ANTHROPIC -> "Anthropic Claude"
+        OPENAI_COMPATIBLE -> "Chat Completions (/chat/completions)"
+        ANTHROPIC -> "Anthropic Messages (/v1/messages)"
+        OPENAI_RESPONSES -> "Responses (/responses)"
         GOOGLE_GEMINI -> "Google Gemini"
     }
 }
@@ -472,13 +347,16 @@ data class ApiKeyConfig(
     }
 
     fun getEffectiveChatEndpoint(): String {
-        return customChatEndpoint?.takeIf { it.isNotBlank() } ?: when (provider) {
-            AiProvider.GLM -> "/v4/chat/completions"
-            AiProvider.VOLCANO -> "/v3/chat/completions"
+        customChatEndpoint?.takeIf { it.isNotBlank() }?.let { return it }
+        return when (provider) {
             AiProvider.ANTHROPIC -> "/v1/messages"
             AiProvider.GOOGLE -> "/v1beta/models"
-            AiProvider.COHERE -> "/v2/chat"
             AiProvider.OLLAMA -> "/api/chat"
+            AiProvider.CUSTOM -> when (apiFormat) {
+                ApiFormat.ANTHROPIC -> "/v1/messages"
+                ApiFormat.OPENAI_RESPONSES -> "/v1/responses"
+                else -> "/v1/chat/completions"
+            }
             else -> "/v1/chat/completions"
         }
     }
