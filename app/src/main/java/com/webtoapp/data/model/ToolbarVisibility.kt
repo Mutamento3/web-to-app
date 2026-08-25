@@ -18,7 +18,8 @@ data class ToolbarButtonVisibility(
     val showForward: Boolean,
     val showRefresh: Boolean,
     val showConsoleButton: Boolean,
-    val showZoom: Boolean
+    val showZoom: Boolean,
+    val showFind: Boolean
 )
 
 /**
@@ -35,9 +36,10 @@ fun hasAnySlimToolbarItem(
     toolbarShowForward: Boolean,
     toolbarShowRefresh: Boolean,
     toolbarShowConsole: Boolean,
-    toolbarShowZoom: Boolean
+    toolbarShowZoom: Boolean,
+    toolbarShowFind: Boolean = true
 ): Boolean = toolbarShowTitle || toolbarShowUrl || toolbarShowBack || toolbarShowForward ||
-    toolbarShowRefresh || toolbarShowConsole || toolbarShowZoom
+    toolbarShowRefresh || toolbarShowConsole || toolbarShowZoom || toolbarShowFind
 
 /**
  * Resolves which toolbar buttons are visible given the hide-toggle state and the
@@ -52,7 +54,8 @@ fun resolveToolbarButtons(
     toolbarShowForward: Boolean,
     toolbarShowRefresh: Boolean,
     toolbarShowConsole: Boolean = true,
-    toolbarShowZoom: Boolean = true
+    toolbarShowZoom: Boolean = true,
+    toolbarShowFind: Boolean = true
 ): ToolbarButtonVisibility {
     val customizedSlim = hideBrowserToolbar && browserToolbarCustomized
     return ToolbarButtonVisibility(
@@ -62,6 +65,7 @@ fun resolveToolbarButtons(
         showForward = !customizedSlim || toolbarShowForward,
         showRefresh = !customizedSlim || toolbarShowRefresh,
         showConsoleButton = !customizedSlim || toolbarShowConsole,
-        showZoom = !customizedSlim || toolbarShowZoom
+        showZoom = !customizedSlim || toolbarShowZoom,
+        showFind = !customizedSlim || toolbarShowFind
     )
 }

@@ -1145,6 +1145,8 @@ data class WebViewShellConfig(
         val toolbarShowConsole: Boolean = true,
         @SerializedName("toolbarShowZoom")
         val toolbarShowZoom: Boolean = true,
+        @SerializedName("toolbarShowFind")
+        val toolbarShowFind: Boolean = true,
 
     @SerializedName("browserToolbarCustomized")
     val browserToolbarCustomized: Boolean = false,

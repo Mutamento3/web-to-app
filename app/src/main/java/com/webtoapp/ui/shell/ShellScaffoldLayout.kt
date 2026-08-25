@@ -9,6 +9,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Terminal
 import androidx.compose.material.icons.outlined.ZoomIn
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -74,6 +75,9 @@ fun BoxScope.ShellScaffoldLayout(
     onClearConsole: () -> Unit,
     onRunScript: (String) -> Unit,
 
+    showFindBar: Boolean,
+    onToggleFindBar: () -> Unit,
+
     statusBarHeightDp: Int
 ) {
     val context = LocalContext.current
@@ -101,6 +105,8 @@ fun BoxScope.ShellScaffoldLayout(
     }
 
     val toolbarCfg = config.webViewConfig
+    // Native find-in-page drives WebView.findAllAsync — system WebView only.
+    val findInPageSupported = config.engineType == "SYSTEM_WEBVIEW"
     val showSlimToolbar = hideBrowserToolbar && toolbarCfg.browserToolbarCustomized && hasAnySlimToolbarItem(
         toolbarShowTitle = toolbarCfg.toolbarShowTitle,
         toolbarShowUrl = toolbarCfg.toolbarShowUrl,
@@ -108,7 +114,8 @@ fun BoxScope.ShellScaffoldLayout(
         toolbarShowForward = toolbarCfg.toolbarShowForward,
         toolbarShowRefresh = toolbarCfg.toolbarShowRefresh,
         toolbarShowConsole = toolbarCfg.toolbarShowConsole,
-        toolbarShowZoom = toolbarCfg.toolbarShowZoom
+        toolbarShowZoom = toolbarCfg.toolbarShowZoom,
+        toolbarShowFind = toolbarCfg.toolbarShowFind && findInPageSupported
     )
     val showToolbar = (!hideToolbar || config.webViewConfig.showToolbarInFullscreen) &&
         (!hideBrowserToolbar || showSlimToolbar)
@@ -125,7 +132,8 @@ fun BoxScope.ShellScaffoldLayout(
         toolbarShowForward = toolbarCfg.toolbarShowForward,
         toolbarShowRefresh = toolbarCfg.toolbarShowRefresh,
         toolbarShowConsole = toolbarCfg.toolbarShowConsole,
-        toolbarShowZoom = toolbarCfg.toolbarShowZoom
+        toolbarShowZoom = toolbarCfg.toolbarShowZoom,
+        toolbarShowFind = toolbarCfg.toolbarShowFind
     )
 
     // Per-app runtime page zoom (persists across cold starts). 0 = no override.
@@ -167,6 +175,9 @@ fun BoxScope.ShellScaffoldLayout(
                     showConsole = showConsole,
                     onToggleConsole = onToggleConsole,
                     consoleErrorCount = consoleMessages.count { it.level == ConsoleLevel.ERROR },
+                    showFindButton = toolbarVisibility.showFind && findInPageSupported,
+                    showFindBar = showFindBar,
+                    onToggleFindBar = onToggleFindBar,
                     showZoom = toolbarVisibility.showZoom,
                     currentZoomPercent = pageZoomPercent,
                     onZoomChange = onZoomChange
@@ -277,6 +288,19 @@ fun BoxScope.ShellScaffoldLayout(
                     onClose = onToggleConsole
                 )
             }
+
+            // Find-in-page bar (native WebView search; slides up like the console)
+            AnimatedVisibility(
+                visible = showFindBar && findInPageSupported,
+                enter = androidx.compose.animation.slideInVertically(initialOffsetY = { it }) + fadeIn(),
+                exit = androidx.compose.animation.slideOutVertically(targetOffsetY = { it }) + fadeOut(),
+                modifier = Modifier.align(Alignment.BottomCenter)
+            ) {
+                FindInPageBar(
+                    webView = webViewRef,
+                    onClose = onToggleFindBar
+                )
+            }
         }
     }
 }
@@ -299,6 +323,9 @@ private fun ShellTopAppBar(
     showConsole: Boolean = false,
     onToggleConsole: () -> Unit = {},
     consoleErrorCount: Int = 0,
+    showFindButton: Boolean = true,
+    showFindBar: Boolean = false,
+    onToggleFindBar: () -> Unit = {},
     showZoom: Boolean = true,
     currentZoomPercent: Int = 0,
     onZoomChange: (Int) -> Unit = {}
@@ -373,6 +400,14 @@ private fun ShellTopAppBar(
                         contentDescription = Strings.console
                     )
                 }
+            }
+            // Find-in-page button: opens the native bottom find bar (system WebView only).
+            if (showFindButton) {
+                com.webtoapp.ui.design.WtaIconButton(
+                    onClick = onToggleFindBar,
+                    icon = if (showFindBar) Icons.Filled.Search else Icons.Outlined.Search,
+                    contentDescription = Strings.nativeBridgeCapsFindInPage
+                )
             }
             // Page-zoom button: opens the zoom presets dialog directly. When more page-level
             // actions (find-in-page, …) land, this can become a ⋮ overflow menu again.

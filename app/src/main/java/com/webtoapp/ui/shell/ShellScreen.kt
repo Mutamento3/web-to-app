@@ -91,6 +91,8 @@ fun ShellScreen(
     var showConsole by remember { mutableStateOf(false) }
     var consoleMessages by remember { mutableStateOf<List<ConsoleLogEntry>>(emptyList()) }
 
+    var showFindBar by remember { mutableStateOf(false) }
+
     var isActivated by remember { mutableStateOf(!config.activationEnabled) }
 
     var isActivationChecked by remember { mutableStateOf(!config.activationEnabled) }
@@ -492,6 +494,8 @@ fun ShellScreen(
         onToggleConsole = { showConsole = !showConsole },
         consoleMessages = consoleMessages,
         onClearConsole = { consoleMessages = emptyList() },
+        showFindBar = showFindBar,
+        onToggleFindBar = { showFindBar = !showFindBar },
         onRunScript = { script ->
             webViewRef?.evaluateJavascript(script) { result ->
                 consoleMessages = consoleMessages + ConsoleLogEntry(
