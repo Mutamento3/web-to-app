@@ -2359,6 +2359,17 @@ fun HideBrowserToolbarCard(
                                 ))
                             }
                         )
+                        WtaSectionDivider()
+                        WtaToggleRow(
+                            title = Strings.toolbarShowFindLabel,
+                            checked = webViewConfig.toolbarShowFind,
+                            onCheckedChange = {
+                                onWebViewConfigChange(webViewConfig.copy(
+                                    toolbarShowFind = it,
+                                    browserToolbarCustomized = true
+                                ))
+                            }
+                        )
                     }
                 }
             }

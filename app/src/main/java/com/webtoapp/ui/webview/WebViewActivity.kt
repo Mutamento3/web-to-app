@@ -35,6 +35,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Terminal
 import androidx.compose.material.icons.outlined.ZoomIn
 import androidx.compose.material3.*
@@ -1145,6 +1146,7 @@ fun WebViewScreen(
     val longPressHandler = remember { LongPressHandler(context, scope) }
 
     var showConsole by remember { mutableStateOf(false) }
+    var showFindBar by remember { mutableStateOf(false) }
     var consoleMessages by remember { mutableStateOf<List<ConsoleLogEntry>>(emptyList()) }
 
     var statusBarBackgroundType by remember { mutableStateOf("COLOR") }
@@ -2909,6 +2911,16 @@ fun WebViewScreen(
                                 )
                             }
                         }
+                        // Find-in-page button: opens the native bottom find bar. System
+                        // WebView only — findAllAsync has no GeckoView equivalent here.
+                        val findInPageSupported = (webApp?.apkExportConfig?.engineType ?: "SYSTEM_WEBVIEW") == "SYSTEM_WEBVIEW"
+                        if ((isTestMode || browserToolbarVisibility?.showFind == true) && (isTestMode || findInPageSupported)) {
+                            com.webtoapp.ui.design.WtaIconButton(
+                                onClick = { showFindBar = !showFindBar },
+                                icon = if (showFindBar) Icons.Filled.Search else Icons.Outlined.Search,
+                                contentDescription = Strings.nativeBridgeCapsFindInPage
+                            )
+                        }
                         // Page-zoom button: opens the zoom presets dialog directly (mirrors
                         // the shell/export toolbar so preview and export behave the same).
                         if (isTestMode || browserToolbarVisibility?.showZoom == true) {
@@ -3353,6 +3365,17 @@ fun WebViewScreen(
                                 }
                             },
                             onClose = { showConsole = false }
+                        )
+                    }
+
+                    AnimatedVisibility(
+                        visible = showFindBar,
+                        enter = slideInVertically(initialOffsetY = { it }) + fadeIn(),
+                        exit = slideOutVertically(targetOffsetY = { it }) + fadeOut()
+                    ) {
+                        com.webtoapp.ui.shell.FindInPageBar(
+                            webView = webViewRef,
+                            onClose = { showFindBar = false }
                         )
                     }
                 }

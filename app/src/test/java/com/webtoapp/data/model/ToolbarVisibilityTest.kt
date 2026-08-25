@@ -93,6 +93,38 @@ class ToolbarVisibilityTest {
     }
 
     @Test
+    fun `slim mode hides find when its toggle is off`() {
+        val visibility = resolveToolbarButtons(
+            hideBrowserToolbar = true,
+            browserToolbarCustomized = true,
+            toolbarShowTitle = true,
+            toolbarShowUrl = true,
+            toolbarShowBack = true,
+            toolbarShowForward = true,
+            toolbarShowRefresh = true,
+            toolbarShowFind = false
+        )
+
+        assertThat(visibility.showFind).isFalse()
+    }
+
+    @Test
+    fun `normal mode ignores the find toggle`() {
+        val visibility = resolveToolbarButtons(
+            hideBrowserToolbar = false,
+            browserToolbarCustomized = false,
+            toolbarShowTitle = false,
+            toolbarShowUrl = false,
+            toolbarShowBack = false,
+            toolbarShowForward = false,
+            toolbarShowRefresh = false,
+            toolbarShowFind = false
+        )
+
+        assertThat(visibility.showFind).isTrue()
+    }
+
+    @Test
     fun `normal mode ignores the console and zoom toggles`() {
         val visibility = resolveToolbarButtons(
             hideBrowserToolbar = false,
@@ -158,7 +190,8 @@ class ToolbarVisibilityTest {
             toolbarShowForward = false,
             toolbarShowRefresh = false,
             toolbarShowConsole = false,
-            toolbarShowZoom = false
+            toolbarShowZoom = false,
+            toolbarShowFind = false
         )
 
         assertThat(hasContent).isFalse()

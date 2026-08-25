@@ -2355,6 +2355,7 @@ object Strings {
     val toolbarShowRefreshLabel: String get() = StringsC.toolbarShowRefreshLabel
     val toolbarShowConsoleLabel: String get() = StringsC.toolbarShowConsoleLabel
     val toolbarShowZoomLabel: String get() = StringsC.toolbarShowZoomLabel
+    val toolbarShowFindLabel: String get() = StringsC.toolbarShowFindLabel
     val clickToSelectImageOrVideo: String get() = StringsC.clickToSelectImageOrVideo
     val displayDuration: String get() = StringsC.displayDuration
     val displayDurationSeconds: String get() = StringsC.displayDurationSeconds
@@ -34417,6 +34418,19 @@ object StringsC {
         AppLanguage.RUSSIAN -> "Показывать кнопку масштабирования страницы"
         AppLanguage.JAPANESE -> "ページズームボタンを表示"
         AppLanguage.KOREAN -> "페이지 확대/축소 버튼 표시"
+    }
+
+    val toolbarShowFindLabel: String get() = when (Strings.lang) {
+        AppLanguage.CHINESE -> "显示页内查找按钮"
+        AppLanguage.ENGLISH -> "Show Find in Page Button"
+        AppLanguage.ARABIC -> "إظهار زر البحث في الصفحة"
+        AppLanguage.PORTUGUESE -> "Mostrar Botão de Localizar na Página"
+        AppLanguage.SPANISH -> "Mostrar Botón de Buscar en Página"
+        AppLanguage.FRENCH -> "Afficher le Bouton Rechercher dans la Page"
+        AppLanguage.GERMAN -> "Seiten-Such-Button anzeigen"
+        AppLanguage.RUSSIAN -> "Показывать кнопку поиска по странице"
+        AppLanguage.JAPANESE -> "ページ内検索ボタンを表示"
+        AppLanguage.KOREAN -> "페이지 내 찾기 버튼 표시"
     }
 
     val clickToSelectImageOrVideo: String get() = when (Strings.lang) {
