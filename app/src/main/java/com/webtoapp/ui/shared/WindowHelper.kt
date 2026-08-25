@@ -2,6 +2,7 @@ package com.webtoapp.ui.shared
 
 import android.app.Activity
 import android.content.pm.ActivityInfo
+import android.os.Build
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
@@ -230,7 +231,16 @@ object WindowHelper {
         when (mode) {
             KeyboardAdjustMode.RESIZE -> {
 
-                if (decorFitsSystemWindows) {
+                // androidx only reports IME insets on API < 30 when the window runs with
+                // SOFT_INPUT_ADJUST_RESIZE; with ADJUST_NOTHING the manual padding below
+                // never sees a non-zero IME inset on Android 10 and lower, so the keyboard
+                // covered the input regardless of this setting (issue #613). Those devices
+                // fall back to the system resize path, which also lets the WebView scroll
+                // the focused input into view on its own.
+                val useManualImePadding = !decorFitsSystemWindows &&
+                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
+
+                if (!useManualImePadding) {
                     @Suppress("DEPRECATION")
                     activity.window.setSoftInputMode(
                         WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE or
