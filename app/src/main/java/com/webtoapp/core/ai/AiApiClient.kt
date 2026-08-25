@@ -82,14 +82,6 @@ class AiApiClient(private val context: Context) {
                     }
                     builder.build()
                 }
-                AiProvider.COHERE -> {
-                    Request.Builder()
-                        .url(fullUrl)
-                        .header("Authorization", "Bearer ${apiKey.apiKey.sanitize()}")
-                        .header("Accept", "application/json")
-                        .get()
-                        .build()
-                }
                 else -> {
                     Request.Builder()
                         .url(fullUrl)
@@ -170,14 +162,6 @@ class AiApiClient(private val context: Context) {
                         builder.header("Authorization", "Bearer ${apiKey.apiKey.sanitize()}")
                     }
                     builder.build()
-                }
-                AiProvider.COHERE -> {
-                    Request.Builder()
-                        .url(fullUrl)
-                        .header("Authorization", "Bearer ${apiKey.apiKey.sanitize()}")
-                        .header("Accept", "application/json")
-                        .get()
-                        .build()
                 }
                 else -> {
                     Request.Builder()
@@ -316,38 +300,6 @@ class AiApiClient(private val context: Context) {
                         )
                     } ?: emptyList()
                 }
-                AiProvider.VOLCANO -> {
-
-                    val dataArray = json.getAsJsonArray("data") ?: json.getAsJsonArray("models")
-                    dataArray?.mapNotNull { modelJson ->
-                        val obj = modelJson.asJsonObject
-                        val modelId = obj.get("id")?.asString
-                            ?: obj.get("model")?.asString
-                            ?: return@mapNotNull null
-                        AiModel(
-                            id = modelId,
-                            name = obj.get("name")?.asString ?: modelId,
-                            provider = provider,
-                            capabilities = inferCapabilities(modelId, provider)
-                        )
-                    } ?: emptyList()
-                }
-                AiProvider.MINIMAX -> {
-
-                    val dataArray = json.getAsJsonArray("data") ?: json.getAsJsonArray("models")
-                    dataArray?.mapNotNull { modelJson ->
-                        val obj = modelJson.asJsonObject
-                        val modelId = obj.get("id")?.asString
-                            ?: obj.get("model")?.asString
-                            ?: return@mapNotNull null
-                        AiModel(
-                            id = modelId,
-                            name = modelId,
-                            provider = provider,
-                            capabilities = inferCapabilities(modelId, provider)
-                        )
-                    } ?: emptyList()
-                }
                 AiProvider.OLLAMA -> {
 
                     json.getAsJsonArray("models")?.mapNotNull { modelJson ->
@@ -360,26 +312,6 @@ class AiApiClient(private val context: Context) {
                             provider = provider,
                             capabilities = inferCapabilities(modelId, provider),
                             contextLength = inferContextLength(modelId, provider)
-                        )
-                    } ?: emptyList()
-                }
-                AiProvider.COHERE -> {
-
-                    val modelsArray = json.getAsJsonArray("models") ?: json.getAsJsonArray("data")
-                    modelsArray?.mapNotNull { modelJson ->
-                        val obj = modelJson.asJsonObject
-                        val modelId = obj.get("name")?.asString
-                            ?: obj.get("id")?.asString
-                            ?: return@mapNotNull null
-                        val contextLength = obj.get("context_length")?.asInt
-                            ?: obj.get("max_input_tokens")?.asInt
-                            ?: inferContextLength(modelId, provider)
-                        AiModel(
-                            id = modelId,
-                            name = modelId,
-                            provider = provider,
-                            capabilities = inferCapabilities(modelId, provider),
-                            contextLength = contextLength
                         )
                     } ?: emptyList()
                 }
@@ -798,9 +730,7 @@ class AiApiClient(private val context: Context) {
                 AiProvider.GOOGLE -> chatWithGemini(baseUrl, apiKey.apiKey, model.id, messages, temperature)
                 AiProvider.ANTHROPIC -> chatWithAnthropic(baseUrl, apiKey.apiKey, model.id, messages, temperature)
                 AiProvider.GLM -> chatWithGLM(baseUrl, apiKey.apiKey, model.id, messages, temperature)
-                AiProvider.VOLCANO -> chatWithVolcano(baseUrl, apiKey.apiKey, model.id, messages, temperature)
                 AiProvider.OLLAMA -> chatWithOllama(baseUrl, apiKey.apiKey, model.id, messages, temperature)
-                AiProvider.COHERE -> chatWithCohere(baseUrl, apiKey.apiKey, model.id, messages, temperature)
                 else -> chatWithOpenAICompatible(baseUrl, apiKey.apiKey, model.id, messages, temperature)
             }
         } catch (e: Exception) {
@@ -983,44 +913,6 @@ class AiApiClient(private val context: Context) {
             Result.failure(Exception(Strings.aiRequestFailed.format(response.code, response.body?.string())))
         }
     }
-
-    private fun chatWithVolcano(
-        baseUrl: String,
-        apiKey: String,
-        modelId: String,
-        messages: List<Map<String, String>>,
-        temperature: Float
-    ): Result<String> {
-        val messagesArray = com.google.gson.JsonArray()
-        messages.forEach { msg ->
-            messagesArray.add(JsonObject().apply {
-                addProperty("role", msg["role"])
-                addProperty("content", msg["content"])
-            })
-        }
-
-        val body = JsonObject().apply {
-            addProperty("model", modelId)
-            add("messages", messagesArray)
-            addProperty("temperature", temperature)
-            addProperty("max_tokens", 8192)
-        }
-
-        val request = Request.Builder()
-            .url("$baseUrl/v3/chat/completions")
-            .header("Authorization", "Bearer ${apiKey.sanitize()}")
-            .header("Content-Type", "application/json")
-            .post(gson.toJson(body).toRequestBody("application/json".toMediaType()))
-            .build()
-
-        val response = client.newCall(request).execute()
-        return if (response.isSuccessful) {
-            parseOpenAIChatResponse(response.body?.string() ?: "")
-        } else {
-            Result.failure(Exception(Strings.aiRequestFailed.format(response.code, response.body?.string())))
-        }
-    }
-
     private fun chatWithOllama(
         baseUrl: String,
         apiKey: String,
@@ -1067,54 +959,6 @@ class AiApiClient(private val context: Context) {
             Result.failure(Exception(Strings.aiRequestFailed.format(response.code, response.body?.string())))
         }
     }
-
-    private fun chatWithCohere(
-        baseUrl: String,
-        apiKey: String,
-        modelId: String,
-        messages: List<Map<String, String>>,
-        temperature: Float
-    ): Result<String> {
-        val messagesArray = com.google.gson.JsonArray()
-        messages.forEach { msg ->
-            messagesArray.add(JsonObject().apply {
-                addProperty("role", msg["role"])
-                addProperty("content", msg["content"])
-            })
-        }
-
-        val body = JsonObject().apply {
-            addProperty("model", modelId)
-            add("messages", messagesArray)
-            addProperty("temperature", temperature)
-            addProperty("stream", false)
-        }
-
-        val request = Request.Builder()
-            .url("$baseUrl/v2/chat")
-            .header("Authorization", "Bearer ${apiKey.sanitize()}")
-            .header("Content-Type", "application/json")
-            .header("Accept", "application/json")
-            .post(gson.toJson(body).toRequestBody("application/json".toMediaType()))
-            .build()
-
-        val response = client.newCall(request).execute()
-        return if (response.isSuccessful) {
-            try {
-                val json = gson.fromJson(response.body?.string() ?: "", JsonObject::class.java)
-                val content = json.getAsJsonObject("message")?.getAsJsonArray("content")
-                    ?.get(0)?.asJsonObject?.get("text")?.asString
-                    ?: json.get("text")?.asString
-                if (content != null) Result.success(content)
-                else Result.failure(Exception(Strings.aiCannotParseResponse))
-            } catch (e: Exception) {
-                Result.failure(e)
-            }
-        } else {
-            Result.failure(Exception(Strings.aiRequestFailed.format(response.code, response.body?.string())))
-        }
-    }
-
     private fun chatWithOpenAICompatible(
         baseUrl: String,
         apiKey: String,
@@ -2347,7 +2191,6 @@ val json = gson.fromJson(body, JsonObject::class.java)
 
         val streamEndpoint = when (apiKey.provider) {
             AiProvider.GLM -> "/v4/chat/completions"
-            AiProvider.VOLCANO -> "/v3/chat/completions"
             else -> "/v1/chat/completions"
         }
 

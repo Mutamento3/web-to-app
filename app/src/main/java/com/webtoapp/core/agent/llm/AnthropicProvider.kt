@@ -19,8 +19,11 @@ import java.io.IOException
 internal class AnthropicProvider(@Suppress("UNUSED_PARAMETER") context: Context) : LlmProvider {
     private val gson = GsonProvider.gson; private val sse = SseParser(); private val client get() = NetworkModule.streamingClient
     override fun supports(provider: AiProvider) = provider == AiProvider.ANTHROPIC
+    override fun supports(req: ChatRequest): Boolean =
+        req.apiKey.provider == AiProvider.ANTHROPIC ||
+            (req.apiKey.provider == AiProvider.CUSTOM && req.apiKey.apiFormat == com.webtoapp.data.model.ApiFormat.ANTHROPIC)
     override fun chatStream(req: ChatRequest): Flow<LlmEvent> = callbackFlow {
-        val url = HttpHelpers.joinUrl(HttpHelpers.baseUrl(req.apiKey), "/v1/messages")
+        val url = HttpHelpers.joinUrl(HttpHelpers.baseUrl(req.apiKey), req.apiKey.getEffectiveChatEndpoint())
         val body = buildBody(req)
         val b = Request.Builder().url(url).header("Content-Type","application/json").post(gson.toJson(body).toRequestBody("application/json".toMediaType()))
         HttpHelpers.applyAuth(b, req.apiKey); trySend(LlmEvent.Started)

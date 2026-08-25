@@ -24,6 +24,16 @@ internal class OpenAiCompatProvider(@Suppress("UNUSED_PARAMETER") context: Conte
 
     override fun supports(provider: AiProvider) = provider != AiProvider.ANTHROPIC && provider != AiProvider.GOOGLE && provider != AiProvider.OLLAMA
 
+    // CUSTOM endpoints speaking Anthropic Messages or OpenAI Responses are owned by
+    // their dedicated providers; only Chat Completions stays here.
+    override fun supports(req: ChatRequest): Boolean {
+        if (!supports(req.apiKey.provider)) return false
+        if (req.apiKey.provider == AiProvider.CUSTOM) {
+            return req.apiKey.apiFormat == com.webtoapp.data.model.ApiFormat.OPENAI_COMPATIBLE
+        }
+        return true
+    }
+
     override fun chatStream(req: ChatRequest): Flow<LlmEvent> = callbackFlow {
         trySend(LlmEvent.Started)
         executeCall(req, isRetry = false)

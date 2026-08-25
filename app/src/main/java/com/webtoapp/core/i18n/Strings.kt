@@ -3317,21 +3317,12 @@ object Strings {
     val providerDeepSeek: String get() = StringsD.providerDeepSeek
     val providerDeepSeekDesc: String get() = StringsD.providerDeepSeekDesc
     val providerDeepSeekPricing: String get() = StringsD.providerDeepSeekPricing
-    val providerMiniMax: String get() = StringsD.providerMiniMax
-    val providerMiniMaxDesc: String get() = StringsD.providerMiniMaxDesc
-    val providerMiniMaxPricing: String get() = StringsD.providerMiniMaxPricing
     val providerGLM: String get() = StringsD.providerGLM
     val providerGLMDesc: String get() = StringsD.providerGLMDesc
     val providerGLMPricing: String get() = StringsD.providerGLMPricing
     val providerGrok: String get() = StringsD.providerGrok
     val providerGrokDesc: String get() = StringsD.providerGrokDesc
     val providerGrokPricing: String get() = StringsD.providerGrokPricing
-    val providerVolcano: String get() = StringsD.providerVolcano
-    val providerVolcanoDesc: String get() = StringsD.providerVolcanoDesc
-    val providerVolcanoPricing: String get() = StringsD.providerVolcanoPricing
-    val providerSiliconFlow: String get() = StringsD.providerSiliconFlow
-    val providerSiliconFlowDesc: String get() = StringsD.providerSiliconFlowDesc
-    val providerSiliconFlowPricing: String get() = StringsD.providerSiliconFlowPricing
     val providerQwen: String get() = StringsD.providerQwen
     val providerQwenDesc: String get() = StringsD.providerQwenDesc
     val providerQwenPricing: String get() = StringsD.providerQwenPricing
@@ -3344,24 +3335,6 @@ object Strings {
     val providerCategoryAggregator: String get() = StringsD.providerCategoryAggregator
     val providerCategorySelfHosted: String get() = StringsD.providerCategorySelfHosted
     val providerCategoryCustom: String get() = StringsD.providerCategoryCustom
-    val providerMistral: String get() = StringsD.providerMistral
-    val providerMistralDesc: String get() = StringsD.providerMistralDesc
-    val providerMistralPricing: String get() = StringsD.providerMistralPricing
-    val providerCohere: String get() = StringsD.providerCohere
-    val providerCohereDesc: String get() = StringsD.providerCohereDesc
-    val providerCoherePricing: String get() = StringsD.providerCoherePricing
-    val providerAI21: String get() = StringsD.providerAI21
-    val providerAI21Desc: String get() = StringsD.providerAI21Desc
-    val providerAI21Pricing: String get() = StringsD.providerAI21Pricing
-    val providerGroq: String get() = StringsD.providerGroq
-    val providerGroqDesc: String get() = StringsD.providerGroqDesc
-    val providerGroqPricing: String get() = StringsD.providerGroqPricing
-    val providerCerebras: String get() = StringsD.providerCerebras
-    val providerCerebrasDesc: String get() = StringsD.providerCerebrasDesc
-    val providerCerebrasPricing: String get() = StringsD.providerCerebrasPricing
-    val providerSambanova: String get() = StringsD.providerSambanova
-    val providerSambanovaDesc: String get() = StringsD.providerSambanovaDesc
-    val providerSambanovaPricing: String get() = StringsD.providerSambanovaPricing
     val providerTogether: String get() = StringsD.providerTogether
     val providerTogetherDesc: String get() = StringsD.providerTogetherDesc
     val providerTogetherPricing: String get() = StringsD.providerTogetherPricing
@@ -3371,30 +3344,6 @@ object Strings {
     val providerFireworks: String get() = StringsD.providerFireworks
     val providerFireworksDesc: String get() = StringsD.providerFireworksDesc
     val providerFireworksPricing: String get() = StringsD.providerFireworksPricing
-    val providerDeepInfra: String get() = StringsD.providerDeepInfra
-    val providerDeepInfraDesc: String get() = StringsD.providerDeepInfraDesc
-    val providerDeepInfraPricing: String get() = StringsD.providerDeepInfraPricing
-    val providerNovita: String get() = StringsD.providerNovita
-    val providerNovitaDesc: String get() = StringsD.providerNovitaDesc
-    val providerNovitaPricing: String get() = StringsD.providerNovitaPricing
-    val providerMoonshot: String get() = StringsD.providerMoonshot
-    val providerMoonshotDesc: String get() = StringsD.providerMoonshotDesc
-    val providerMoonshotPricing: String get() = StringsD.providerMoonshotPricing
-    val providerBaichuan: String get() = StringsD.providerBaichuan
-    val providerBaichuanDesc: String get() = StringsD.providerBaichuanDesc
-    val providerBaichuanPricing: String get() = StringsD.providerBaichuanPricing
-    val providerYi: String get() = StringsD.providerYi
-    val providerYiDesc: String get() = StringsD.providerYiDesc
-    val providerYiPricing: String get() = StringsD.providerYiPricing
-    val providerStepfun: String get() = StringsD.providerStepfun
-    val providerStepfunDesc: String get() = StringsD.providerStepfunDesc
-    val providerStepfunPricing: String get() = StringsD.providerStepfunPricing
-    val providerHunyuan: String get() = StringsD.providerHunyuan
-    val providerHunyuanDesc: String get() = StringsD.providerHunyuanDesc
-    val providerHunyuanPricing: String get() = StringsD.providerHunyuanPricing
-    val providerSpark: String get() = StringsD.providerSpark
-    val providerSparkDesc: String get() = StringsD.providerSparkDesc
-    val providerSparkPricing: String get() = StringsD.providerSparkPricing
     val providerOllama: String get() = StringsD.providerOllama
     val providerOllamaDesc: String get() = StringsD.providerOllamaDesc
     val providerOllamaPricing: String get() = StringsD.providerOllamaPricing
@@ -46590,31 +46539,6 @@ object StringsD {
         AppLanguage.KOREAN -> "매우 낮은 가격, ~¥0.4/100만 토큰"
     }
 
-    val providerMiniMax: String get() = "MiniMax"
-    val providerMiniMaxDesc: String get() = when (Strings.lang) {
-        AppLanguage.CHINESE -> "国产，支持高音质人声语音克隆/合成。文本模型性能优秀，代码agent能力较强"
-        AppLanguage.ENGLISH -> "Chinese, supports high-quality voice cloning/synthesis. Excellent text model, strong code agent capability"
-        AppLanguage.ARABIC -> "صيني، يدعم استنساخ/تركيب الصوت عالي الجودة. نموذج نص ممتاز، قدرة وكيل كود قوية"
-        AppLanguage.PORTUGUESE -> "Chinês, suporta clonagem/síntese de voz de alta qualidade. Modelo de texto excelente, forte capacidade de agente de código"
-        AppLanguage.SPANISH -> "Chino, soporta clonación/síntesis de voz de alta calidad. Modelo de texto excelente, fuerte capacidad de agente de código"
-        AppLanguage.FRENCH -> "Chinois, prend en charge le clonage/synthèse vocale haute qualité. Modèle de texte excellent, forte capacité d'agent de code"
-        AppLanguage.GERMAN -> "Chinesisch, unterstützt hochwertiges Voice-Cloning/Synthese. Ausgezeichnetes Textmodell, starke Code-Agent-Fähigkeit"
-        AppLanguage.RUSSIAN -> "Китайский, поддерживает высококачественное клонирование/синтез голоса. Отличная текстовая модель, сильные возможности код-агента"
-        AppLanguage.JAPANESE -> "中国製、高音質音声クローン/合成サポート。テキストモデル性能優秀、コードエージェント能力が強い"
-        AppLanguage.KOREAN -> "중국산, 고품질 음성 클로닝/합성 지원. 텍스트 모델 성능 우수, 코드 에이전트 능력 강함"
-    }
-    val providerMiniMaxPricing: String get() = when (Strings.lang) {
-        AppLanguage.CHINESE -> "价格较低，约 \$1/百万 token"
-        AppLanguage.ENGLISH -> "Low price, ~\$1/million tokens"
-        AppLanguage.ARABIC -> "سعر منخفض، حوالي \$1/مليون رمز"
-        AppLanguage.PORTUGUESE -> "Preço baixo, ~\$1/milhão de tokens"
-        AppLanguage.SPANISH -> "Precio bajo, ~\$1/millón de tokens"
-        AppLanguage.FRENCH -> "Prix bas, ~\$1/million de tokens"
-        AppLanguage.GERMAN -> "Niedriger Preis, ~\$1/Million Token"
-        AppLanguage.RUSSIAN -> "Низкая цена, ~\$1/млн токенов"
-        AppLanguage.JAPANESE -> "低価格、約\$1/100万トークン"
-        AppLanguage.KOREAN -> "저렴한 가격, ~\$1/100만 토큰"
-    }
 
     val providerGLM: String get() = when (Strings.lang) {
         AppLanguage.CHINESE -> "智谱GLM"
@@ -46679,79 +46603,7 @@ object StringsD {
         AppLanguage.KOREAN -> "저렴함, Grok-4.1-fast 약 \$0.5/백만 토큰"
     }
 
-    val providerVolcano: String get() = when (Strings.lang) {
-        AppLanguage.CHINESE -> "火山引擎"
-        AppLanguage.ENGLISH -> "Volcano Engine"
-        AppLanguage.ARABIC -> "Volcano Engine"
-        AppLanguage.PORTUGUESE -> "Volcano Engine"
-        AppLanguage.SPANISH -> "Volcano Engine"
-        AppLanguage.FRENCH -> "Volcano Engine"
-        AppLanguage.GERMAN -> "Volcano Engine"
-        AppLanguage.RUSSIAN -> "Volcano Engine"
-        AppLanguage.JAPANESE -> "Volcano Engine"
-        AppLanguage.KOREAN -> "Volcano Engine"
-    }
-    val providerVolcanoDesc: String get() = when (Strings.lang) {
-        AppLanguage.CHINESE -> "字节跳动旗下，豆包大模型生态均衡。推荐模型：doubao-1.6-pro-256k"
-        AppLanguage.ENGLISH -> "ByteDance's AI platform, balanced Doubao model ecosystem. Recommended: doubao-1.6-pro-256k"
-        AppLanguage.ARABIC -> "منصة ByteDance للذكاء الاصطناعي، نظام Doubao متوازن. موصى به: doubao-1.6-pro-256k"
-        AppLanguage.PORTUGUESE -> "Plataforma de IA da ByteDance, ecossistema equilibrado de modelos Doubao. Recomendado: doubao-1.6-pro-256k"
-        AppLanguage.SPANISH -> "Plataforma de IA de ByteDance, ecosistema equilibrado de modelos Doubao. Recomendado: doubao-1.6-pro-256k"
-        AppLanguage.FRENCH -> "Plateforme IA de ByteDance, écosystème équilibré de modèles Doubao. Recommandé : doubao-1.6-pro-256k"
-        AppLanguage.GERMAN -> "ByteDances KI-Plattform, ausgewogenes Doubao-Modell-Ökosystem. Empfohlen: doubao-1.6-pro-256k"
-        AppLanguage.RUSSIAN -> "ИИ-платформа ByteDance, сбалансированная экосистема моделей Doubao. Рекомендуется: doubao-1.6-pro-256k"
-        AppLanguage.JAPANESE -> "ByteDanceのAIプラットフォーム、Doubaoモデルエコシステムがバランス良好。推奨: doubao-1.6-pro-256k"
-        AppLanguage.KOREAN -> "ByteDance의 AI 플랫폼, 균형 잡힌 Doubao 모델 생태계. 추천: doubao-1.6-pro-256k"
-    }
-    val providerVolcanoPricing: String get() = when (Strings.lang) {
-        AppLanguage.CHINESE -> "有免费额度，价格便宜"
-        AppLanguage.ENGLISH -> "Free tier available, cheap pricing"
-        AppLanguage.ARABIC -> "مستوى مجاني متاح، تسعير رخيص"
-        AppLanguage.PORTUGUESE -> "Camada gratuita disponível, preço baixo"
-        AppLanguage.SPANISH -> "Nivel gratuito disponible, precio bajo"
-        AppLanguage.FRENCH -> "Niveau gratuit disponible, prix abordable"
-        AppLanguage.GERMAN -> "Kostenlose Stufe verfügbar, günstiger Preis"
-        AppLanguage.RUSSIAN -> "Есть бесплатный уровень, низкие цены"
-        AppLanguage.JAPANESE -> "無料枠あり、低価格"
-        AppLanguage.KOREAN -> "무료 tier 제공, 저렴한 가격"
-    }
 
-    val providerSiliconFlow: String get() = when (Strings.lang) {
-        AppLanguage.CHINESE -> "硅基流动"
-        AppLanguage.ENGLISH -> "SiliconFlow"
-        AppLanguage.ARABIC -> "SiliconFlow"
-        AppLanguage.PORTUGUESE -> "SiliconFlow"
-        AppLanguage.SPANISH -> "SiliconFlow"
-        AppLanguage.FRENCH -> "SiliconFlow"
-        AppLanguage.GERMAN -> "SiliconFlow"
-        AppLanguage.RUSSIAN -> "SiliconFlow"
-        AppLanguage.JAPANESE -> "SiliconFlow"
-        AppLanguage.KOREAN -> "SiliconFlow"
-    }
-    val providerSiliconFlowDesc: String get() = when (Strings.lang) {
-        AppLanguage.CHINESE -> "国产 AI 平台，聚合多种开源模型。"
-        AppLanguage.ENGLISH -> "Chinese AI platform, aggregates various open source models."
-        AppLanguage.ARABIC -> "منصة ذكاء اصطناعي صينية، تجمع نماذج مفتوحة المصدر متنوعة."
-        AppLanguage.PORTUGUESE -> "Plataforma de IA chinesa, agrega vários modelos de código aberto."
-        AppLanguage.SPANISH -> "Plataforma de IA china, agrega varios modelos de código abierto."
-        AppLanguage.FRENCH -> "Plateforme d'IA chinoise, agrège divers modèles open source."
-        AppLanguage.GERMAN -> "Chinesische KI-Plattform, bündelt verschiedene Open-Source-Modelle."
-        AppLanguage.RUSSIAN -> "Китайская ИИ-платформа, объединяет различные модели с открытым исходным кодом."
-        AppLanguage.JAPANESE -> "中国製AIプラットフォーム、様々なオープンソースモデルを集約。"
-        AppLanguage.KOREAN -> "중국산 AI 플랫폼, 다양한 오픈소스 모델을 통합."
-    }
-    val providerSiliconFlowPricing: String get() = when (Strings.lang) {
-        AppLanguage.CHINESE -> "有免费额度，价格便宜"
-        AppLanguage.ENGLISH -> "Free tier available, cheap pricing"
-        AppLanguage.ARABIC -> "مستوى مجاني متاح، تسعير رخيص"
-        AppLanguage.PORTUGUESE -> "Camada gratuita disponível, preço baixo"
-        AppLanguage.SPANISH -> "Nivel gratuito disponible, precio bajo"
-        AppLanguage.FRENCH -> "Niveau gratuit disponible, prix abordable"
-        AppLanguage.GERMAN -> "Kostenlose Stufe verfügbar, günstiger Preis"
-        AppLanguage.RUSSIAN -> "Есть бесплатный уровень, низкие цены"
-        AppLanguage.JAPANESE -> "無料枠あり、低価格"
-        AppLanguage.KOREAN -> "무료 tier 제공, 저렴한 가격"
-    }
 
     val providerQwen: String get() = when (Strings.lang) {
         AppLanguage.CHINESE -> "通义千问"
@@ -46900,161 +46752,11 @@ object StringsD {
         AppLanguage.KOREAN -> "사용자 지정"
     }
 
-    val providerMistral: String get() = "Mistral AI"
-    val providerMistralDesc: String get() = when (Strings.lang) {
-        AppLanguage.CHINESE -> "欧洲领先 AI 公司，Mistral Large 系列推理能力强，支持多语言和代码生成"
-        AppLanguage.ENGLISH -> "Leading European AI company. Mistral Large series with strong reasoning, multilingual and code generation support"
-        AppLanguage.ARABIC -> "شركة ذكاء اصطناعي أوروبية رائدة. سلسلة Mistral Large مع استدلال قوي ودعم متعدد اللغات وتوليد الكود"
-        AppLanguage.PORTUGUESE -> "Empresa líder europeia de IA. Série Mistral Large com forte raciocínio, suporte multilíngue e geração de código"
-        AppLanguage.SPANISH -> "Empresa líder europea de IA. Serie Mistral Large con fuerte razonamiento, soporte multilingüe y generación de código"
-        AppLanguage.FRENCH -> "Entreprise européenne d'IA de premier plan. Série Mistral Large avec raisonnement puissant, prise en charge multilingue et génération de code"
-        AppLanguage.GERMAN -> "Führendes europäisches KI-Unternehmen. Mistral-Large-Serie mit starker Schlussfolgerung, mehrsprachiger und Code-Generierungs-Unterstützung"
-        AppLanguage.RUSSIAN -> "Ведущая европейская ИИ-компания. Серия Mistral Large с сильным рассуждением, поддержкой многоязычности и генерации кода"
-        AppLanguage.JAPANESE -> "ヨーロッパ有数のAI企業。Mistral Largeシリーズは推論能力が強く、多言語とコード生成に対応"
-        AppLanguage.KOREAN -> "유럽 선도 AI 기업. Mistral Large 시리즈는 강력한 추론, 다국어 및 코드 생성 지원"
-    }
-    val providerMistralPricing: String get() = when (Strings.lang) {
-        AppLanguage.CHINESE -> "Mistral Large 约 \$2/百万 token，有免费模型"
-        AppLanguage.ENGLISH -> "Mistral Large ~\$2/M tokens, free models available"
-        AppLanguage.ARABIC -> "Mistral Large حوالي \$2/مليون رمز، نماذج مجانية متاحة"
-        AppLanguage.PORTUGUESE -> "Mistral Large ~\$2/M tokens, modelos gratuitos disponíveis"
-        AppLanguage.SPANISH -> "Mistral Large ~\$2/M tokens, modelos gratuitos disponibles"
-        AppLanguage.FRENCH -> "Mistral Large ~\$2/M tokens, modèles gratuits disponibles"
-        AppLanguage.GERMAN -> "Mistral Large ~\$2/M Token, kostenlose Modelle verfügbar"
-        AppLanguage.RUSSIAN -> "Mistral Large ~\$2/M токенов, доступны бесплатные модели"
-        AppLanguage.JAPANESE -> "Mistral Large ~\$2/M トークン、無料モデルあり"
-        AppLanguage.KOREAN -> "Mistral Large ~\$2/M 토큰, 무료 모델 제공"
-    }
 
-    val providerCohere: String get() = "Cohere"
-    val providerCohereDesc: String get() = when (Strings.lang) {
-        AppLanguage.CHINESE -> "企业级 AI 平台，Command R+ 系列擅长 RAG 和企业搜索，支持 100+ 语言"
-        AppLanguage.ENGLISH -> "Enterprise AI platform. Command R+ series excels at RAG and enterprise search, supports 100+ languages"
-        AppLanguage.ARABIC -> "منصة ذكاء اصطناعي للمؤسسات. سلسلة Command R+ متميزة في RAG والبحث المؤسسي، تدعم 100+ لغة"
-        AppLanguage.PORTUGUESE -> "Plataforma de IA empresarial. Série Command R+ se destaca em RAG e busca empresarial, suporta mais de 100 idiomas"
-        AppLanguage.SPANISH -> "Plataforma de IA empresarial. Serie Command R+ destaca en RAG y búsqueda empresarial, soporta más de 100 idiomas"
-        AppLanguage.FRENCH -> "Plateforme d'IA d'entreprise. La série Command R+ excelle en RAG et recherche d'entreprise, prend en charge plus de 100 langues"
-        AppLanguage.GERMAN -> "Unternehmens-KI-Plattform. Command-R+-Serie glänzt bei RAG und Unternehmenssuche, unterstützt über 100 Sprachen"
-        AppLanguage.RUSSIAN -> "Корпоративная ИИ-платформа. Серия Command R+ отлично справляется с RAG и корпоративным поиском, поддерживает более 100 языков"
-        AppLanguage.JAPANESE -> "エンタープライズ向けAIプラットフォーム。Command R+シリーズはRAGと企業検索に優れ、100以上の言語に対応"
-        AppLanguage.KOREAN -> "엔터프라이즈 AI 플랫폼. Command R+ 시리즈는 RAG 및 기업 검색에 뛰어나며 100개 이상의 언어 지원"
-    }
-    val providerCoherePricing: String get() = when (Strings.lang) {
-        AppLanguage.CHINESE -> "Command R+ 约 \$2.5/百万 token"
-        AppLanguage.ENGLISH -> "Command R+ ~\$2.5/M tokens"
-        AppLanguage.ARABIC -> "Command R+ حوالي \$2.5/مليون رمز"
-        AppLanguage.PORTUGUESE -> "Command R+ ~$2.5/M tokens"
-        AppLanguage.SPANISH -> "Command R+ ~$2.5/M tokens"
-        AppLanguage.FRENCH -> "Command R+ ~$2.5/M tokens"
-        AppLanguage.GERMAN -> "Command R+ ~\$2.5/M Token"
-        AppLanguage.RUSSIAN -> "Command R+ ~\$2.5/M токенов"
-        AppLanguage.JAPANESE -> "Command R+ ~\$2.5/M トークン"
-        AppLanguage.KOREAN -> "Command R+ ~\$2.5/M 토큰"
-    }
 
-    val providerAI21: String get() = "AI21 Labs"
-    val providerAI21Desc: String get() = when (Strings.lang) {
-        AppLanguage.CHINESE -> "以色列 AI 公司，Jamba 系列基于 SSM-Transformer 混合架构，长上下文处理出色"
-        AppLanguage.ENGLISH -> "Israeli AI company. Jamba series based on SSM-Transformer hybrid, excels at long context processing"
-        AppLanguage.ARABIC -> "شركة ذكاء اصطناعي إسرائيلية. سلسلة Jamba مبنية على هجين SSM-Transformer، متميزة في معالجة السياق الطويل"
-        AppLanguage.PORTUGUESE -> "Empresa israelense de IA. Série Jamba baseada em híbrido SSM-Transformer, destaca-se no processamento de contexto longo"
-        AppLanguage.SPANISH -> "Empresa israelí de IA. Serie Jamba basada en híbrido SSM-Transformer, destaca en el procesamiento de contexto largo"
-        AppLanguage.FRENCH -> "Entreprise israélienne d'IA. Série Jamba basée sur un hybride SSM-Transformer, excelle dans le traitement de contexte long"
-        AppLanguage.GERMAN -> "Israelisches KI-Unternehmen. Jamba-Serie basiert auf SSM-Transformer-Hybrid, glänzt bei der Verarbeitung langer Kontexte"
-        AppLanguage.RUSSIAN -> "Израильская ИИ-компания. Серия Jamba на основе гибрида SSM-Transformer, отлично обрабатывает длинный контекст"
-        AppLanguage.JAPANESE -> "イスラエルのAI企業。JambaシリーズはSSM-Transformerハイブリッドに基づき、長文コンテキスト処理に優れる"
-        AppLanguage.KOREAN -> "이스라엘 AI 기업. Jamba 시리즈는 SSM-Transformer 하이브리드 기반으로 긴 컨텍스트 처리에 뛰어남"
-    }
-    val providerAI21Pricing: String get() = when (Strings.lang) {
-        AppLanguage.CHINESE -> "Jamba 系列约 \$2/百万 token"
-        AppLanguage.ENGLISH -> "Jamba series ~\$2/M tokens"
-        AppLanguage.ARABIC -> "سلسلة Jamba حوالي \$2/مليون رمز"
-        AppLanguage.PORTUGUESE -> "Série Jamba ~\$2/M tokens"
-        AppLanguage.SPANISH -> "Serie Jamba ~\$2/M tokens"
-        AppLanguage.FRENCH -> "Série Jamba ~\$2/M tokens"
-        AppLanguage.GERMAN -> "Jamba-Serie ~\$2/M Token"
-        AppLanguage.RUSSIAN -> "Серия Jamba ~\$2/M токенов"
-        AppLanguage.JAPANESE -> "Jambaシリーズ ~\$2/M トークン"
-        AppLanguage.KOREAN -> "Jamba 시리즈 ~\$2/M 토큰"
-    }
 
-    val providerGroq: String get() = "Groq"
-    val providerGroqDesc: String get() = when (Strings.lang) {
-        AppLanguage.CHINESE -> "超快推理引擎，基于 LPU 硬件加速。响应速度极快，适合实时对话场景"
-        AppLanguage.ENGLISH -> "Ultra-fast inference engine powered by LPU hardware. Extremely fast response, ideal for real-time chat"
-        AppLanguage.ARABIC -> "محرك استدلال فائق السرعة مدعوم بأجهزة LPU. استجابة سريعة للغاية، مثالي للدردشة في الوقت الفعلي"
-        AppLanguage.PORTUGUESE -> "Motor de inferência ultrarrápido com hardware LPU. Resposta extremamente rápida, ideal para chat em tempo real"
-        AppLanguage.SPANISH -> "Motor de inferencia ultrarrápido con hardware LPU. Respuesta extremadamente rápida, ideal para chat en tiempo real"
-        AppLanguage.FRENCH -> "Moteur d'inférence ultra-rapide propulsé par le matériel LPU. Réponse extrêmement rapide, idéal pour le chat en temps réel"
-        AppLanguage.GERMAN -> "Ultraschnelle Inferenz-Engine mit LPU-Hardware. Extrem schnelle Antwort, ideal für Echtzeit-Chat"
-        AppLanguage.RUSSIAN -> "Сверхбыстрый движок вывода на аппаратном обеспечении LPU. Крайне быстрый отклик, идеален для чата в реальном времени"
-        AppLanguage.JAPANESE -> "LPUハードウェアによる超高速推論エンジン。応答が極めて速く、リアルタイムチャットに最適"
-        AppLanguage.KOREAN -> "LPU 하드웨어 기반 초고속 추론 엔진. 응답이 매우 빨라 실시간 채팅에 이상적"
-    }
-    val providerGroqPricing: String get() = when (Strings.lang) {
-        AppLanguage.CHINESE -> "有免费额度，价格低廉"
-        AppLanguage.ENGLISH -> "Free tier available, very affordable"
-        AppLanguage.ARABIC -> "مستوى مجاني متاح، بأسعار معقولة جداً"
-        AppLanguage.PORTUGUESE -> "Camada gratuita disponível, muito acessível"
-        AppLanguage.SPANISH -> "Nivel gratuito disponible, muy asequible"
-        AppLanguage.FRENCH -> "Niveau gratuit disponible, très abordable"
-        AppLanguage.GERMAN -> "Kostenlose Stufe verfügbar, sehr erschwinglich"
-        AppLanguage.RUSSIAN -> "Есть бесплатный уровень, очень доступно"
-        AppLanguage.JAPANESE -> "無料枠あり、非常に手頃"
-        AppLanguage.KOREAN -> "무료 tier 제공, 매우 저렴함"
-    }
 
-    val providerCerebras: String get() = "Cerebras"
-    val providerCerebrasDesc: String get() = when (Strings.lang) {
-        AppLanguage.CHINESE -> "晶圆级芯片推理，速度极快。支持 Llama 等开源模型的超高速推理"
-        AppLanguage.ENGLISH -> "Wafer-scale chip inference, extremely fast. Supports ultra-fast inference for Llama and other open-source models"
-        AppLanguage.ARABIC -> "استدلال على مستوى الرقاقة، سريع للغاية. يدعم الاستدلال فائق السرعة لـ Llama ونماذج مفتوحة المصدر أخرى"
-        AppLanguage.PORTUGUESE -> "Inferência em chip em escala de wafer, extremamente rápida. Suporta inferência ultrarrápida para Llama e outros modelos de código aberto"
-        AppLanguage.SPANISH -> "Inferencia en chip a escala de oblea, extremadamente rápida. Soporta inferencia ultrarrápida para Llama y otros modelos de código abierto"
-        AppLanguage.FRENCH -> "Inférence sur puce à l'échelle du wafer, extrêmement rapide. Prend en charge l'inférence ultra-rapide pour Llama et d'autres modèles open source"
-        AppLanguage.GERMAN -> "Wafer-Scale-Chip-Inferenz, extrem schnell. Unterstützt ultraschnelle Inferenz für Llama und andere Open-Source-Modelle"
-        AppLanguage.RUSSIAN -> "Вывод на чипе масштаба пластины, крайне быстрый. Поддерживает сверхбыстрый вывод для Llama и других моделей с открытым исходным кодом"
-        AppLanguage.JAPANESE -> "ウェハースケールチップ推論、極めて高速。Llamaなどのオープンソースモデルの超高速推論に対応"
-        AppLanguage.KOREAN -> "웨이퍼 스케일 칩 추론, 매우 빠름. Llama 등 오픈소스 모델의 초고속 추론 지원"
-    }
-    val providerCerebrasPricing: String get() = when (Strings.lang) {
-        AppLanguage.CHINESE -> "有免费额度，按量计费"
-        AppLanguage.ENGLISH -> "Free tier available, pay per usage"
-        AppLanguage.ARABIC -> "مستوى مجاني متاح، الدفع حسب الاستخدام"
-        AppLanguage.PORTUGUESE -> "Camada gratuita disponível, pagamento por uso"
-        AppLanguage.SPANISH -> "Nivel gratuito disponible, pago por uso"
-        AppLanguage.FRENCH -> "Niveau gratuit disponible, paiement à l'usage"
-        AppLanguage.GERMAN -> "Kostenlose Stufe verfügbar, nutzungsabhängige Abrechnung"
-        AppLanguage.RUSSIAN -> "Есть бесплатный уровень, оплата по использованию"
-        AppLanguage.JAPANESE -> "無料枠あり、使用量課金"
-        AppLanguage.KOREAN -> "무료 tier 제공, 사용량 기준 과금"
-    }
 
-    val providerSambanova: String get() = "SambaNova"
-    val providerSambanovaDesc: String get() = when (Strings.lang) {
-        AppLanguage.CHINESE -> "AI 芯片公司，提供高速推理服务。支持 Llama、DeepSeek 等开源模型"
-        AppLanguage.ENGLISH -> "AI chip company providing high-speed inference. Supports Llama, DeepSeek and other open-source models"
-        AppLanguage.ARABIC -> "شركة شرائح ذكاء اصطناعي توفر استدلال عالي السرعة. تدعم Llama وDeepSeek ونماذج مفتوحة المصدر أخرى"
-        AppLanguage.PORTUGUESE -> "Empresa de chips de IA, fornece inferência de alta velocidade. Suporta Llama, DeepSeek e outros modelos de código aberto"
-        AppLanguage.SPANISH -> "Empresa de chips de IA, proporciona inferencia de alta velocidad. Soporta Llama, DeepSeek y otros modelos de código abierto"
-        AppLanguage.FRENCH -> "Entreprise de puces IA, fournit une inférence à haute vitesse. Prend en charge Llama, DeepSeek et d'autres modèles open source"
-        AppLanguage.GERMAN -> "KI-Chip-Unternehmen, bietet hochgeschwindigkeits Inferenz. Unterstützt Llama, DeepSeek und weitere Open-Source-Modelle"
-        AppLanguage.RUSSIAN -> "Компания по производству ИИ-чипов, предоставляет высокоскоростной вывод. Поддерживает Llama, DeepSeek и другие модели с открытым исходным кодом"
-        AppLanguage.JAPANESE -> "AIチップ企業、高速推論を提供。Llama、DeepSeekなどのオープンソースモデルをサポート"
-        AppLanguage.KOREAN -> "AI 칩 기업, 고속 추론 제공. Llama, DeepSeek 등 오픈소스 모델 지원"
-    }
-    val providerSambanovaPricing: String get() = when (Strings.lang) {
-        AppLanguage.CHINESE -> "有免费额度，价格低廉"
-        AppLanguage.ENGLISH -> "Free tier available, affordable pricing"
-        AppLanguage.ARABIC -> "مستوى مجاني متاح، تسعير معقول"
-        AppLanguage.PORTUGUESE -> "Camada gratuita disponível, preço acessível"
-        AppLanguage.SPANISH -> "Nivel gratuito disponible, precio asequible"
-        AppLanguage.FRENCH -> "Niveau gratuit disponible, prix abordable"
-        AppLanguage.GERMAN -> "Kostenlose Stufe verfügbar, erschwinglicher Preis"
-        AppLanguage.RUSSIAN -> "Есть бесплатный уровень, доступные цены"
-        AppLanguage.JAPANESE -> "無料枠あり、手頃な価格"
-        AppLanguage.KOREAN -> "무료 tier 제공, 저렴한 가격"
-    }
 
     val providerTogether: String get() = "Together AI"
     val providerTogetherDesc: String get() = when (Strings.lang) {
@@ -47134,279 +46836,13 @@ object StringsD {
         AppLanguage.KOREAN -> "모델별 과금, 경쟁력 있는 가격"
     }
 
-    val providerDeepInfra: String get() = "DeepInfra"
-    val providerDeepInfraDesc: String get() = when (Strings.lang) {
-        AppLanguage.CHINESE -> "开源模型推理平台，支持数百种模型。OpenAI 兼容接口，价格低廉"
-        AppLanguage.ENGLISH -> "Open-source model inference platform, supports hundreds of models. OpenAI-compatible API, affordable pricing"
-        AppLanguage.ARABIC -> "منصة استدلال نماذج مفتوحة المصدر، تدعم مئات النماذج. واجهة متوافقة مع OpenAI، تسعير معقول"
-        AppLanguage.PORTUGUESE -> "Plataforma de inferência de modelos de código aberto, suporta centenas de modelos. API compatível com OpenAI, preço acessível"
-        AppLanguage.SPANISH -> "Plataforma de inferencia de modelos de código abierto, soporta cientos de modelos. API compatible con OpenAI, precio asequible"
-        AppLanguage.FRENCH -> "Plateforme d'inférence de modèles open source, prend en charge des centaines de modèles. API compatible OpenAI, prix abordable"
-        AppLanguage.GERMAN -> "Open-Source-Modell-Inferenzplattform, unterstützt Hunderte von Modellen. OpenAI-kompatible API, erschwinglicher Preis"
-        AppLanguage.RUSSIAN -> "Платформа вывода моделей с открытым исходным кодом, поддерживает сотни моделей. API, совместимый с OpenAI, доступные цены"
-        AppLanguage.JAPANESE -> "オープンソースモデル推論プラットフォーム、数百のモデルをサポート。OpenAI 互換 API、手頃な価格"
-        AppLanguage.KOREAN -> "오픈소스 모델 추론 플랫폼, 수백 개 모델 지원. OpenAI 호환 API, 저렴한 가격"
-    }
-    val providerDeepInfraPricing: String get() = when (Strings.lang) {
-        AppLanguage.CHINESE -> "按量计费，价格低廉"
-        AppLanguage.ENGLISH -> "Pay per usage, affordable pricing"
-        AppLanguage.ARABIC -> "الدفع حسب الاستخدام، تسعير معقول"
-        AppLanguage.PORTUGUESE -> "Pagamento por uso, preço acessível"
-        AppLanguage.SPANISH -> "Pago por uso, precio asequible"
-        AppLanguage.FRENCH -> "Paiement à l'usage, prix abordable"
-        AppLanguage.GERMAN -> "Zahlung nach Nutzung, erschwinglicher Preis"
-        AppLanguage.RUSSIAN -> "Оплата по использованию, доступные цены"
-        AppLanguage.JAPANESE -> "使用量課金、手頃な価格"
-        AppLanguage.KOREAN -> "사용량 과금, 저렴한 가격"
-    }
 
-    val providerNovita: String get() = "Novita AI"
-    val providerNovitaDesc: String get() = when (Strings.lang) {
-        AppLanguage.CHINESE -> "AI 模型推理平台，支持 LLM 和图像生成模型。OpenAI 兼容接口"
-        AppLanguage.ENGLISH -> "AI model inference platform, supports LLM and image generation models. OpenAI-compatible API"
-        AppLanguage.ARABIC -> "منصة استدلال نماذج الذكاء الاصطناعي، تدعم LLM ونماذج توليد الصور. واجهة متوافقة مع OpenAI"
-        AppLanguage.PORTUGUESE -> "Plataforma de inferência de modelos de IA, suporta LLM e modelos de geração de imagens. API compatível com OpenAI"
-        AppLanguage.SPANISH -> "Plataforma de inferencia de modelos de IA, soporta LLM y modelos de generación de imágenes. API compatible con OpenAI"
-        AppLanguage.FRENCH -> "Plateforme d'inférence de modèles IA, prend en charge les LLM et les modèles de génération d'images. API compatible OpenAI"
-        AppLanguage.GERMAN -> "KI-Modell-Inferenzplattform, unterstützt LLM- und Bildgenerierungsmodelle. OpenAI-kompatible API"
-        AppLanguage.RUSSIAN -> "Платформа вывода ИИ-моделей, поддерживает LLM и модели генерации изображений. API, совместимый с OpenAI"
-        AppLanguage.JAPANESE -> "AIモデル推論プラットフォーム、LLMと画像生成モデルをサポート。OpenAI 互換 API"
-        AppLanguage.KOREAN -> "AI 모델 추론 플랫폼, LLM 및 이미지 생성 모델 지원. OpenAI 호환 API"
-    }
-    val providerNovitaPricing: String get() = when (Strings.lang) {
-        AppLanguage.CHINESE -> "按量计费，价格有竞争力"
-        AppLanguage.ENGLISH -> "Pay per usage, competitive pricing"
-        AppLanguage.ARABIC -> "الدفع حسب الاستخدام، تسعير تنافسي"
-        AppLanguage.PORTUGUESE -> "Pagamento por uso, preço competitivo"
-        AppLanguage.SPANISH -> "Pago por uso, precio competitivo"
-        AppLanguage.FRENCH -> "Paiement à l'usage, prix compétitif"
-        AppLanguage.GERMAN -> "Zahlung nach Nutzung, wettbewerbsfähiger Preis"
-        AppLanguage.RUSSIAN -> "Оплата по использованию, конкурентные цены"
-        AppLanguage.JAPANESE -> "使用量課金、競争力のある価格"
-        AppLanguage.KOREAN -> "사용량 과금, 경쟁력 있는 가격"
-    }
 
-    val providerMoonshot: String get() = when (Strings.lang) {
-        AppLanguage.CHINESE -> "月之暗面/Kimi"
-        AppLanguage.ENGLISH -> "Moonshot/Kimi"
-        AppLanguage.ARABIC -> "Moonshot/Kimi"
-        AppLanguage.PORTUGUESE -> "Moonshot/Kimi"
-        AppLanguage.SPANISH -> "Moonshot/Kimi"
-        AppLanguage.FRENCH -> "Moonshot/Kimi"
-        AppLanguage.GERMAN -> "Moonshot/Kimi"
-        AppLanguage.RUSSIAN -> "Moonshot/Kimi"
-        AppLanguage.JAPANESE -> "Moonshot/Kimi"
-        AppLanguage.KOREAN -> "Moonshot/Kimi"
-    }
-    val providerMoonshotDesc: String get() = when (Strings.lang) {
-        AppLanguage.CHINESE -> "国产大模型，Kimi 系列擅长长文本处理（200K+ 上下文），编程能力强"
-        AppLanguage.ENGLISH -> "Chinese LLM, Kimi series excels at long text processing (200K+ context), strong coding ability"
-        AppLanguage.ARABIC -> "نموذج لغوي صيني كبير، سلسلة Kimi متميزة في معالجة النصوص الطويلة (200K+ سياق)، قدرة برمجة قوية"
-        AppLanguage.PORTUGUESE -> "LLM chinês, série Kimi destaca-se no processamento de textos longos (contexto 200K+), forte capacidade de programação"
-        AppLanguage.SPANISH -> "LLM chino, la serie Kimi destaca en el procesamiento de textos largos (contexto 200K+), fuerte capacidad de programación"
-        AppLanguage.FRENCH -> "LLM chinois, la série Kimi excelle dans le traitement des textes longs (contexte 200K+), forte capacité de codage"
-        AppLanguage.GERMAN -> "Chinesischer LLM, Kimi-Serie glänzt bei langer Textverarbeitung (200K+ Kontext), starke Programmierfähigkeit"
-        AppLanguage.RUSSIAN -> "Китайский LLM, серия Kimi отличается обработкой длинных текстов (контекст 200K+), сильные способности к программированию"
-        AppLanguage.JAPANESE -> "中国製LLM、Kimi シリーズは長文処理に優れ（200K+ コンテキスト）、プログラミング能力が高い"
-        AppLanguage.KOREAN -> "중국 LLM, Kimi 시리즈는 긴 텍스트 처리에 뛰어남(200K+ 컨텍스트), 강력한 코딩 능력"
-    }
-    val providerMoonshotPricing: String get() = when (Strings.lang) {
-        AppLanguage.CHINESE -> "有免费额度，约 ¥12/百万 token"
-        AppLanguage.ENGLISH -> "Free tier available, ~¥12/M tokens"
-        AppLanguage.ARABIC -> "مستوى مجاني متاح، حوالي ¥12/مليون رمز"
-        AppLanguage.PORTUGUESE -> "Camada gratuita disponível, ~¥12/M tokens"
-        AppLanguage.SPANISH -> "Nivel gratuito disponible, ~¥12/M tokens"
-        AppLanguage.FRENCH -> "Niveau gratuit disponible, ~¥12/M tokens"
-        AppLanguage.GERMAN -> "Kostenlose Stufe verfügbar, ~¥12/M Tokens"
-        AppLanguage.RUSSIAN -> "Есть бесплатный уровень, ~¥12/M токенов"
-        AppLanguage.JAPANESE -> "無料枠あり、~¥12/M tokens"
-        AppLanguage.KOREAN -> "무료 tier 제공, ~¥12/M tokens"
-    }
 
-    val providerBaichuan: String get() = when (Strings.lang) {
-        AppLanguage.CHINESE -> "百川智能"
-        AppLanguage.ENGLISH -> "Baichuan"
-        AppLanguage.ARABIC -> "Baichuan"
-        AppLanguage.PORTUGUESE -> "Baichuan"
-        AppLanguage.SPANISH -> "Baichuan"
-        AppLanguage.FRENCH -> "Baichuan"
-        AppLanguage.GERMAN -> "Baichuan"
-        AppLanguage.RUSSIAN -> "Baichuan"
-        AppLanguage.JAPANESE -> "Baichuan"
-        AppLanguage.KOREAN -> "Baichuan"
-    }
-    val providerBaichuanDesc: String get() = when (Strings.lang) {
-        AppLanguage.CHINESE -> "国产大模型，擅长中文理解和生成，支持搜索增强"
-        AppLanguage.ENGLISH -> "Chinese LLM, excels at Chinese language understanding and generation, supports search augmentation"
-        AppLanguage.ARABIC -> "نموذج لغوي صيني كبير، متميز في فهم وتوليد اللغة الصينية، يدعم تعزيز البحث"
-        AppLanguage.PORTUGUESE -> "LLM chinês, destaca-se na compreensão e geração de idioma chinês, suporta aumento por busca"
-        AppLanguage.SPANISH -> "LLM chinês, destaca en la comprensión y generación del idioma chino, soporta aumento por búsqueda"
-        AppLanguage.FRENCH -> "LLM chinois, excelle dans la compréhension et la génération de la langue chinoise, prend en charge l'augmentation par recherche"
-        AppLanguage.GERMAN -> "Chinesischer LLM, glänzt beim Verstehen und Generieren der chinesischen Sprache, unterstützt Such-Erweiterung"
-        AppLanguage.RUSSIAN -> "Китайский LLM, отличается пониманием и генерацией китайского языка, поддерживает дополнение поиском"
-        AppLanguage.JAPANESE -> "中国製LLM、中国語の理解と生成に優れ、検索拡張をサポート"
-        AppLanguage.KOREAN -> "중국 LLM, 중국어 이해 및 생성에 뛰어나고, 검색 증강 지원"
-    }
-    val providerBaichuanPricing: String get() = when (Strings.lang) {
-        AppLanguage.CHINESE -> "有免费额度，价格低廉"
-        AppLanguage.ENGLISH -> "Free tier available, affordable"
-        AppLanguage.ARABIC -> "مستوى مجاني متاح، بأسعار معقولة"
-        AppLanguage.PORTUGUESE -> "Camada gratuita disponível, acessível"
-        AppLanguage.SPANISH -> "Nivel gratuito disponible, asequible"
-        AppLanguage.FRENCH -> "Niveau gratuit disponible, abordable"
-        AppLanguage.GERMAN -> "Kostenlose Stufe verfügbar, erschwinglich"
-        AppLanguage.RUSSIAN -> "Есть бесплатный уровень, доступно"
-        AppLanguage.JAPANESE -> "無料枠あり、手頃"
-        AppLanguage.KOREAN -> "무료 tier 제공, 저렴"
-    }
 
-    val providerYi: String get() = when (Strings.lang) {
-        AppLanguage.CHINESE -> "零一万物"
-        AppLanguage.ENGLISH -> "Yi/Lingyiwanwu"
-        AppLanguage.ARABIC -> "Yi/Lingyiwanwu"
-        AppLanguage.PORTUGUESE -> "Yi/Lingyiwanwu"
-        AppLanguage.SPANISH -> "Yi/Lingyiwanwu"
-        AppLanguage.FRENCH -> "Yi/Lingyiwanwu"
-        AppLanguage.GERMAN -> "Yi/Lingyiwanwu"
-        AppLanguage.RUSSIAN -> "Yi/Lingyiwanwu"
-        AppLanguage.JAPANESE -> "Yi/Lingyiwanwu"
-        AppLanguage.KOREAN -> "Yi/Lingyiwanwu"
-    }
-    val providerYiDesc: String get() = when (Strings.lang) {
-        AppLanguage.CHINESE -> "李开复创办，Yi 系列模型中英文表现均衡，支持长上下文"
-        AppLanguage.ENGLISH -> "Founded by Kai-Fu Lee. Yi series models balanced in Chinese-English, supports long context"
-        AppLanguage.ARABIC -> "أسسها كاي-فو لي. سلسلة Yi متوازنة في الصينية-الإنجليزية، تدعم السياق الطويل"
-        AppLanguage.PORTUGUESE -> "Fundada por Kai-Fu Lee. Modelos da série Yi equilibrados em chinês-inglês, suporta contexto longo"
-        AppLanguage.SPANISH -> "Fundada por Kai-Fu Lee. Modelos de la serie Yi equilibrados en chino-inglés, soporta contexto largo"
-        AppLanguage.FRENCH -> "Fondée par Kai-Fu Lee. Les modèles de la série Yi équilibrés en chinois-anglais, prend en charge le contexte long"
-        AppLanguage.GERMAN -> "Von Kai-Fu Lee gegründet. Yi-Serien-Modelle ausgewogen in Chinesisch-Englisch, unterstützt langen Kontext"
-        AppLanguage.RUSSIAN -> "Основана Кай-Фу Ли. Модели серии Yi сбалансированы в китайском-английском, поддерживает длинный контекст"
-        AppLanguage.JAPANESE -> "李開復が創業。Yi シリーズモデルは中英バランスが良く、長文コンテキスト対応"
-        AppLanguage.KOREAN -> "카이푸 리가 설립. Yi 시리즈 모델은 중영어 균형이 좋고, 긴 컨텍스트 지원"
-    }
-    val providerYiPricing: String get() = when (Strings.lang) {
-        AppLanguage.CHINESE -> "有免费额度，价格低廉"
-        AppLanguage.ENGLISH -> "Free tier available, affordable"
-        AppLanguage.ARABIC -> "مستوى مجاني متاح، بأسعار معقولة"
-        AppLanguage.PORTUGUESE -> "Camada gratuita disponível, acessível"
-        AppLanguage.SPANISH -> "Nivel gratuito disponible, asequible"
-        AppLanguage.FRENCH -> "Niveau gratuit disponible, abordable"
-        AppLanguage.GERMAN -> "Kostenlose Stufe verfügbar, erschwinglich"
-        AppLanguage.RUSSIAN -> "Есть бесплатный уровень, доступно"
-        AppLanguage.JAPANESE -> "無料枠あり、手頃"
-        AppLanguage.KOREAN -> "무료 tier 제공, 저렴"
-    }
 
-    val providerStepfun: String get() = when (Strings.lang) {
-        AppLanguage.CHINESE -> "阶跃星辰"
-        AppLanguage.ENGLISH -> "Stepfun"
-        AppLanguage.ARABIC -> "Stepfun"
-        AppLanguage.PORTUGUESE -> "Stepfun"
-        AppLanguage.SPANISH -> "Stepfun"
-        AppLanguage.FRENCH -> "Stepfun"
-        AppLanguage.GERMAN -> "Stepfun"
-        AppLanguage.RUSSIAN -> "Stepfun"
-        AppLanguage.JAPANESE -> "Stepfun"
-        AppLanguage.KOREAN -> "Stepfun"
-    }
-    val providerStepfunDesc: String get() = when (Strings.lang) {
-        AppLanguage.CHINESE -> "国产大模型，Step 系列支持超长上下文（256K），多模态能力强"
-        AppLanguage.ENGLISH -> "Chinese LLM, Step series supports ultra-long context (256K), strong multimodal capability"
-        AppLanguage.ARABIC -> "نموذج لغوي صيني كبير، سلسلة Step تدعم سياق فائق الطول (256K)، قدرة متعددة الوسائط قوية"
-        AppLanguage.PORTUGUESE -> "LLM chinês, série Step suporta contexto ultralongo (256K), forte capacidade multimodal"
-        AppLanguage.SPANISH -> "LLM chino, la serie Step soporta contexto ultralargo (256K), fuerte capacidad multimodal"
-        AppLanguage.FRENCH -> "LLM chinois, la série Step prend en charge un contexte ultra-long (256K), forte capacité multimodale"
-        AppLanguage.GERMAN -> "Chinesischer LLM, Step-Serie unterstützt ultralangen Kontext (256K), starke multimodale Fähigkeit"
-        AppLanguage.RUSSIAN -> "Китайский LLM, серия Step поддерживает сверхдлинный контекст (256K), сильные мультимодальные возможности"
-        AppLanguage.JAPANESE -> "中国製LLM、Step シリーズは超長文コンテキスト対応(256K)、強力なマルチモーダル能力"
-        AppLanguage.KOREAN -> "중국 LLM, Step 시리즈는 초장문 컨텍스트 지원(256K), 강력한 멀티모달 능력"
-    }
-    val providerStepfunPricing: String get() = when (Strings.lang) {
-        AppLanguage.CHINESE -> "有免费额度，按量计费"
-        AppLanguage.ENGLISH -> "Free tier available, pay per usage"
-        AppLanguage.ARABIC -> "مستوى مجاني متاح، الدفع حسب الاستخدام"
-        AppLanguage.PORTUGUESE -> "Camada gratuita disponível, pagamento por uso"
-        AppLanguage.SPANISH -> "Nivel gratuito disponible, pago por uso"
-        AppLanguage.FRENCH -> "Niveau gratuit disponible, paiement à l'usage"
-        AppLanguage.GERMAN -> "Kostenlose Stufe verfügbar, nutzungsabhängige Abrechnung"
-        AppLanguage.RUSSIAN -> "Есть бесплатный уровень, оплата по использованию"
-        AppLanguage.JAPANESE -> "無料枠あり、使用量課金"
-        AppLanguage.KOREAN -> "무료 tier 제공, 사용량 기준 과금"
-    }
 
-    val providerHunyuan: String get() = when (Strings.lang) {
-        AppLanguage.CHINESE -> "腾讯混元"
-        AppLanguage.ENGLISH -> "Tencent Hunyuan"
-        AppLanguage.ARABIC -> "Tencent Hunyuan"
-        AppLanguage.PORTUGUESE -> "Tencent Hunyuan"
-        AppLanguage.SPANISH -> "Tencent Hunyuan"
-        AppLanguage.FRENCH -> "Tencent Hunyuan"
-        AppLanguage.GERMAN -> "Tencent Hunyuan"
-        AppLanguage.RUSSIAN -> "Tencent Hunyuan"
-        AppLanguage.JAPANESE -> "Tencent Hunyuan"
-        AppLanguage.KOREAN -> "Tencent Hunyuan"
-    }
-    val providerHunyuanDesc: String get() = when (Strings.lang) {
-        AppLanguage.CHINESE -> "腾讯自研大模型，擅长中文对话和代码生成，支持多模态"
-        AppLanguage.ENGLISH -> "Tencent's LLM, excels at Chinese dialogue and code generation, supports multimodal"
-        AppLanguage.ARABIC -> "نموذج Tencent اللغوي الكبير، متميز في الحوار الصيني وتوليد الكود، يدعم متعدد الوسائط"
-        AppLanguage.PORTUGUESE -> "LLM da Tencent, destaca-se em diálogo em chinês e geração de código, suporta multimodal"
-        AppLanguage.SPANISH -> "LLM de Tencent, destaca en diálogo en chino y generación de código, soporta multimodal"
-        AppLanguage.FRENCH -> "LLM de Tencent, excelle dans le dialogue chinois et la génération de code, prend en charge le multimodal"
-        AppLanguage.GERMAN -> "Tencents LLM, glänzt bei chinesischem Dialog und Codegenerierung, unterstützt multimodal"
-        AppLanguage.RUSSIAN -> "LLM от Tencent, отличается китайским диалогом и генерацией кода, поддерживает мультимодальность"
-        AppLanguage.JAPANESE -> "Tencent 自社開発LLM、中国語対話とコード生成に優れ、マルチモーダル対応"
-        AppLanguage.KOREAN -> "Tencent 자체 LLM, 중국어 대화와 코드 생성에 뛰어나고, 멀티모달 지원"
-    }
-    val providerHunyuanPricing: String get() = when (Strings.lang) {
-        AppLanguage.CHINESE -> "有免费额度，价格较低"
-        AppLanguage.ENGLISH -> "Free tier available, low pricing"
-        AppLanguage.ARABIC -> "مستوى مجاني متاح، تسعير منخفض"
-        AppLanguage.PORTUGUESE -> "Camada gratuita disponível, preço baixo"
-        AppLanguage.SPANISH -> "Nivel gratuito disponible, precio bajo"
-        AppLanguage.FRENCH -> "Niveau gratuit disponible, prix bas"
-        AppLanguage.GERMAN -> "Kostenlose Stufe verfügbar, niedriger Preis"
-        AppLanguage.RUSSIAN -> "Есть бесплатный уровень, низкие цены"
-        AppLanguage.JAPANESE -> "無料枠あり、低価格"
-        AppLanguage.KOREAN -> "무료 tier 제공, 저렴한 가격"
-    }
 
-    val providerSpark: String get() = when (Strings.lang) {
-        AppLanguage.CHINESE -> "讯飞星火"
-        AppLanguage.ENGLISH -> "iFlytek Spark"
-        AppLanguage.ARABIC -> "iFlytek Spark"
-        AppLanguage.PORTUGUESE -> "iFlytek Spark"
-        AppLanguage.SPANISH -> "iFlytek Spark"
-        AppLanguage.FRENCH -> "iFlytek Spark"
-        AppLanguage.GERMAN -> "iFlytek Spark"
-        AppLanguage.RUSSIAN -> "iFlytek Spark"
-        AppLanguage.JAPANESE -> "iFlytek Spark"
-        AppLanguage.KOREAN -> "iFlytek Spark"
-    }
-    val providerSparkDesc: String get() = when (Strings.lang) {
-        AppLanguage.CHINESE -> "科大讯飞大模型，语音识别和中文理解能力强，OpenAI 兼容接口"
-        AppLanguage.ENGLISH -> "iFlytek's LLM, strong speech recognition and Chinese understanding, OpenAI-compatible API"
-        AppLanguage.ARABIC -> "نموذج iFlytek اللغوي الكبير، تعرف قوي على الكلام وفهم اللغة الصينية، واجهة متوافقة مع OpenAI"
-        AppLanguage.PORTUGUESE -> "LLM da iFlytek, forte reconhecimento de fala e compreensão de chinês, API compatível com OpenAI"
-        AppLanguage.SPANISH -> "LLM de iFlytek, fuerte reconocimiento de voz y comprensión de chino, API compatible con OpenAI"
-        AppLanguage.FRENCH -> "LLM d'iFlytek, forte reconnaissance vocale et compréhension du chinois, API compatible OpenAI"
-        AppLanguage.GERMAN -> "iFlyteks LLM, starke Spracherkennung und Chinesisch-Verständnis, OpenAI-kompatible API"
-        AppLanguage.RUSSIAN -> "LLM от iFlytek, сильное распознавание речи и понимание китайского, API, совместимый с OpenAI"
-        AppLanguage.JAPANESE -> "iFlytek のLLM、音声認識と中国語理解に強み、OpenAI 互換 API"
-        AppLanguage.KOREAN -> "iFlytek LLM, 음성 인식 및 중국어 이해가 강점, OpenAI 호환 API"
-    }
-    val providerSparkPricing: String get() = when (Strings.lang) {
-        AppLanguage.CHINESE -> "有免费额度，按量计费"
-        AppLanguage.ENGLISH -> "Free tier available, pay per usage"
-        AppLanguage.ARABIC -> "مستوى مجاني متاح، الدفع حسب الاستخدام"
-        AppLanguage.PORTUGUESE -> "Camada gratuita disponível, pagamento por uso"
-        AppLanguage.SPANISH -> "Nivel gratuito disponible, pago por uso"
-        AppLanguage.FRENCH -> "Niveau gratuit disponible, paiement à l'usage"
-        AppLanguage.GERMAN -> "Kostenlose Stufe verfügbar, nutzungsabhängige Abrechnung"
-        AppLanguage.RUSSIAN -> "Есть бесплатный уровень, оплата по использованию"
-        AppLanguage.JAPANESE -> "無料枠あり、使用量課金"
-        AppLanguage.KOREAN -> "무료 tier 제공, 사용량 기준 과금"
-    }
 
     val providerOllama: String get() = "Ollama"
     val providerOllamaDesc: String get() = when (Strings.lang) {
