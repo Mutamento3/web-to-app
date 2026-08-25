@@ -3008,6 +3008,7 @@ object Strings {
     val hostsRulesCount: String get() = StringsD.hostsRulesCount
     val importFromUrl: String get() = StringsD.importFromUrl
     val popularHostsSources: String get() = StringsD.popularHostsSources
+    val customHostsSources: String get() = StringsD.customHostsSources
     val importHostsUrl: String get() = StringsD.importHostsUrl
     val importHostsUrlHint: String get() = StringsD.importHostsUrlHint
     val importHostsSuccess: String get() = StringsD.importHostsSuccess
@@ -42838,6 +42839,19 @@ object StringsD {
         AppLanguage.RUSSIAN -> "Популярные источники Hosts"
         AppLanguage.JAPANESE -> "人気のHostsソース"
         AppLanguage.KOREAN -> "인기 Hosts 소스"
+    }
+
+    val customHostsSources: String get() = when (Strings.lang) {
+        AppLanguage.CHINESE -> "自定义源"
+        AppLanguage.ENGLISH -> "Custom Sources"
+        AppLanguage.ARABIC -> "مصادر مخصصة"
+        AppLanguage.PORTUGUESE -> "Fontes Personalizadas"
+        AppLanguage.SPANISH -> "Fuentes Personalizadas"
+        AppLanguage.FRENCH -> "Sources Personnalisées"
+        AppLanguage.GERMAN -> "Eigene Quellen"
+        AppLanguage.RUSSIAN -> "Пользовательские источники"
+        AppLanguage.JAPANESE -> "カスタムソース"
+        AppLanguage.KOREAN -> "사용자 지정 소스"
     }
 
     val importHostsUrl: String get() = when (Strings.lang) {

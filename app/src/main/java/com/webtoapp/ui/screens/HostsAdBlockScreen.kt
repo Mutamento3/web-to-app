@@ -101,6 +101,7 @@ fun HostsAdBlockScreen(onBack: () -> Unit) {
     var enabledSources by remember { mutableStateOf(emptySet<String>()) }
     var disabledSources by remember { mutableStateOf(emptySet<String>()) }
     var sourceCounts by remember { mutableStateOf(emptyMap<String, Int>()) }
+    var customSources by remember { mutableStateOf(emptyList<HostsSource>()) }
     var query by rememberSaveable { mutableStateOf("") }
     var filter by rememberSaveable { mutableStateOf(HostsFilter.ALL.name) }
     var showUrlDialog by remember { mutableStateOf(false) }
@@ -120,6 +121,7 @@ fun HostsAdBlockScreen(onBack: () -> Unit) {
         disabledSources = adBlocker.getDisabledHostsSources()
         val keys = adBlocker.getAllDownloadedSourceKeys()
         sourceCounts = keys.associateWith { adBlocker.getSourceRuleCount(it) }
+        customSources = adBlocker.getCustomHostsSources()
     }
 
     val filePickerLauncher = rememberLauncherForActivityResult(
@@ -330,6 +332,50 @@ fun HostsAdBlockScreen(onBack: () -> Unit) {
                         isDownloading = isDownloading,
                         progress = progress,
                         ruleCount = ruleCount,
+                        onImport = { importSource(source) },
+                        onCancel = {
+                            downloadJobs[source.url]?.cancel()
+                            downloadProgress.remove(source.url)
+                            downloadJobs.remove(source.url)
+                        },
+                        onToggleEnabled = { checked ->
+                            scope.launch {
+                                adBlocker.setHostsSourceEnabled(context, source.url, checked)
+                                adBlocker.saveHostsRules(context)
+                                refreshState()
+                                snackbarHostState.showSnackbar(
+                                    if (checked) Strings.hostsSourceEnabled else Strings.hostsSourceDisabled
+                                )
+                            }
+                        },
+                        onDelete = { showDeleteSourceDialog = source }
+                    )
+                }
+            }
+
+            if (customSources.isNotEmpty()) {
+                item(key = "custom-sources-title") {
+                    Text(
+                        Strings.customHostsSources,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+                items(customSources, key = { it.url }) { source ->
+                    val enabled = enabledSources.contains(source.url)
+                    val isDownloading = downloadProgress.containsKey(source.url)
+                    val progress = downloadProgress[source.url]
+                    val ruleCount = sourceCounts[source.url] ?: 0
+                    val isFileSource = source.url.startsWith("file:")
+
+                    HostsSourceCard(
+                        source = source,
+                        isDownloaded = true,
+                        isEnabled = enabled,
+                        isDownloading = isDownloading,
+                        progress = progress,
+                        ruleCount = ruleCount,
+                        showRetry = !isFileSource,
                         onImport = { importSource(source) },
                         onCancel = {
                             downloadJobs[source.url]?.cancel()
@@ -612,7 +658,8 @@ private fun HostsSourceCard(
     onImport: () -> Unit,
     onCancel: () -> Unit,
     onToggleEnabled: (Boolean) -> Unit,
-    onDelete: () -> Unit
+    onDelete: () -> Unit,
+    showRetry: Boolean = true
 ) {
     WtaCard(tone = WtaCardTone.Surface) {
         Column(
@@ -695,14 +742,16 @@ private fun HostsSourceCard(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        FilledTonalButton(
-                            onClick = onImport,
-                            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            Icon(Icons.Outlined.Refresh, null, Modifier.size(16.dp))
-                            Spacer(Modifier.width(4.dp))
-                            Text(Strings.retry, style = MaterialTheme.typography.labelMedium)
+                        if (showRetry) {
+                            FilledTonalButton(
+                                onClick = onImport,
+                                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Icon(Icons.Outlined.Refresh, null, Modifier.size(16.dp))
+                                Spacer(Modifier.width(4.dp))
+                                Text(Strings.retry, style = MaterialTheme.typography.labelMedium)
+                            }
                         }
                         FilledTonalButton(
                             onClick = onDelete,

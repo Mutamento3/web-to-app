@@ -673,6 +673,10 @@ class AdBlocker {
 
     private val sourceRuleCounts = mutableMapOf<String, Int>()
 
+    /** Display names for user-imported (custom) sources, keyed by source key. Preset
+     *  sources resolve their names from [getPopularHostsSources] instead. */
+    private val customSourceNames = mutableMapOf<String, String>()
+
     private val networkBlockFilters = mutableListOf<NetworkFilter>()
     private val networkExceptionFilters = mutableListOf<NetworkFilter>()
 
@@ -971,6 +975,7 @@ class AdBlocker {
                 enabledHostsSources.remove(sourceKey)
             }
             rebuildHostsFromSourceContents(context)
+            saveSourcesRegistry(context)
             invalidateCache()
             Result.success(Unit)
         } catch (e: Exception) {
@@ -983,8 +988,10 @@ class AdBlocker {
             enabledHostsSources.remove(sourceKey)
             disabledHostsSources.remove(sourceKey)
             sourceRuleCounts.remove(sourceKey)
+            customSourceNames.remove(sourceKey)
             AdBlockFilterCache.removeSourceContent(context, sourceKey)
             rebuildHostsFromSourceContents(context)
+            saveSourcesRegistry(context)
             invalidateCache()
             Result.success(Unit)
         } catch (e: Exception) {
@@ -1154,6 +1161,43 @@ class AdBlocker {
     fun getAllDownloadedSourceKeys(): Set<String> = enabledHostsSources + disabledHostsSources
     fun isHostsSourceDownloaded(url: String): Boolean =
         enabledHostsSources.contains(url) || disabledHostsSources.contains(url)
+
+    /**
+     * User-imported sources (file picks / custom URLs) as listable entries, i.e. registry
+     * keys that are not one of the preset [getPopularHostsSources] URLs. Preset sources
+     * keep their hardcoded [HostsSource] metadata; custom ones resolve their display name
+     * from the import-time metadata (registry v2) with structural fallbacks.
+     */
+    fun getCustomHostsSources(): List<HostsSource> {
+        val presetUrls = getPopularHostsSources().map { it.url }.toSet()
+        return (enabledHostsSources + disabledHostsSources)
+            .filter { it !in presetUrls }
+            .map { key ->
+                HostsSource(
+                    name = customSourceNames[key] ?: fallbackSourceName(key),
+                    url = key,
+                    description = key
+                )
+            }
+            .sortedBy { it.name.lowercase() }
+    }
+
+    private fun fallbackSourceName(key: String): String {
+        if (key.startsWith("file:")) {
+            return extractSourceDisplayName(key)
+                ?: java.util.Locale.ROOT.let { key.removePrefix("file:").takeLast(48) }
+        }
+        return runCatching { java.net.URI(key).host }.getOrNull()
+            ?: key.takeLast(48)
+    }
+
+    private fun extractSourceDisplayName(rawUri: String): String? {
+        val raw = rawUri.substringAfterLast('/')
+            .substringBefore('?')
+            .substringBefore('#')
+        val decoded = android.net.Uri.decode(raw).trim()
+        return decoded.ifBlank { null }
+    }
 
     private fun parseAndAddRule(rawRule: String) {
         val rule = rawRule.trim()
@@ -1673,7 +1717,15 @@ class AdBlocker {
             enabledHostsSources.add(sourceKey)
             disabledHostsSources.remove(sourceKey)
             sourceRuleCounts[sourceKey] = count
+            val resolverDisplayName = context.contentResolver.query(uri, null, null, null, null)?.use { cursor ->
+                val idx = cursor.getColumnIndex(android.provider.OpenableColumns.DISPLAY_NAME)
+                if (idx >= 0 && cursor.moveToFirst()) cursor.getString(idx)?.trim() else null
+            }
+            customSourceNames[sourceKey] = resolverDisplayName
+                ?: extractSourceDisplayName(uri.toString())
+                ?: "custom-filters"
             AdBlockFilterCache.saveSourceContent(context, sourceKey, content)
+            saveSourcesRegistry(context)
             Result.success(count)
         } catch (e: Exception) {
             Result.failure(e)
@@ -1686,7 +1738,8 @@ class AdBlocker {
     suspend fun importHostsFromUrl(
         url: String,
         context: Context? = null,
-        onProgress: ((DownloadProgress) -> Unit)?
+        displayName: String? = null,
+        onProgress: ((DownloadProgress) -> Unit)? = null
     ): Result<Int> = withContext(Dispatchers.IO) {
         try {
 
@@ -1753,6 +1806,9 @@ class AdBlocker {
             enabledHostsSources.add(url)
             disabledHostsSources.remove(url)
             sourceRuleCounts[url] = 0
+            if (!displayName.isNullOrBlank()) {
+                customSourceNames[url] = displayName
+            }
             if (context != null) {
                 saveSourcesRegistry(context)
             }
@@ -1862,11 +1918,11 @@ class AdBlocker {
             buildString {
                 enabledHostsSources.forEach { url ->
                     val count = sourceRuleCounts[url] ?: 0
-                    appendLine("$url\t$count\t1")
+                    appendLine("$url\t$count\t1\t${customSourceNames[url] ?: ""}")
                 }
                 disabledHostsSources.forEach { url ->
                     val count = sourceRuleCounts[url] ?: 0
-                    appendLine("$url\t$count\t0")
+                    appendLine("$url\t$count\t0\t${customSourceNames[url] ?: ""}")
                 }
             }.trimEnd()
         )
@@ -1924,6 +1980,8 @@ class AdBlocker {
                     enabledHostsSources.add(url)
                 }
                 sourceRuleCounts[url] = count
+                // Optional 4th column (registry v2): display name for custom sources.
+                parts.getOrNull(3)?.takeIf { it.isNotBlank() }?.let { customSourceNames[url] = it }
             }
     }
 
