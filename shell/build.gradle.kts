@@ -24,7 +24,7 @@ android {
 
         targetSdk = 28
         versionCode = 60
-        versionName = "2.6.0"
+        versionName = "2.5.4"
 
         buildConfigField("boolean", "SHELL_RUNTIME_ONLY", "true")
 
