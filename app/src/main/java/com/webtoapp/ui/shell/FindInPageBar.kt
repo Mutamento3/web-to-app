@@ -13,6 +13,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.ImeAction
@@ -39,6 +42,8 @@ fun FindInPageBar(
     var activeMatchOrdinal by remember { mutableIntStateOf(-1) }
     var numberOfMatches by remember { mutableIntStateOf(0) }
     var doneCounting by remember { mutableStateOf(true) }
+    val inputFocusRequester = remember { FocusRequester() }
+    var inputFocused by remember { mutableStateOf(false) }
 
     // Listen for engine-side counting results while the bar is up; detach (and drop
     // the highlights) when it goes away.
@@ -58,6 +63,11 @@ fun FindInPageBar(
         }
     }
 
+    // Cursor ready as soon as the bar opens.
+    LaunchedEffect(webView) {
+        if (webView != null) inputFocusRequester.requestFocus()
+    }
+
     // Live search as the query changes (debounced), like Chrome's find bar.
     LaunchedEffect(query, webView) {
         val wv = webView ?: return@LaunchedEffect
@@ -71,6 +81,10 @@ fun FindInPageBar(
         kotlinx.coroutines.delay(300)
         try {
             wv.findAllAsync(query)
+            // findAllAsync makes the WebView steal view focus from this input, which
+            // swallowed the backspace key (type worked, delete did not). Re-claim it
+            // after each search unless the user moved focus away on purpose.
+            if (!inputFocused) inputFocusRequester.requestFocus()
         } catch (e: Exception) {
             AppLogger.w("FindInPageBar", "findAllAsync failed", e)
         }
@@ -105,7 +119,10 @@ fun FindInPageBar(
                         style = MaterialTheme.typography.bodySmall
                     )
                 },
-                modifier = Modifier.weight(1f),
+                modifier = Modifier
+                    .weight(1f)
+                    .focusRequester(inputFocusRequester)
+                    .onFocusChanged { inputFocused = it.isFocused },
                 singleLine = true,
                 textStyle = MaterialTheme.typography.bodySmall,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),

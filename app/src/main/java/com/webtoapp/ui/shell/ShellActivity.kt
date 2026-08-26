@@ -194,8 +194,26 @@ class ShellActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Forward keys to the page only when focus actually belongs to the page (the WebView /
+     * browser surface, or no app UI is focused). While a find session is active, Chromium's
+     * WebView consumes DEL unconditionally, so blindly forwarding ate the backspace of app
+     * UI like the find-in-page input.
+     */
+    private fun isFocusInsidePageView(): Boolean {
+        var view = currentFocus ?: return true
+        val pageView = browserSurface?.view ?: webView
+        while (view is View) {
+            if (view is WebView || (pageView != null && view == pageView)) return true
+            view = view.parent as? View ?: return false
+        }
+        return false
+    }
+
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
-        if (shouldForwardKeyToWebView(event) && (browserSurface?.dispatchKeyEvent(event) == true || webView?.dispatchKeyEvent(event) == true)) {
+        if (shouldForwardKeyToWebView(event) && isFocusInsidePageView() &&
+            (browserSurface?.dispatchKeyEvent(event) == true || webView?.dispatchKeyEvent(event) == true)
+        ) {
             return true
         }
 
