@@ -89,7 +89,6 @@ class ToolRegistryFactory(
         GetAppTool(),
         CreateAppTool(),
         UpdateAppTool(),
-        ReadAppFileTool(),
         // Common-config templates
         ListConfigTemplatesTool(),
         SaveConfigTemplateTool(),

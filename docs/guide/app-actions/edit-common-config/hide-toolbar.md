@@ -14,13 +14,17 @@ Controls the in-app browser toolbar (the bar with back/forward/refresh/title/URL
   - show back (`toolbarShowBack`)
   - show forward (`toolbarShowForward`)
   - show refresh (`toolbarShowRefresh`)
+  - show console button (`toolbarShowConsole`)
+  - show page-zoom button (`toolbarShowZoom`)
+  - show find-in-page button (`toolbarShowFind`)
 
 ## Runtime toolbar controls
 
-These controls live in the toolbar at runtime (inside the generated APK or the host preview), not in the build-time config above:
+These panels open **from the toolbar at runtime** (inside the generated APK or the host preview). Their toolbar buttons are gated by the build-time items above — hide the item and the button disappears:
 
 - **Page zoom** — a toolbar action opens a preset picker (50% / 67% / 75% / 80% / 90% / 100% / 110% / 125% / 150%, mirroring Chrome's stops). The chosen zoom is saved **per app** (by package name) and re-applied on cold start without a page reload. Separate from the build-time [Zoom](/guide/app-actions/edit-common-config/advanced-settings) toggle.
 - **Console** — a toolbar button opens a console panel showing `console.log` / error output. Useful for debugging the loaded page at runtime.
+- **Find in page** — a toolbar button opens a native bottom search bar with live match counting and previous/next navigation, powered by the WebView engine (`findAllAsync`).
 
 ## Notes
 
