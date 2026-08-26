@@ -72,7 +72,7 @@ A quick scan of what's in the box. Each links to the detailed feature map below.
 | **Local runtimes** | Native Node.js 18.20, PHP 8.4 + Composer 2.10, Python 3.14, official Go 1.26, WordPress 7.x over SQLite |
 | **Extensions** | Built-in modules, userscripts with `GM_*`, MV3 Chrome extensions, live Chrome Web Store search |
 | **APK/AAB output** | On-device V1/V2/V3 signing, Google Play AAB export with targetSdk rewrite, keystore management |
-| **Agent** | Full-app automation via 50+ tools: generate, build, export, manage ports/engines/runtimes, clone apps, ad-block rules, config templates, and more; auto-retry on 429/5xx |
+| **Agent** | Full-app automation via 57 tools: generate, build, export, manage ports/engines/runtimes, clone apps, ad-block rules, config templates, and more; auto-retry on 429/5xx |
 | **Host languages** | **10 UI languages** — 中文 · English · العربية · Português · Español · Français · Deutsch · Русский · 日本語 · 한국어 (Arabic RTL) |
 
 ---
@@ -118,7 +118,7 @@ WebToApp has a large number of switches. The sections below group them by use ca
 <summary><b>🛡️ Privacy, fingerprint defense & hardening</b></summary>
 
 - **Browser fingerprint disguise across 50+ vectors** — User-Agent, WebGL, Canvas, AudioContext, ClientRects, timezone, language, memory, media devices, WebRTC, fonts, battery, permissions, performance, storage, notifications, CSS media, iframe propagation, and error-stack cleanup.
-- **Hosts-rule ad blocker** with cosmetic MutationObserver filtering, **20 built-in community filter lists** (EasyList, uBlock Origin, AdGuard, AdAway, plus 8 language-specific lists), per-source enable/disable/delete, and custom subscription rules bundled into the APK.
+- **Hosts-rule ad blocker** with cosmetic MutationObserver filtering, **20 built-in community filter lists** (EasyList, uBlock Origin, AdGuard, AdAway, plus 8 language-specific lists), per-source enable/disable/delete, named custom filter imports managed as cards and selectable per app, and custom subscription rules bundled into the APK.
 - **Resource encryption** (PBKDF2 + AES-256-GCM) for packaged config, HTML, media, and BGM; optional custom encryption password stronger than package/certificate-derived keys.
 - **Runtime hardening** when encryption is on — anti-debug, anti-Frida, DEX-tamper checks; threat response of log-only, silent exit, or randomized crash.
 - **WebView/content isolation** for storage, WebRTC, Canvas, Audio, WebGL, fonts, headers, and IP surfaces.
@@ -148,7 +148,7 @@ WebToApp has a large number of switches. The sections below group them by use ca
 - **MV3 Chrome extension runtime** for manifest content scripts in isolated or main worlds, with `chrome.*` polyfills for runtime, storage, tabs, scripting, and declarative network-request parsing.
 - **In-app Chrome Web Store search** — browse and install browser extensions by keyword (or paste a store URL / extension ID), with offline fallback to manual import.
 - **Export codes** (`WTA1:` gzip + Base64) and QR sharing via ZXing.
-- **Agent** — a tool-calling assistant with 50+ built-in tools covering the entire app surface: create/edit/build/export apps, manage ports and browser engines, install/clear runtimes, ad-block hosts rules, common-config templates, usage stats, app cloning, batch import, Play policy checks, and module development. Plan mode waits for user approval; automatic retry/backoff on 429/5xx.
+- **Agent** — a tool-calling assistant with 57 built-in tools covering the entire app surface: create/edit/build/export apps, manage ports and browser engines, install/clear runtimes, ad-block hosts rules, common-config templates, usage stats, app cloning, batch import, Play policy checks, and module development. Plan mode waits for user approval; automatic retry/backoff on 429/5xx.
 
 </details>
 
@@ -157,7 +157,7 @@ WebToApp has a large number of switches. The sections below group them by use ca
 
 - **Splash screens** — image or video, with skip behavior, trim ranges, and fixed orientation.
 - **Background music** — playlists with synced LRC lyrics, lyric animations, custom font/color/stroke/shadow, and online music search.
-- **Toolbar, status bar (light & dark), navigation, floating-window mode, and long-press menu styles.** Status bar color can follow theme, a custom color, full transparency, or **PAGE_TOP** (sample the page’s top pixels so the chrome matches the content). The runtime toolbar also offers a per-app **page-zoom preset** (saved across cold starts) and a **console** panel for on-device debugging.
+- **Toolbar, status bar (light & dark), navigation, floating-window mode, and long-press menu styles.** Status bar color can follow theme, a custom color, full transparency, or **PAGE_TOP** (sample the page’s top pixels so the chrome matches the content). The runtime toolbar also offers a per-app **page-zoom preset** (saved across cold starts), a native **find-in-page** bottom bar, and a **console** panel for on-device debugging.
 - **Download location mode** — system Downloads, app-private directory, or a custom SAF folder picked by the user.
 - **Announcement templates** for launch, interval, and no-network moments.
 - **Host app language** — switch the entire builder UI among 10 languages (中文 / English / العربية / Português / Español / Français / Deutsch / Русский / 日本語 / 한국어); Arabic is full RTL.
@@ -204,7 +204,7 @@ WebToApp has a large number of switches. The sections below group them by use ca
 
 ## Agent
 
-WebToApp ships a built-in AI agent (open from **⋮ → Agent**) that can operate the entire app through natural-language conversation. Instead of tapping through menus, you describe what you want and the Agent executes it via a tool-calling loop backed by any OpenAI-compatible LLM you configure in [AI Settings](#tech-stack).
+WebToApp ships a built-in AI agent (open from **⋮ → Agent**) that can operate the entire app through natural-language conversation. Instead of tapping through menus, you describe what you want and the Agent executes it via a tool-calling loop backed by any LLM you configure in [AI Settings](#tech-stack) — Chat Completions, Anthropic Messages, or OpenAI Responses endpoints, plus Google Gemini and Ollama / LM Studio / VLLM locals.
 
 **How it works:**
 
@@ -213,7 +213,7 @@ WebToApp ships a built-in AI agent (open from **⋮ → Agent**) that can operat
 3. The Agent executes each tool on-device — read-only tools run immediately; write tools pop a permission dialog first.
 4. Results flow back to the LLM, which continues until the task is done or it asks you a clarifying question.
 
-**40+ built-in tools, grouped by domain:**
+**57 built-in tools, grouped by domain:**
 
 | Domain | Examples |
 | --- | --- |
