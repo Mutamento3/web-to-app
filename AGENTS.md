@@ -278,6 +278,7 @@ The editor screens have an established card language. **Find the neighboring car
 
 ## Easy-to-miss points
 
+- **Keyboard avoidance below API 30 requires the classic window path.** Android 10 and lower have no native IME-inset dispatch: an edge-to-edge window (`decorFitsSystemWindows = false`) is never resized for the keyboard and reports zero IME insets, so no `softInputMode` value helps there. `WindowHelper.applyImmersiveFullscreen` therefore keeps the decor fitting system windows on the RESIZE keyboard path below API 30 (system `SOFT_INPUT_ADJUST_RESIZE` works) and degrades TRANSPARENT/IMAGE status-bar styles to solid colors on that path. Do not re-enable edge-to-edge unconditionally for those devices (#613; #634 flipped only the softInputMode bits and fixed nothing — its Robolectric test passed because it never asserted the layout flags).
 - **Shared sources are authored in `app/`.** Editing only a file under `shell/src` is usually wrong; it will be overwritten on sync or diverge from host.
 - **Config field names drift.** Editor model, `ApkConfig`, JSON factory, and shell config must stay aligned; Gson silently drops unknown/missing fields. Run `checkConfigFieldDrift`.
 - **Low targetSdk (28) and fork/exec runtimes** constrain "modernize the shell SDK" changes.
