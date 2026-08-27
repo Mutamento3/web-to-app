@@ -389,6 +389,12 @@ fun OnlineMusicSearchDialog(
                 topBar = {
                     TopAppBar(
                         title = { Text(Strings.onlineMusic) },
+                        colors = TopAppBarDefaults.topAppBarColors(
+                            containerColor = Color.Transparent,
+                            navigationIconContentColor = MaterialTheme.colorScheme.onSurface,
+                            titleContentColor = MaterialTheme.colorScheme.onSurface,
+                            actionIconContentColor = MaterialTheme.colorScheme.onSurface
+                        ),
                         navigationIcon = {
                             IconButton(onClick = {
                                 mediaPlayer?.release()

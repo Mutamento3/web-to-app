@@ -51,7 +51,10 @@ fun BgmCard(
                 exit = CardCollapseTransition
             ) {
               Column(
-                  modifier = Modifier.padding(horizontal = WtaSpacing.RowHorizontal),
+                  modifier = Modifier.padding(
+                      horizontal = WtaSpacing.RowHorizontal,
+                      vertical = WtaSpacing.ContentGap
+                  ),
                   verticalArrangement = Arrangement.spacedBy(12.dp)
               ) {
                 if (config.playlist.isNotEmpty()) {
