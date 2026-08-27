@@ -1148,9 +1148,6 @@ data class WebViewShellConfig(
         @SerializedName("toolbarShowFind")
         val toolbarShowFind: Boolean = true,
 
-        @SerializedName("initialPageZoomPercent")
-        val initialPageZoomPercent: Int = 100,
-
     @SerializedName("browserToolbarCustomized")
     val browserToolbarCustomized: Boolean = false,
 

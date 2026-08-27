@@ -78,7 +78,6 @@ fun buildWebViewConfig(config: ShellConfig): WebViewConfig {
         popupBlockerToggleEnabled = config.webViewConfig.popupBlockerToggleEnabled,
 
         initialScale = config.webViewConfig.initialScale,
-        initialPageZoomPercent = config.webViewConfig.initialPageZoomPercent,
         viewportMode = try { com.webtoapp.data.model.ViewportMode.valueOf(config.webViewConfig.viewportMode) } catch (e: Exception) { com.webtoapp.data.model.ViewportMode.DEFAULT },
         customViewportWidth = config.webViewConfig.customViewportWidth,
         newWindowBehavior = try { com.webtoapp.data.model.NewWindowBehavior.valueOf(config.webViewConfig.newWindowBehavior) } catch (e: Exception) { com.webtoapp.data.model.NewWindowBehavior.SAME_WINDOW },
