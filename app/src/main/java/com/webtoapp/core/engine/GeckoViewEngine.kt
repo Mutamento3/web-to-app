@@ -19,6 +19,10 @@ import org.mozilla.geckoview.GeckoView
 import org.mozilla.geckoview.StorageController
 import org.mozilla.geckoview.WebResponse
 import org.mozilla.geckoview.WebExtension
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.mozilla.geckoview.MediaSession as GeckoMediaSession
 
 data class ProxyConfig(
@@ -37,6 +41,9 @@ class GeckoViewEngine(
 
     companion object {
         private const val TAG = "GeckoViewEngine"
+
+        /** Cache dir (under cacheDir) holding materialized file-picker uploads (#638). */
+        private const val UPLOAD_CACHE_DIR = "gecko_uploads"
 
         @Volatile
         private var sharedRuntime: GeckoRuntime? = null
@@ -413,6 +420,12 @@ class GeckoViewEngine(
 
     private var bridgeScope: kotlinx.coroutines.CoroutineScope? = null
 
+    /**
+     * Drives the off-main copy + @UiThread confirm for picked files (#638). Cancelled on
+     * destroy() so a pending upload cannot outlive the engine.
+     */
+    private var filePromptScope: kotlinx.coroutines.CoroutineScope? = null
+
     override fun createView(
         context: Context,
         config: WebViewConfig,
@@ -619,9 +632,7 @@ class GeckoViewEngine(
                 val valueCallback = android.webkit.ValueCallback<Array<android.net.Uri>> { uris ->
                     when {
                         uris.isNullOrEmpty() -> finish(prompt.dismiss())
-                        prompt.type == GeckoSession.PromptDelegate.FilePrompt.Type.MULTIPLE ->
-                            finish(prompt.confirm(context, uris))
-                        else -> finish(prompt.confirm(context, uris[0]))
+                        else -> deliverPickedFiles(prompt, uris) { finish(it) }
                     }
                 }
 
@@ -636,6 +647,47 @@ class GeckoViewEngine(
                     finish(prompt.dismiss())
                 }
                 return result
+            }
+        }
+    }
+
+    /**
+     * FilePrompt.confirm() resolves Uris to local path strings and silently uploads nothing
+     * when the provider refuses to expose one (#638: galleries, cloud, vendor pickers), so
+     * content:// picks are first copied into a cache dir by GeckoUploadMaterializer (same
+     * approach as Firefox's android-components). The copy runs on IO; confirm() is annotated
+     * @UiThread and resumes on main. A failed materialization still confirms with the original
+     * Uris — upstream resolution may succeed where the copy could not.
+     */
+    private fun deliverPickedFiles(
+        prompt: GeckoSession.PromptDelegate.FilePrompt,
+        uris: Array<android.net.Uri>,
+        finish: (GeckoSession.PromptDelegate.PromptResponse) -> Unit
+    ) {
+        val scope = filePromptScope ?: kotlinx.coroutines.MainScope().also { filePromptScope = it }
+        scope.launch {
+            val prepared = runCatching {
+                withContext(Dispatchers.IO) {
+                    GeckoUploadMaterializer.prepare(
+                        uris,
+                        java.io.File(context.cacheDir, UPLOAD_CACHE_DIR),
+                        context.contentResolver
+                    )
+                }
+            }.onFailure { AppLogger.w(TAG, "File upload materialization failed: ${it.message}") }
+                .getOrDefault(uris)
+            try {
+                if (prompt.type == GeckoSession.PromptDelegate.FilePrompt.Type.MULTIPLE) {
+                    finish(prompt.confirm(context, prepared))
+                } else {
+                    finish(prompt.confirm(context, prepared[0]))
+                }
+            } catch (e: Exception) {
+                AppLogger.w(TAG, "FilePrompt confirm failed: ${e.message}")
+                // Free the page's input state instead of leaving the upload pending forever.
+                try {
+                    finish(prompt.dismiss())
+                } catch (_: Exception) { }
             }
         }
     }
@@ -907,6 +959,10 @@ class GeckoViewEngine(
         geckoView = null
         callback = null
         lastConfig = null
+        filePromptScope?.cancel()
+        filePromptScope = null
+        runCatching { GeckoUploadMaterializer.purgeAll(java.io.File(context.cacheDir, UPLOAD_CACHE_DIR)) }
+            .onFailure { AppLogger.w(TAG, "Upload cache purge failed: ${it.message}") }
     }
 
     override fun clearCache(includeDiskFiles: Boolean) {
