@@ -2950,10 +2950,11 @@ fun WebViewScreen(
                                     currentZoom = pageZoomPercent,
                                     onSelect = { percent ->
                                         pageZoomPercent = percent
-                                        // Browser-level zoom (CSS zoom on :root) relayouts
-                                        // synchronously — apply to the live DOM directly
-                                        // instead of the old textZoom + reload dance (#654).
-                                        webViewRef?.let { com.webtoapp.core.webview.PageZoom.applyToLoaded(it, percent) }
+                                        // textZoom only takes effect on the next page layout,
+                                        // so a live page needs a reload to reflect the change
+                                        // immediately (Chromium does not relayout for setTextZoom).
+                                        webViewRef?.settings?.textZoom = if (percent > 0) percent else 100
+                                        webViewRef?.reload()
                                         PageZoomStore.setZoomPercent(context, previewAppPackage, percent)
                                     },
                                     onDismiss = { zoomDialogOpen = false }

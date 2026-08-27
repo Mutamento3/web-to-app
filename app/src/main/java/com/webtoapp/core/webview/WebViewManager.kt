@@ -1208,14 +1208,6 @@ class WebViewManager(
     @Volatile
     private var currentMainFrameUrl: String? = null
 
-    /**
-     * Resolved browser-level page zoom percent for the WebView being configured
-     * (build-time default resolved against the runtime PageZoomStore override).
-     * Applied on every onPageFinished via [PageZoom.applyToLoaded]; 100 = no zoom.
-     */
-    @Volatile
-    private var currentConfiguredPageZoom: Int = com.webtoapp.core.webview.PageZoom.DEFAULT_PERCENT
-
     private val cookieFlushRunnable = Runnable {
         try { CookieManager.getInstance().flush() } catch (_: Exception) {}
     }
@@ -1556,24 +1548,14 @@ class WebViewManager(
 
             com.webtoapp.core.perf.NativePerfEngine.optimizeWebViewSettings(this)
 
-            // Runtime per-app page zoom, persisted across cold starts via PageZoomStore.
-            // Browser-level (CSS zoom on :root), not textZoom — textZoom only rescales glyphs
-            // and never touches images/layout (#654). Applied AFTER viewport settings; a
-            // stored runtime override wins over the build-time initial zoom. 0 = no override.
+            // Runtime per-app page zoom (textZoom), persisted across cold starts via
+            // PageZoomStore. Applied AFTER the viewport/dark-mode settings above (which may
+            // pin textZoom to 100 in DESKTOP mode) so the user override wins. 0 = no override.
             val runtimeZoomOverride = com.webtoapp.core.webview.PageZoomStore
                 .getZoomPercent(context, context.packageName)
-            val effectivePageZoom = com.webtoapp.core.webview.PageZoom.resolvePercent(
-                configuredPercent = config.initialPageZoomPercent,
-                runtimeOverridePercent = runtimeZoomOverride
-            )
-            if (effectivePageZoom != com.webtoapp.core.webview.PageZoom.DEFAULT_PERCENT) {
-                AppLogger.d(
-                    "WebViewManager",
-                    "Initial browser page zoom: $effectivePageZoom% (configured=${config.initialPageZoomPercent}, runtime=$runtimeZoomOverride)"
-                )
-                // Applies at onPageFinished via PageZoom.applyToLoaded (DOM must exist for the
-                // :root style to survive the next navigation).
-                currentConfiguredPageZoom = effectivePageZoom
+            if (runtimeZoomOverride > 0) {
+                settings.textZoom = runtimeZoomOverride
+                AppLogger.d("WebViewManager", "Applied runtime page zoom: textZoom=$runtimeZoomOverride%")
             }
 
             if (config.initialScale > 0) {
@@ -2231,10 +2213,6 @@ class WebViewManager(
                 currentMainFrameUrl = url ?: currentMainFrameUrl
                 val elapsed = System.currentTimeMillis() - diagPageStartTime
                 AppLogger.d("WebViewManager", "Page finished: +${elapsed}ms blocked=$diagBlockedCount errors=$diagErrorCount")
-
-                // Browser-level page zoom must re-apply on every finished navigation: the
-                // :root style dies with each document. Idempotent + de-duplicated in PageZoom.
-                com.webtoapp.core.webview.PageZoom.applyToLoaded(view, currentConfiguredPageZoom)
 
                 if (url != null && url.startsWith("file://")) {
                     fileRetryCount = 0

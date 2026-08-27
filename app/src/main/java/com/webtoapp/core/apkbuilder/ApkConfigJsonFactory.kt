@@ -179,7 +179,6 @@ internal object ApkConfigJsonFactory {
         "toolbarShowConsole" to webView.toolbarShowConsole,
         "toolbarShowZoom" to webView.toolbarShowZoom,
         "toolbarShowFind" to webView.toolbarShowFind,
-        "initialPageZoomPercent" to webView.initialPageZoomPercent,
         "browserToolbarCustomized" to webView.browserToolbarCustomized,
         "showStatusBarInFullscreen" to webView.showStatusBarInFullscreen,
         "showNavigationBarInFullscreen" to webView.showNavigationBarInFullscreen,
