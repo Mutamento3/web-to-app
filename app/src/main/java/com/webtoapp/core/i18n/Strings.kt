@@ -999,6 +999,8 @@ object Strings {
     val console: String get() = StringsA.console
     val pageZoomLabel: String get() = StringsA.pageZoomLabel
     val pageZoomReset: String get() = StringsA.pageZoomReset
+    val pageZoomSettingLabel: String get() = StringsA.pageZoomSettingLabel
+    val pageZoomSettingHint: String get() = StringsA.pageZoomSettingHint
     val noConsoleMessages: String get() = StringsA.noConsoleMessages
     val inputJavaScript: String get() = StringsA.inputJavaScript
     val preparingDownload: String get() = StringsA.preparingDownload
@@ -2354,7 +2356,6 @@ object Strings {
     val toolbarShowForwardLabel: String get() = StringsC.toolbarShowForwardLabel
     val toolbarShowRefreshLabel: String get() = StringsC.toolbarShowRefreshLabel
     val toolbarShowConsoleLabel: String get() = StringsC.toolbarShowConsoleLabel
-    val toolbarShowZoomLabel: String get() = StringsC.toolbarShowZoomLabel
     val toolbarShowFindLabel: String get() = StringsC.toolbarShowFindLabel
     val clickToSelectImageOrVideo: String get() = StringsC.clickToSelectImageOrVideo
     val displayDuration: String get() = StringsC.displayDuration
@@ -17591,6 +17592,32 @@ object StringsA {
         AppLanguage.RUSSIAN -> "Сбросить"
         AppLanguage.JAPANESE -> "リセット"
         AppLanguage.KOREAN -> "재설정"
+    }
+
+    val pageZoomSettingLabel: String get() = when (Strings.lang) {
+        AppLanguage.CHINESE -> "初始页面缩放"
+        AppLanguage.ENGLISH -> "Initial Page Zoom"
+        AppLanguage.ARABIC -> "تكبير الصفحة الابتدائي"
+        AppLanguage.PORTUGUESE -> "Zoom Inicial da Página"
+        AppLanguage.SPANISH -> "Zoom inicial de página"
+        AppLanguage.FRENCH -> "Zoom de page initial"
+        AppLanguage.GERMAN -> "Anfänglicher Seitenzoom"
+        AppLanguage.RUSSIAN -> "Начальный масштаб страницы"
+        AppLanguage.JAPANESE -> "初期ページズーム"
+        AppLanguage.KOREAN -> "초기 페이지 확대"
+    }
+
+    val pageZoomSettingHint: String get() = when (Strings.lang) {
+        AppLanguage.CHINESE -> "应用启动时应用的页面缩放比例，无需退出全屏使用工具栏"
+        AppLanguage.ENGLISH -> "Page zoom applied at app start — no need to leave fullscreen for the toolbar"
+        AppLanguage.ARABIC -> "تكبير الصفحة المطبق عند بدء التطبيق — لا حاجة لمغادرة ملء الشاشة لاستخدام شريط الأدوات"
+        AppLanguage.PORTUGUESE -> "Zoom de página aplicado ao iniciar o aplicativo — sem precisar sair da tela cheia para usar a barra de ferramentas"
+        AppLanguage.SPANISH -> "Zoom de página aplicado al iniciar la aplicación; no hace falta salir de pantalla completa para usar la barra de herramientas"
+        AppLanguage.FRENCH -> "Zoom de page appliqué au démarrage de l'application — inutile de quitter le plein écran pour utiliser la barre d'outils"
+        AppLanguage.GERMAN -> "Beim App-Start angewandter Seitenzoom — ohne die Symbolleiste im Vollbildmodus verlassen zu müssen"
+        AppLanguage.RUSSIAN -> "Масштаб страницы при запуске приложения — не нужно выходить из полноэкранного режима ради панели инструментов"
+        AppLanguage.JAPANESE -> "アプリ起動時に適用されるページズーム。フルスクリーンを解除してツールバーを使う必要はありません"
+        AppLanguage.KOREAN -> "앱 시작 시 적용되는 페이지 확대/축소 — 전체 화면을 나가 도구 모음을 사용할 필요가 없습니다"
     }
 
     val noConsoleMessages: String get() = when (Strings.lang) {
@@ -34355,19 +34382,6 @@ object StringsC {
         AppLanguage.RUSSIAN -> "Показывать кнопку консоли"
         AppLanguage.JAPANESE -> "コンソールボタンを表示"
         AppLanguage.KOREAN -> "콘솔 버튼 표시"
-    }
-
-    val toolbarShowZoomLabel: String get() = when (Strings.lang) {
-        AppLanguage.CHINESE -> "显示页面缩放按钮"
-        AppLanguage.ENGLISH -> "Show Page Zoom Button"
-        AppLanguage.ARABIC -> "إظهار زر تكبير الصفحة"
-        AppLanguage.PORTUGUESE -> "Mostrar Botão de Zoom da Página"
-        AppLanguage.SPANISH -> "Mostrar Botón de Zoom de Página"
-        AppLanguage.FRENCH -> "Afficher le Bouton de Zoom de Page"
-        AppLanguage.GERMAN -> "Seiten-Zoom-Button anzeigen"
-        AppLanguage.RUSSIAN -> "Показывать кнопку масштабирования страницы"
-        AppLanguage.JAPANESE -> "ページズームボタンを表示"
-        AppLanguage.KOREAN -> "페이지 확대/축소 버튼 표시"
     }
 
     val toolbarShowFindLabel: String get() = when (Strings.lang) {

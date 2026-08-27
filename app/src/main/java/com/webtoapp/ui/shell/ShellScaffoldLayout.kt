@@ -26,7 +26,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import com.webtoapp.core.i18n.Strings
 import com.webtoapp.core.shell.ShellConfig
-import com.webtoapp.core.webview.PageZoomStore
 import com.webtoapp.core.webview.WebViewCallbacks
 import com.webtoapp.data.model.WebViewConfig
 import com.webtoapp.data.model.hasAnySlimToolbarItem
@@ -114,7 +113,6 @@ fun BoxScope.ShellScaffoldLayout(
         toolbarShowForward = toolbarCfg.toolbarShowForward,
         toolbarShowRefresh = toolbarCfg.toolbarShowRefresh,
         toolbarShowConsole = toolbarCfg.toolbarShowConsole,
-        toolbarShowZoom = toolbarCfg.toolbarShowZoom,
         toolbarShowFind = toolbarCfg.toolbarShowFind && findInPageSupported
     )
     val showToolbar = (!hideToolbar || config.webViewConfig.showToolbarInFullscreen) &&
@@ -132,22 +130,8 @@ fun BoxScope.ShellScaffoldLayout(
         toolbarShowForward = toolbarCfg.toolbarShowForward,
         toolbarShowRefresh = toolbarCfg.toolbarShowRefresh,
         toolbarShowConsole = toolbarCfg.toolbarShowConsole,
-        toolbarShowZoom = toolbarCfg.toolbarShowZoom,
         toolbarShowFind = toolbarCfg.toolbarShowFind
     )
-
-    // Per-app runtime page zoom (persists across cold starts). 0 = no override.
-    var pageZoomPercent by remember {
-        mutableStateOf(PageZoomStore.getZoomPercent(context, config.packageName))
-    }
-    val onZoomChange: (Int) -> Unit = { percent ->
-        pageZoomPercent = percent
-        // textZoom only takes effect on the next page layout, so a live page needs a reload
-        // to reflect the change immediately (Chromium does not relayout for setTextZoom).
-        webViewRef?.settings?.textZoom = if (percent > 0) percent else 100
-        webViewRef?.reload()
-        PageZoomStore.setZoomPercent(context, config.packageName, percent)
-    }
 
     Scaffold(
 
@@ -177,10 +161,7 @@ fun BoxScope.ShellScaffoldLayout(
                     consoleErrorCount = consoleMessages.count { it.level == ConsoleLevel.ERROR },
                     showFindButton = toolbarVisibility.showFind && findInPageSupported,
                     showFindBar = showFindBar,
-                    onToggleFindBar = onToggleFindBar,
-                    showZoom = toolbarVisibility.showZoom,
-                    currentZoomPercent = pageZoomPercent,
-                    onZoomChange = onZoomChange
+                    onToggleFindBar = onToggleFindBar
                 )
             }
         }
@@ -325,10 +306,7 @@ private fun ShellTopAppBar(
     consoleErrorCount: Int = 0,
     showFindButton: Boolean = true,
     showFindBar: Boolean = false,
-    onToggleFindBar: () -> Unit = {},
-    showZoom: Boolean = true,
-    currentZoomPercent: Int = 0,
-    onZoomChange: (Int) -> Unit = {}
+    onToggleFindBar: () -> Unit = {}
 ) {
     val context = LocalContext.current
 
@@ -408,23 +386,6 @@ private fun ShellTopAppBar(
                     icon = if (showFindBar) Icons.Filled.Search else Icons.Outlined.Search,
                     contentDescription = Strings.nativeBridgeCapsFindInPage
                 )
-            }
-            // Page-zoom button: opens the zoom presets dialog directly. When more page-level
-            // actions (find-in-page, …) land, this can become a ⋮ overflow menu again.
-            if (showZoom) {
-                var zoomDialogOpen by remember { mutableStateOf(false) }
-                com.webtoapp.ui.design.WtaIconButton(
-                    onClick = { zoomDialogOpen = true },
-                    icon = Icons.Outlined.ZoomIn,
-                    contentDescription = Strings.pageZoomLabel
-                )
-                if (zoomDialogOpen) {
-                    ZoomPresetsDialog(
-                        currentZoom = currentZoomPercent,
-                        onSelect = onZoomChange,
-                        onDismiss = { zoomDialogOpen = false }
-                    )
-                }
             }
         },
         colors = TopAppBarDefaults.topAppBarColors(

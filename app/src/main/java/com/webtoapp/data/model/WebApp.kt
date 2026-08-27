@@ -295,7 +295,6 @@ data class WebViewConfig(
     val toolbarShowForward: Boolean = true,
     val toolbarShowRefresh: Boolean = true,
     val toolbarShowConsole: Boolean = true,
-    val toolbarShowZoom: Boolean = true,
     val toolbarShowFind: Boolean = true,
     val browserToolbarCustomized: Boolean = false,
     val hideToolbar: Boolean = false,
@@ -329,6 +328,11 @@ data class WebViewConfig(
     val popupBlockerToggleEnabled: Boolean = false,
 
     val initialScale: Int = 0,
+    // Build-time per-app page zoom in percent (100 = default), applied via textZoom on
+    // every run (#654). This is THE page zoom for the app — the tool was transferred from
+    // the runtime hidden toolbar into the editor's Advanced Settings, so there is no
+    // runtime override layer anymore. 0 (legacy data) is treated as 100.
+    val pageZoomPercent: Int = 100,
     val viewportMode: ViewportMode = ViewportMode.DEFAULT,
     val customViewportWidth: Int = 0,
     val newWindowBehavior: NewWindowBehavior = NewWindowBehavior.SAME_WINDOW,

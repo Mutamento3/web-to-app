@@ -18,16 +18,15 @@ data class ToolbarButtonVisibility(
     val showForward: Boolean,
     val showRefresh: Boolean,
     val showConsoleButton: Boolean,
-    val showZoom: Boolean,
     val showFind: Boolean
 )
 
 /**
- * Whether the customized slim toolbar has at least one item to render. Console and
- * zoom are toolbar items in their own right: a toolbar customized down to only
- * those two buttons must still render. Both the host preview and the exported
- * shell gate the slim toolbar on this predicate — keep them on the shared
- * function so the two paths cannot drift apart again.
+ * Whether the customized slim toolbar has at least one item to render. Console is a
+ * toolbar item in its own right: a toolbar customized down to only that button
+ * must still render. Both the host preview and the exported shell gate the slim
+ * toolbar on this predicate — keep them on the shared function so the two paths
+ * cannot drift apart again.
  */
 fun hasAnySlimToolbarItem(
     toolbarShowTitle: Boolean,
@@ -36,10 +35,9 @@ fun hasAnySlimToolbarItem(
     toolbarShowForward: Boolean,
     toolbarShowRefresh: Boolean,
     toolbarShowConsole: Boolean,
-    toolbarShowZoom: Boolean,
     toolbarShowFind: Boolean = true
 ): Boolean = toolbarShowTitle || toolbarShowUrl || toolbarShowBack || toolbarShowForward ||
-    toolbarShowRefresh || toolbarShowConsole || toolbarShowZoom || toolbarShowFind
+    toolbarShowRefresh || toolbarShowConsole || toolbarShowFind
 
 /**
  * Resolves which toolbar buttons are visible given the hide-toggle state and the
@@ -54,7 +52,6 @@ fun resolveToolbarButtons(
     toolbarShowForward: Boolean,
     toolbarShowRefresh: Boolean,
     toolbarShowConsole: Boolean = true,
-    toolbarShowZoom: Boolean = true,
     toolbarShowFind: Boolean = true
 ): ToolbarButtonVisibility {
     val customizedSlim = hideBrowserToolbar && browserToolbarCustomized
@@ -65,7 +62,6 @@ fun resolveToolbarButtons(
         showForward = !customizedSlim || toolbarShowForward,
         showRefresh = !customizedSlim || toolbarShowRefresh,
         showConsoleButton = !customizedSlim || toolbarShowConsole,
-        showZoom = !customizedSlim || toolbarShowZoom,
         showFind = !customizedSlim || toolbarShowFind
     )
 }

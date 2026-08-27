@@ -70,7 +70,6 @@ import com.webtoapp.data.model.SplashType
 import com.webtoapp.data.model.WebApp
 import com.webtoapp.data.model.hasAnySlimToolbarItem
 import com.webtoapp.data.model.resolveToolbarButtons
-import com.webtoapp.core.webview.PageZoomStore
 import android.content.pm.ActivityInfo
 import com.webtoapp.ui.theme.WebToAppTheme
 import com.webtoapp.util.DownloadHelper
@@ -2811,8 +2810,7 @@ fun WebViewScreen(
             toolbarShowBack = it.toolbarShowBack,
             toolbarShowForward = it.toolbarShowForward,
             toolbarShowRefresh = it.toolbarShowRefresh,
-            toolbarShowConsole = it.toolbarShowConsole,
-            toolbarShowZoom = it.toolbarShowZoom
+            toolbarShowConsole = it.toolbarShowConsole
         )
     } == true
     val showSlimToolbar = hideBrowserToolbar && toolbarCfg?.browserToolbarCustomized == true && hasAnyToolbarItem
@@ -2829,15 +2827,8 @@ fun WebViewScreen(
             toolbarShowBack = it.toolbarShowBack,
             toolbarShowForward = it.toolbarShowForward,
             toolbarShowRefresh = it.toolbarShowRefresh,
-            toolbarShowConsole = it.toolbarShowConsole,
-            toolbarShowZoom = it.toolbarShowZoom
+            toolbarShowConsole = it.toolbarShowConsole
         )
-    }
-
-    // Per-app runtime page zoom (persists across cold starts). 0 = no override.
-    val previewAppPackage = webApp?.packageName ?: context.packageName
-    var pageZoomPercent by remember(previewAppPackage) {
-        mutableStateOf(PageZoomStore.getZoomPercent(context, previewAppPackage))
     }
 
     LaunchedEffect(hideToolbar) {
@@ -2935,31 +2926,6 @@ fun WebViewScreen(
                                 icon = if (showFindBar) Icons.Filled.Search else Icons.Outlined.Search,
                                 contentDescription = Strings.nativeBridgeCapsFindInPage
                             )
-                        }
-                        // Page-zoom button: opens the zoom presets dialog directly (mirrors
-                        // the shell/export toolbar so preview and export behave the same).
-                        if (isTestMode || browserToolbarVisibility?.showZoom == true) {
-                            var zoomDialogOpen by remember { mutableStateOf(false) }
-                            com.webtoapp.ui.design.WtaIconButton(
-                                onClick = { zoomDialogOpen = true },
-                                icon = Icons.Outlined.ZoomIn,
-                                contentDescription = Strings.pageZoomLabel
-                            )
-                            if (zoomDialogOpen) {
-                                com.webtoapp.ui.shell.ZoomPresetsDialog(
-                                    currentZoom = pageZoomPercent,
-                                    onSelect = { percent ->
-                                        pageZoomPercent = percent
-                                        // textZoom only takes effect on the next page layout,
-                                        // so a live page needs a reload to reflect the change
-                                        // immediately (Chromium does not relayout for setTextZoom).
-                                        webViewRef?.settings?.textZoom = if (percent > 0) percent else 100
-                                        webViewRef?.reload()
-                                        PageZoomStore.setZoomPercent(context, previewAppPackage, percent)
-                                    },
-                                    onDismiss = { zoomDialogOpen = false }
-                                )
-                            }
                         }
                     },
                     colors = TopAppBarDefaults.topAppBarColors(
