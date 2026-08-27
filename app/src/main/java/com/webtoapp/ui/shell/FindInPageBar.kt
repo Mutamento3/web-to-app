@@ -11,12 +11,14 @@ import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
@@ -63,9 +65,15 @@ fun FindInPageBar(
         }
     }
 
-    // Cursor ready as soon as the bar opens.
+    // Cursor and IME ready as soon as the bar opens (#652): requestFocus alone leaves the
+    // keyboard hidden, so wait for focus to land before raising the IME.
+    val keyboard = LocalSoftwareKeyboardController.current
     LaunchedEffect(webView) {
-        if (webView != null) inputFocusRequester.requestFocus()
+        if (webView != null) {
+            inputFocusRequester.requestFocus()
+            withFrameNanos { }
+            if (inputFocused) keyboard?.show()
+        }
     }
 
     // Live search as the query changes (debounced), like Chrome's find bar.
@@ -187,6 +195,7 @@ fun FindInPageBar(
             IconButton(
                 onClick = {
                     query = ""
+                    keyboard?.hide()
                     onClose()
                 },
                 modifier = Modifier.size(36.dp)
