@@ -1,4 +1,4 @@
-package com.webtoapp.ui.shell
+package com.webtoapp.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ExperimentalLayoutApi

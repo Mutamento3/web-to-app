@@ -1143,8 +1143,6 @@ data class WebViewShellConfig(
     val toolbarShowRefresh: Boolean = true,
         @SerializedName("toolbarShowConsole")
         val toolbarShowConsole: Boolean = true,
-        @SerializedName("toolbarShowZoom")
-        val toolbarShowZoom: Boolean = true,
         @SerializedName("toolbarShowFind")
         val toolbarShowFind: Boolean = true,
 
@@ -1230,6 +1228,9 @@ data class WebViewShellConfig(
 
     @SerializedName("initialScale")
     val initialScale: Int = 0,
+
+    @SerializedName("pageZoomPercent")
+    val pageZoomPercent: Int = 100,
 
     @SerializedName("viewportMode")
     val viewportMode: String = "DEFAULT",

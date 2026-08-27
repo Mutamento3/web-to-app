@@ -26,7 +26,6 @@ class ToolbarVisibilityTest {
         assertThat(visibility.showForward).isTrue()
         assertThat(visibility.showRefresh).isTrue()
         assertThat(visibility.showConsoleButton).isTrue()
-        assertThat(visibility.showZoom).isTrue()
     }
 
     @Test
@@ -47,12 +46,11 @@ class ToolbarVisibilityTest {
         assertThat(visibility.showForward).isTrue()
         assertThat(visibility.showRefresh).isFalse()
         assertThat(visibility.showConsoleButton).isTrue()
-        assertThat(visibility.showZoom).isTrue()
     }
 
     @Test
-    fun `slim mode keeps console and zoom on their own toggles`() {
-        // The five navigation toggles off no longer force console/zoom off — each has
+    fun `slim mode keeps console on its own toggle`() {
+        // The five navigation toggles off no longer force console off — it has
         // its own switch now.
         val visibility = resolveToolbarButtons(
             hideBrowserToolbar = true,
@@ -70,11 +68,10 @@ class ToolbarVisibilityTest {
         assertThat(visibility.showForward).isFalse()
         assertThat(visibility.showRefresh).isFalse()
         assertThat(visibility.showConsoleButton).isTrue()
-        assertThat(visibility.showZoom).isTrue()
     }
 
     @Test
-    fun `slim mode hides console and zoom when their toggles are off`() {
+    fun `slim mode hides console when its toggle is off`() {
         val visibility = resolveToolbarButtons(
             hideBrowserToolbar = true,
             browserToolbarCustomized = true,
@@ -83,12 +80,10 @@ class ToolbarVisibilityTest {
             toolbarShowBack = true,
             toolbarShowForward = true,
             toolbarShowRefresh = true,
-            toolbarShowConsole = false,
-            toolbarShowZoom = false
+            toolbarShowConsole = false
         )
 
         assertThat(visibility.showConsoleButton).isFalse()
-        assertThat(visibility.showZoom).isFalse()
         assertThat(visibility.showTitle).isTrue()
     }
 
@@ -125,7 +120,7 @@ class ToolbarVisibilityTest {
     }
 
     @Test
-    fun `normal mode ignores the console and zoom toggles`() {
+    fun `normal mode ignores the console toggle`() {
         val visibility = resolveToolbarButtons(
             hideBrowserToolbar = false,
             browserToolbarCustomized = false,
@@ -134,12 +129,10 @@ class ToolbarVisibilityTest {
             toolbarShowBack = false,
             toolbarShowForward = false,
             toolbarShowRefresh = false,
-            toolbarShowConsole = false,
-            toolbarShowZoom = false
+            toolbarShowConsole = false
         )
 
         assertThat(visibility.showConsoleButton).isTrue()
-        assertThat(visibility.showZoom).isTrue()
     }
 
     @Test
@@ -160,22 +153,20 @@ class ToolbarVisibilityTest {
         assertThat(visibility.showBack).isTrue()
         assertThat(visibility.showRefresh).isTrue()
         assertThat(visibility.showConsoleButton).isTrue()
-        assertThat(visibility.showZoom).isTrue()
     }
 
     @Test
-    fun `slim toolbar with only console and zoom enabled still has content`() {
+    fun `slim toolbar with only console enabled still has content`() {
         // Regression: the slim-toolbar gate in both the preview and the exported shell
         // used to count only the five navigation items, so a toolbar customized down
-        // to just the console and zoom buttons rendered as a completely hidden top bar.
+        // to just the console button rendered as a completely hidden top bar.
         val hasContent = hasAnySlimToolbarItem(
             toolbarShowTitle = false,
             toolbarShowUrl = false,
             toolbarShowBack = false,
             toolbarShowForward = false,
             toolbarShowRefresh = false,
-            toolbarShowConsole = true,
-            toolbarShowZoom = true
+            toolbarShowConsole = true
         )
 
         assertThat(hasContent).isTrue()
@@ -190,7 +181,6 @@ class ToolbarVisibilityTest {
             toolbarShowForward = false,
             toolbarShowRefresh = false,
             toolbarShowConsole = false,
-            toolbarShowZoom = false,
             toolbarShowFind = false
         )
 

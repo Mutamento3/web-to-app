@@ -3753,7 +3753,6 @@ private fun com.webtoapp.data.model.WebViewConfig.toWebViewBlock(context: androi
         toolbarShowForward = toolbarShowForward,
         toolbarShowRefresh = toolbarShowRefresh,
         toolbarShowConsole = toolbarShowConsole,
-        toolbarShowZoom = toolbarShowZoom,
         toolbarShowFind = toolbarShowFind,
         browserToolbarCustomized = browserToolbarCustomized,
         showStatusBarInFullscreen = showStatusBarInFullscreen,
@@ -3803,6 +3802,7 @@ private fun WebApp.buildWebViewBlock(context: android.content.Context?): WebView
 
 private fun WebApp.buildWebViewBehaviorBlock(): WebViewBehaviorBlock = WebViewBehaviorBlock(
     initialScale = webViewConfig.initialScale,
+    pageZoomPercent = webViewConfig.pageZoomPercent,
     viewportMode = webViewConfig.viewportMode.name,
     customViewportWidth = webViewConfig.customViewportWidth,
     newWindowBehavior = webViewConfig.newWindowBehavior.name,

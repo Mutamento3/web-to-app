@@ -44,7 +44,7 @@ class WebViewConfigBooleanCoverageTest {
             "zoomEnabled", "desktopMode",
             "hideToolbar", "hideBrowserToolbar", "toolbarShowTitle", "toolbarShowUrl",
             "toolbarShowBack", "toolbarShowForward", "toolbarShowRefresh",
-            "toolbarShowConsole", "toolbarShowZoom", "toolbarShowFind",
+            "toolbarShowConsole", "toolbarShowFind",
             "browserToolbarCustomized", "showStatusBarInFullscreen",
             "showNavigationBarInFullscreen", "showToolbarInFullscreen", "landscapeMode",
             "longPressMenuEnabled", "popupBlockerEnabled", "popupBlockerToggleEnabled",
@@ -202,7 +202,8 @@ class WebViewConfigBooleanCoverageTest {
                 swipeRefreshZone = com.webtoapp.data.model.SwipeRefreshZone.ANYWHERE,
                 autoRefreshIntervalSec = 120,
                 blobInterceptThresholdMb = 10,
-                screenAwakeTimeoutMinutes = 15
+                screenAwakeTimeoutMinutes = 15,
+                pageZoomPercent = 125
             )
         )
         val shell = roundTrip(app)
@@ -227,6 +228,7 @@ class WebViewConfigBooleanCoverageTest {
         readShell("autoRefreshIntervalSec", 120)
         readShell("blobInterceptThresholdMb", 10)
         readShell("screenAwakeTimeoutMinutes", 15)
+        readShell("pageZoomPercent", 125)
     }
 
     // ────────────────────────────────────────────────────────────
@@ -288,7 +290,6 @@ class WebViewConfigBooleanCoverageTest {
             toolbarShowForward = bool("toolbarShowForward"),
             toolbarShowRefresh = bool("toolbarShowRefresh"),
             toolbarShowConsole = bool("toolbarShowConsole"),
-            toolbarShowZoom = bool("toolbarShowZoom"),
             toolbarShowFind = bool("toolbarShowFind"),
             browserToolbarCustomized = bool("browserToolbarCustomized"),
             showStatusBarInFullscreen = bool("showStatusBarInFullscreen"),

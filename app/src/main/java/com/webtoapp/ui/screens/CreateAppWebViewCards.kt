@@ -1003,6 +1003,30 @@ fun BrowserAdvancedConfigCard(
                                 onCheckedChange = { onConfigChange(config.copy(zoomEnabled = it)) }
                             )
                             WtaSectionDivider()
+                            // Per-app page zoom (#654): transferred from the runtime hidden
+                            // toolbar into Advanced Settings — this is THE zoom for the app,
+                            // applied via textZoom on every run. Same Chrome-style presets.
+                            var pageZoomDialogOpen by remember { mutableStateOf(false) }
+                            WtaChoiceRow(
+                                title = Strings.pageZoomSettingLabel,
+                                subtitle = Strings.pageZoomSettingHint,
+                                value = "${if (config.pageZoomPercent <= 0) 100 else config.pageZoomPercent}%",
+                                onClick = { pageZoomDialogOpen = true }
+                            )
+                            if (pageZoomDialogOpen) {
+                                com.webtoapp.ui.components.ZoomPresetsDialog(
+                                    currentZoom = config.pageZoomPercent,
+                                    onSelect = { percent ->
+                                        onConfigChange(config.copy(
+                                            // 0 means "reset" in the presets dialog; the editor
+                                            // stores the concrete default (100) instead.
+                                            pageZoomPercent = if (percent > 0) percent else 100
+                                        ))
+                                    },
+                                    onDismiss = { pageZoomDialogOpen = false }
+                                )
+                            }
+                            WtaSectionDivider()
                             WtaToggleRow(
                                 title = Strings.fullscreenVideoSetting,
                                 subtitle = Strings.fullscreenVideoSettingHint,
@@ -2348,17 +2372,6 @@ fun HideBrowserToolbarCard(
                             onCheckedChange = {
                                 onWebViewConfigChange(webViewConfig.copy(
                                     toolbarShowConsole = it,
-                                    browserToolbarCustomized = true
-                                ))
-                            }
-                        )
-                        WtaSectionDivider()
-                        WtaToggleRow(
-                            title = Strings.toolbarShowZoomLabel,
-                            checked = webViewConfig.toolbarShowZoom,
-                            onCheckedChange = {
-                                onWebViewConfigChange(webViewConfig.copy(
-                                    toolbarShowZoom = it,
                                     browserToolbarCustomized = true
                                 ))
                             }
