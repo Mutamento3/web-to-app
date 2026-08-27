@@ -1003,6 +1003,27 @@ fun BrowserAdvancedConfigCard(
                                 onCheckedChange = { onConfigChange(config.copy(zoomEnabled = it)) }
                             )
                             WtaSectionDivider()
+                            var initialZoomDialogOpen by remember { mutableStateOf(false) }
+                            WtaChoiceRow(
+                                title = Strings.initialPageZoomLabel,
+                                subtitle = Strings.initialPageZoomHint,
+                                value = "${if (config.initialPageZoomPercent <= 0) 100 else config.initialPageZoomPercent}%",
+                                onClick = { initialZoomDialogOpen = true }
+                            )
+                            if (initialZoomDialogOpen) {
+                                com.webtoapp.ui.shell.ZoomPresetsDialog(
+                                    currentZoom = config.initialPageZoomPercent,
+                                    onSelect = { percent ->
+                                        onConfigChange(config.copy(
+                                            // 0 means "reset" from the runtime dialog; the
+                                            // editor stores the concrete default (100) instead.
+                                            initialPageZoomPercent = if (percent > 0) percent else 100
+                                        ))
+                                    },
+                                    onDismiss = { initialZoomDialogOpen = false }
+                                )
+                            }
+                            WtaSectionDivider()
                             WtaToggleRow(
                                 title = Strings.fullscreenVideoSetting,
                                 subtitle = Strings.fullscreenVideoSettingHint,

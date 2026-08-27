@@ -999,6 +999,8 @@ object Strings {
     val console: String get() = StringsA.console
     val pageZoomLabel: String get() = StringsA.pageZoomLabel
     val pageZoomReset: String get() = StringsA.pageZoomReset
+    val initialPageZoomLabel: String get() = StringsA.initialPageZoomLabel
+    val initialPageZoomHint: String get() = StringsA.initialPageZoomHint
     val noConsoleMessages: String get() = StringsA.noConsoleMessages
     val inputJavaScript: String get() = StringsA.inputJavaScript
     val preparingDownload: String get() = StringsA.preparingDownload
@@ -17591,6 +17593,32 @@ object StringsA {
         AppLanguage.RUSSIAN -> "Сбросить"
         AppLanguage.JAPANESE -> "リセット"
         AppLanguage.KOREAN -> "재설정"
+    }
+
+    val initialPageZoomLabel: String get() = when (Strings.lang) {
+        AppLanguage.CHINESE -> "初始页面缩放"
+        AppLanguage.ENGLISH -> "Initial Page Zoom"
+        AppLanguage.ARABIC -> "تكبير الصفحة الابتدائي"
+        AppLanguage.PORTUGUESE -> "Zoom Inicial da Página"
+        AppLanguage.SPANISH -> "Zoom inicial de página"
+        AppLanguage.FRENCH -> "Zoom de page initial"
+        AppLanguage.GERMAN -> "Anfänglicher Seitenzoom"
+        AppLanguage.RUSSIAN -> "Начальный масштаб страницы"
+        AppLanguage.JAPANESE -> "初期ページズーム"
+        AppLanguage.KOREAN -> "초기 페이지 확대"
+    }
+
+    val initialPageZoomHint: String get() = when (Strings.lang) {
+        AppLanguage.CHINESE -> "应用启动时的整页缩放比例；用户仍可在运行时通过工具栏调整"
+        AppLanguage.ENGLISH -> "Whole-page zoom applied at app start; users can still adjust it from the toolbar"
+        AppLanguage.ARABIC -> "تكبير الصفحة الكاملة عند بدء التطبيق؛ لا يزال بإمكان المستخدمين تعديله من شريط الأدوات"
+        AppLanguage.PORTUGUESE -> "Zoom de página inteira aplicado ao iniciar o aplicativo; os usuários ainda podem ajustá-lo pela barra de ferramentas"
+        AppLanguage.SPANISH -> "Zoom de página completa aplicado al iniciar la aplicación; los usuarios aún pueden ajustarlo desde la barra de herramientas"
+        AppLanguage.FRENCH -> "Zoom de page entière appliqué au démarrage de l'application ; les utilisateurs peuvent toujours l'ajuster depuis la barre d'outils"
+        AppLanguage.GERMAN -> "Ganzseitiger Zoom beim Start der App; Nutzer können ihn weiterhin über die Symbolleiste anpassen"
+        AppLanguage.RUSSIAN -> "Масштаб всей страницы при запуске приложения; пользователи могут изменить его через панель инструментов"
+        AppLanguage.JAPANESE -> "アプリ起動時のページ全体のズーム率。ユーザーはツールバーから後で調整できます"
+        AppLanguage.KOREAN -> "앱 시작 시 적용되는 전체 페이지 확대/축소; 사용자는 도구 모음에서 조정할 수 있습니다"
     }
 
     val noConsoleMessages: String get() = when (Strings.lang) {
