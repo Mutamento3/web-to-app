@@ -142,10 +142,9 @@ fun BoxScope.ShellScaffoldLayout(
     }
     val onZoomChange: (Int) -> Unit = { percent ->
         pageZoomPercent = percent
-        // textZoom only takes effect on the next page layout, so a live page needs a reload
-        // to reflect the change immediately (Chromium does not relayout for setTextZoom).
-        webViewRef?.settings?.textZoom = if (percent > 0) percent else 100
-        webViewRef?.reload()
+        // Browser-level zoom (CSS zoom on :root) relayouts synchronously — apply to the
+        // live DOM immediately instead of the old textZoom + reload dance (#654).
+        webViewRef?.let { com.webtoapp.core.webview.PageZoom.applyToLoaded(it, percent) }
         PageZoomStore.setZoomPercent(context, config.packageName, percent)
     }
 

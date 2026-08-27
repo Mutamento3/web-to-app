@@ -202,7 +202,8 @@ class WebViewConfigBooleanCoverageTest {
                 swipeRefreshZone = com.webtoapp.data.model.SwipeRefreshZone.ANYWHERE,
                 autoRefreshIntervalSec = 120,
                 blobInterceptThresholdMb = 10,
-                screenAwakeTimeoutMinutes = 15
+                screenAwakeTimeoutMinutes = 15,
+                initialPageZoomPercent = 125
             )
         )
         val shell = roundTrip(app)
@@ -227,6 +228,7 @@ class WebViewConfigBooleanCoverageTest {
         readShell("autoRefreshIntervalSec", 120)
         readShell("blobInterceptThresholdMb", 10)
         readShell("screenAwakeTimeoutMinutes", 15)
+        readShell("initialPageZoomPercent", 125)
     }
 
     // ────────────────────────────────────────────────────────────

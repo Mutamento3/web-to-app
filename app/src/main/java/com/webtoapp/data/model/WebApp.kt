@@ -297,6 +297,9 @@ data class WebViewConfig(
     val toolbarShowConsole: Boolean = true,
     val toolbarShowZoom: Boolean = true,
     val toolbarShowFind: Boolean = true,
+    // Build-time browser-level page zoom default in percent (100 = no zoom, #654). Runtime
+    // overrides from the toolbar dialog still win over this via PageZoomStore.
+    val initialPageZoomPercent: Int = 100,
     val browserToolbarCustomized: Boolean = false,
     val hideToolbar: Boolean = false,
     val showStatusBarInFullscreen: Boolean = false,
