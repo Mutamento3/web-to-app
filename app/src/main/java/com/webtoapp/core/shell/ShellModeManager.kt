@@ -1124,8 +1124,8 @@ data class WebViewShellConfig(
     @SerializedName("hideToolbar")
     val hideToolbar: Boolean = false,
 
-    @SerializedName("hideBrowserToolbar")
-    val hideBrowserToolbar: Boolean = false,
+    @SerializedName("browserToolbarEnabled")
+    val browserToolbarEnabled: Boolean = false,
 
     @SerializedName("toolbarShowTitle")
     val toolbarShowTitle: Boolean = true,
@@ -1145,9 +1145,6 @@ data class WebViewShellConfig(
         val toolbarShowConsole: Boolean = true,
         @SerializedName("toolbarShowFind")
         val toolbarShowFind: Boolean = true,
-
-    @SerializedName("browserToolbarCustomized")
-    val browserToolbarCustomized: Boolean = false,
 
     @SerializedName("showStatusBarInFullscreen")
     val showStatusBarInFullscreen: Boolean = false,

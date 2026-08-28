@@ -28,7 +28,7 @@ import com.webtoapp.core.i18n.Strings
 import com.webtoapp.core.shell.ShellConfig
 import com.webtoapp.core.webview.WebViewCallbacks
 import com.webtoapp.data.model.WebViewConfig
-import com.webtoapp.data.model.hasAnySlimToolbarItem
+import com.webtoapp.data.model.hasAnyToolbarItem
 import com.webtoapp.data.model.resolveToolbarButtons
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -37,7 +37,6 @@ fun BoxScope.ShellScaffoldLayout(
     config: ShellConfig,
     appType: String,
     hideToolbar: Boolean,
-    hideBrowserToolbar: Boolean = false,
 
     isLoading: Boolean,
     loadProgress: Int,
@@ -106,7 +105,8 @@ fun BoxScope.ShellScaffoldLayout(
     val toolbarCfg = config.webViewConfig
     // Native find-in-page drives WebView.findAllAsync — system WebView only.
     val findInPageSupported = config.engineType == "SYSTEM_WEBVIEW"
-    val showSlimToolbar = hideBrowserToolbar && toolbarCfg.browserToolbarCustomized && hasAnySlimToolbarItem(
+    val toolbarEnabled = toolbarCfg.browserToolbarEnabled
+    val hasAnyItem = hasAnyToolbarItem(
         toolbarShowTitle = toolbarCfg.toolbarShowTitle,
         toolbarShowUrl = toolbarCfg.toolbarShowUrl,
         toolbarShowBack = toolbarCfg.toolbarShowBack,
@@ -115,15 +115,12 @@ fun BoxScope.ShellScaffoldLayout(
         toolbarShowConsole = toolbarCfg.toolbarShowConsole,
         toolbarShowFind = toolbarCfg.toolbarShowFind && findInPageSupported
     )
-    val showToolbar = (!hideToolbar || config.webViewConfig.showToolbarInFullscreen) &&
-        (!hideBrowserToolbar || showSlimToolbar)
+    val showToolbar = toolbarEnabled && hasAnyItem &&
+        (!hideToolbar || config.webViewConfig.showToolbarInFullscreen)
 
-    // In normal (non-hide) mode the toolbar always shows the full button set; only the
-    // customized slim mode applies the toolbarShow* filters. This keeps a normal-mode
-    // app from ending up with every button hidden after the hide toggle was turned off.
+    // Every button requires both the master switch and its own flag.
     val toolbarVisibility = resolveToolbarButtons(
-        hideBrowserToolbar = toolbarCfg.hideBrowserToolbar,
-        browserToolbarCustomized = toolbarCfg.browserToolbarCustomized,
+        toolbarEnabled = toolbarEnabled,
         toolbarShowTitle = toolbarCfg.toolbarShowTitle,
         toolbarShowUrl = toolbarCfg.toolbarShowUrl,
         toolbarShowBack = toolbarCfg.toolbarShowBack,

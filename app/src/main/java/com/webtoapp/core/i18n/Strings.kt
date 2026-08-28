@@ -2345,9 +2345,8 @@ object Strings {
     val statusBarStyleConfigLabel: String get() = StringsC.statusBarStyleConfigLabel
     val statusBarLightModeLabel: String get() = StringsC.statusBarLightModeLabel
     val statusBarDarkModeLabel: String get() = StringsC.statusBarDarkModeLabel
-    val hideBrowserToolbarLabel: String get() = StringsC.hideBrowserToolbarLabel
-    val toolbarContentOptionsLabel: String get() = StringsC.toolbarContentOptionsLabel
-    val toolbarContentOptionsHint: String get() = StringsC.toolbarContentOptionsHint
+    val browserToolbarLabel: String get() = StringsC.browserToolbarLabel
+    val browserToolbarHint: String get() = StringsC.browserToolbarHint
     val toolbarShowTitleLabel: String get() = StringsC.toolbarShowTitleLabel
     val toolbarShowTitleHint: String get() = StringsC.toolbarShowTitleHint
     val toolbarShowUrlLabel: String get() = StringsC.toolbarShowUrlLabel
@@ -34241,43 +34240,30 @@ object StringsC {
         AppLanguage.KOREAN -> "다크 모드"
     }
 
-    val hideBrowserToolbarLabel: String get() = when (Strings.lang) {
-        AppLanguage.CHINESE -> "隐藏工具栏"
-        AppLanguage.ENGLISH -> "Hide Toolbar"
-        AppLanguage.ARABIC -> "إخفاء شريط الأدوات"
-        AppLanguage.PORTUGUESE -> "Ocultar Barra de Ferramentas"
-        AppLanguage.SPANISH -> "Ocultar Barra de Herramientas"
-        AppLanguage.FRENCH -> "Masquer la Barre d'Outils"
-        AppLanguage.GERMAN -> "Symbolleiste ausblenden"
-        AppLanguage.RUSSIAN -> "Скрыть панель инструментов"
-        AppLanguage.JAPANESE -> "ツールバーを非表示"
-        AppLanguage.KOREAN -> "도구 모음 숨기기"
+    val browserToolbarLabel: String get() = when (Strings.lang) {
+        AppLanguage.CHINESE -> "工具栏"
+        AppLanguage.ENGLISH -> "Toolbar"
+        AppLanguage.ARABIC -> "شريط الأدوات"
+        AppLanguage.PORTUGUESE -> "Barra de Ferramentas"
+        AppLanguage.SPANISH -> "Barra de Herramientas"
+        AppLanguage.FRENCH -> "Barre d'Outils"
+        AppLanguage.GERMAN -> "Symbolleiste"
+        AppLanguage.RUSSIAN -> "Панель инструментов"
+        AppLanguage.JAPANESE -> "ツールバー"
+        AppLanguage.KOREAN -> "도구 모음"
     }
 
-    val toolbarContentOptionsLabel: String get() = when (Strings.lang) {
-        AppLanguage.CHINESE -> "工具栏内容"
-        AppLanguage.ENGLISH -> "Toolbar Content"
-        AppLanguage.ARABIC -> "محتوى شريط الأدوات"
-        AppLanguage.PORTUGUESE -> "Conteúdo da Barra de Ferramentas"
-        AppLanguage.SPANISH -> "Contenido de la Barra de Herramientas"
-        AppLanguage.FRENCH -> "Contenu de la Barre d'Outils"
-        AppLanguage.GERMAN -> "Symbolleisteninhalt"
-        AppLanguage.RUSSIAN -> "Содержимое панели инструментов"
-        AppLanguage.JAPANESE -> "ツールバーのコンテンツ"
-        AppLanguage.KOREAN -> "도구 모음 콘텐츠"
-    }
-
-    val toolbarContentOptionsHint: String get() = when (Strings.lang) {
-        AppLanguage.CHINESE -> "配置浏览器工具栏可见时显示哪些内容"
-        AppLanguage.ENGLISH -> "Choose what appears when the browser toolbar is visible"
-        AppLanguage.ARABIC -> "اختر ما يظهر عند عرض شريط أدوات المتصفح"
-        AppLanguage.PORTUGUESE -> "Escolha o que aparece quando a barra de ferramentas do navegador está visível"
-        AppLanguage.SPANISH -> "Elige qué aparece cuando la barra de herramientas del navegador está visible"
-        AppLanguage.FRENCH -> "Choisissez ce qui apparaît lorsque la barre d'outils du navigateur est visible"
-        AppLanguage.GERMAN -> "Wählen Sie, was angezeigt wird, wenn die Browser-Symbolleiste sichtbar ist"
-        AppLanguage.RUSSIAN -> "Выберите, что отображается, когда панель инструментов браузера видна"
-        AppLanguage.JAPANESE -> "ブラウザツールバーが表示されているときに表示する内容を選択"
-        AppLanguage.KOREAN -> "브라우저 도구 모음이 표시될 때 나타날 항목 선택"
+    val browserToolbarHint: String get() = when (Strings.lang) {
+        AppLanguage.CHINESE -> "开启后显示浏览器工具栏，可单独开关各按钮；关闭时页面全屏显示"
+        AppLanguage.ENGLISH -> "Show the browser toolbar with per-button toggles. Off keeps the page fullscreen"
+        AppLanguage.ARABIC -> "يعرض شريط أدوات المتصفح مع مفاتيح لكل زر. عند الإيقاف تبقى الصفحة بملء الشاشة"
+        AppLanguage.PORTUGUESE -> "Mostra a barra de ferramentas do navegador com botões individuais. Desligada, a página fica em tela cheia"
+        AppLanguage.SPANISH -> "Muestra la barra de herramientas del navegador con botones individuales. Apagada, la página queda a pantalla completa"
+        AppLanguage.FRENCH -> "Affiche la barre d'outils du navigateur avec des boutons individuels. Désactivée, la page reste en plein écran"
+        AppLanguage.GERMAN -> "Zeigt die Browser-Symbolleiste mit einzelnen Schaltern. Aus bleibt die Seite Vollbild"
+        AppLanguage.RUSSIAN -> "Показывает панель инструментов браузера с отдельными кнопками. Выключено — страница во весь экран"
+        AppLanguage.JAPANESE -> "ブラウザツールバーを表示し、ボタンごとに切り替えられます。オフの場合はページが全画面表示になります"
+        AppLanguage.KOREAN -> "브라우저 도구 모음을 표시하고 버튼별로 켜고 끌 수 있습니다. 끄면 페이지가 전체 화면으로 표시됩니다"
     }
 
     val toolbarShowTitleLabel: String get() = when (Strings.lang) {

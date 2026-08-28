@@ -106,7 +106,7 @@ data class ApkConfig(
     val userAgentMode: String get() = webView.userAgentMode
     val customUserAgent: String? get() = webView.customUserAgent
     val hideToolbar: Boolean get() = webView.hideToolbar
-    val hideBrowserToolbar: Boolean get() = webView.hideBrowserToolbar
+    val browserToolbarEnabled: Boolean get() = webView.browserToolbarEnabled
     val toolbarShowTitle: Boolean get() = webView.toolbarShowTitle
     val toolbarShowUrl: Boolean get() = webView.toolbarShowUrl
     val toolbarShowBack: Boolean get() = webView.toolbarShowBack
@@ -114,7 +114,6 @@ data class ApkConfig(
     val toolbarShowRefresh: Boolean get() = webView.toolbarShowRefresh
     val toolbarShowConsole: Boolean get() = webView.toolbarShowConsole
     val toolbarShowFind: Boolean get() = webView.toolbarShowFind
-    val browserToolbarCustomized: Boolean get() = webView.browserToolbarCustomized
     val showStatusBarInFullscreen: Boolean get() = webView.showStatusBarInFullscreen
     val showNavigationBarInFullscreen: Boolean get() = webView.showNavigationBarInFullscreen
     val showToolbarInFullscreen: Boolean get() = webView.showToolbarInFullscreen
@@ -473,7 +472,7 @@ data class WebViewBlock(
     val userAgentMode: String = "DEFAULT",
     val customUserAgent: String? = null,
     val hideToolbar: Boolean = false,
-    val hideBrowserToolbar: Boolean = false,
+    val browserToolbarEnabled: Boolean = false,
     val toolbarShowTitle: Boolean = true,
     val toolbarShowUrl: Boolean = true,
     val toolbarShowBack: Boolean = true,
@@ -481,7 +480,6 @@ data class WebViewBlock(
     val toolbarShowRefresh: Boolean = true,
     val toolbarShowConsole: Boolean = true,
     val toolbarShowFind: Boolean = true,
-    val browserToolbarCustomized: Boolean = false,
     val showStatusBarInFullscreen: Boolean = false,
     val showNavigationBarInFullscreen: Boolean = false,
     val showToolbarInFullscreen: Boolean = false,

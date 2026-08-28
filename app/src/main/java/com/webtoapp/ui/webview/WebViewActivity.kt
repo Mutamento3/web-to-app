@@ -68,7 +68,7 @@ import com.webtoapp.data.model.HtmlLoadMode
 import com.webtoapp.data.model.SplashOrientation
 import com.webtoapp.data.model.SplashType
 import com.webtoapp.data.model.WebApp
-import com.webtoapp.data.model.hasAnySlimToolbarItem
+import com.webtoapp.data.model.hasAnyToolbarItem
 import com.webtoapp.data.model.resolveToolbarButtons
 import android.content.pm.ActivityInfo
 import com.webtoapp.ui.theme.WebToAppTheme
@@ -2798,17 +2798,17 @@ fun WebViewScreen(
 
     val hideToolbar = !isTestMode && webApp?.webViewConfig?.hideToolbar == true
 
-    val hideBrowserToolbar = !isTestMode && webApp?.webViewConfig?.hideBrowserToolbar == true
+    val toolbarEnabled = !isTestMode && webApp?.webViewConfig?.browserToolbarEnabled == true
 
     val showToolbarInPreview = !hideToolbar || webApp?.webViewConfig?.showToolbarInFullscreen == true
 
     val toolbarCfg = webApp?.webViewConfig
     // Native find-in-page drives WebView.findAllAsync — system WebView only.
-    // Declared here (not inside the toolbar actions) so the slim-toolbar predicate
+    // Declared here (not inside the toolbar actions) so the toolbar predicate
     // below can discount the find item on non-system engines, mirroring the shell.
     val findInPageSupported = (webApp?.apkExportConfig?.engineType ?: "SYSTEM_WEBVIEW") == "SYSTEM_WEBVIEW"
     val hasAnyToolbarItem = toolbarCfg?.let {
-        hasAnySlimToolbarItem(
+        hasAnyToolbarItem(
             toolbarShowTitle = it.toolbarShowTitle,
             toolbarShowUrl = it.toolbarShowUrl,
             toolbarShowBack = it.toolbarShowBack,
@@ -2818,15 +2818,13 @@ fun WebViewScreen(
             toolbarShowFind = it.toolbarShowFind && findInPageSupported
         )
     } == true
-    val showSlimToolbar = hideBrowserToolbar && toolbarCfg?.browserToolbarCustomized == true && hasAnyToolbarItem
-    val shouldShowTopBar = showToolbarInPreview && (!hideBrowserToolbar || showSlimToolbar)
+    val shouldShowTopBar = showToolbarInPreview && toolbarEnabled && hasAnyToolbarItem
 
-    // Normal (non-hide) mode always shows the full button set; only the customized slim
-    // mode applies the toolbarShow* filters (mirrors the shell/export layout).
+    // Every button requires both the master switch and its own flag
+    // (mirrors the shell/export layout).
     val browserToolbarVisibility = toolbarCfg?.let {
         resolveToolbarButtons(
-            hideBrowserToolbar = it.hideBrowserToolbar,
-            browserToolbarCustomized = it.browserToolbarCustomized,
+            toolbarEnabled = toolbarEnabled,
             toolbarShowTitle = it.toolbarShowTitle,
             toolbarShowUrl = it.toolbarShowUrl,
             toolbarShowBack = it.toolbarShowBack,
@@ -3434,7 +3432,7 @@ fun WebViewScreen(
             }
 
             if (webApp?.webViewConfig?.showFloatingBackButton == true &&
-                ((hideToolbar && !showToolbarInPreview) || hideBrowserToolbar) &&
+                ((hideToolbar && !showToolbarInPreview) || !toolbarEnabled) &&
                 canGoBack
             ) {
                 var fabAlpha by remember { mutableFloatStateOf(0.9f) }
