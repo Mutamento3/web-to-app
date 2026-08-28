@@ -38,7 +38,7 @@ fun buildWebViewConfig(config: ShellConfig): WebViewConfig {
         downloadLocationMode = try { com.webtoapp.data.model.DownloadLocationMode.valueOf(config.webViewConfig.downloadLocationMode) } catch (e: Exception) { com.webtoapp.data.model.DownloadLocationMode.SYSTEM_DOWNLOAD },
         customDownloadDirUri = config.webViewConfig.customDownloadDirUri,
         hideToolbar = config.webViewConfig.hideToolbar,
-        hideBrowserToolbar = config.webViewConfig.hideBrowserToolbar,
+        browserToolbarEnabled = config.webViewConfig.browserToolbarEnabled,
         toolbarShowTitle = config.webViewConfig.toolbarShowTitle,
         toolbarShowUrl = config.webViewConfig.toolbarShowUrl,
         toolbarShowBack = config.webViewConfig.toolbarShowBack,

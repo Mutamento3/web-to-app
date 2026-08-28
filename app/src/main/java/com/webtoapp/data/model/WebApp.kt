@@ -288,7 +288,10 @@ data class WebViewConfig(
     val downloadLocationMode: DownloadLocationMode = DownloadLocationMode.SYSTEM_DOWNLOAD,
     val customDownloadDirUri: String = "",
     val openExternalLinks: Boolean = false,
-    val hideBrowserToolbar: Boolean = false,
+    // "Browser toolbar" master switch (#654 redesign): off (default) renders no toolbar
+    // at all — the page behaves fullscreen-like; on shows the toolbar with every item
+    // flag on, and the user trims individual buttons from there.
+    val browserToolbarEnabled: Boolean = false,
     val toolbarShowTitle: Boolean = true,
     val toolbarShowUrl: Boolean = true,
     val toolbarShowBack: Boolean = true,
@@ -296,7 +299,6 @@ data class WebViewConfig(
     val toolbarShowRefresh: Boolean = true,
     val toolbarShowConsole: Boolean = true,
     val toolbarShowFind: Boolean = true,
-    val browserToolbarCustomized: Boolean = false,
     val hideToolbar: Boolean = false,
     val showStatusBarInFullscreen: Boolean = false,
     val showNavigationBarInFullscreen: Boolean = false,

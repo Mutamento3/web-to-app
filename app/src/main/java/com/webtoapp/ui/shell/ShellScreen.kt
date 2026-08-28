@@ -413,8 +413,6 @@ fun ShellScreen(
 
     val hideToolbar = config.webViewConfig.hideToolbar
 
-    val hideBrowserToolbar = config.webViewConfig.hideBrowserToolbar
-
     val swipeRefreshEnabled = config.webViewConfig.swipeRefreshEnabled
 
     LaunchedEffect(hideToolbar) {
@@ -464,7 +462,6 @@ fun ShellScreen(
         config = config,
         appType = appType,
         hideToolbar = hideToolbar,
-        hideBrowserToolbar = hideBrowserToolbar,
         isLoading = isLoading,
         loadProgress = loadProgress,
         pageTitle = pageTitle,

@@ -52,7 +52,7 @@ import com.webtoapp.ui.components.BgmCard
 import com.webtoapp.ui.components.*
 import com.webtoapp.ui.viewmodel.EditState
 import com.webtoapp.ui.viewmodel.hasPreviewableContent
-import com.webtoapp.ui.viewmodel.withHideBrowserToolbar
+import com.webtoapp.ui.viewmodel.withBrowserToolbarEnabled
 import com.webtoapp.ui.viewmodel.MainViewModel
 import com.webtoapp.ui.viewmodel.UiState
 import androidx.compose.ui.platform.LocalContext
@@ -223,12 +223,12 @@ fun CreateAppScreen(
             }
 
             item {
-                HideBrowserToolbarCard(
-                    enabled = editState.webViewConfig.hideBrowserToolbar,
+                BrowserToolbarCard(
+                    enabled = editState.webViewConfig.browserToolbarEnabled,
                     webViewConfig = editState.webViewConfig,
                     onEnabledChange = { enabled ->
                         viewModel.updateEditState {
-                            copy(webViewConfig = webViewConfig.withHideBrowserToolbar(enabled))
+                            copy(webViewConfig = webViewConfig.withBrowserToolbarEnabled(enabled))
                         }
                     },
                     onWebViewConfigChange = { newConfig ->
@@ -245,7 +245,7 @@ fun CreateAppScreen(
                     showStatusBar = editState.webViewConfig.showStatusBarInFullscreen,
                     showNavigationBar = editState.webViewConfig.showNavigationBarInFullscreen,
                     hideBrowserToolbarInFullscreen =
-                        editState.webViewConfig.hideBrowserToolbar ||
+                        !editState.webViewConfig.browserToolbarEnabled ||
                             !editState.webViewConfig.showToolbarInFullscreen,
                     webViewConfig = editState.webViewConfig,
                     onEnabledChange = {
