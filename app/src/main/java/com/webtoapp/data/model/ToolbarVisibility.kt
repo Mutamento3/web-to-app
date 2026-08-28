@@ -26,7 +26,9 @@ data class ToolbarButtonVisibility(
  * toolbar item in its own right: a toolbar customized down to only that button
  * must still render. Both the host preview and the exported shell gate the slim
  * toolbar on this predicate — keep them on the shared function so the two paths
- * cannot drift apart again.
+ * cannot drift apart again. The console/find flags have NO defaults on purpose:
+ * every caller must pass them explicitly, so a new flag can never be silently
+ * treated as "on" by one path and not the other.
  */
 fun hasAnySlimToolbarItem(
     toolbarShowTitle: Boolean,
@@ -35,13 +37,15 @@ fun hasAnySlimToolbarItem(
     toolbarShowForward: Boolean,
     toolbarShowRefresh: Boolean,
     toolbarShowConsole: Boolean,
-    toolbarShowFind: Boolean = true
+    toolbarShowFind: Boolean
 ): Boolean = toolbarShowTitle || toolbarShowUrl || toolbarShowBack || toolbarShowForward ||
     toolbarShowRefresh || toolbarShowConsole || toolbarShowFind
 
 /**
  * Resolves which toolbar buttons are visible given the hide-toggle state and the
  * customized toolbar content flags. See [ToolbarButtonVisibility] for the contract.
+ * The console/find flags have NO defaults on purpose — same anti-drift rule as
+ * [hasAnySlimToolbarItem].
  */
 fun resolveToolbarButtons(
     hideBrowserToolbar: Boolean,
@@ -51,8 +55,8 @@ fun resolveToolbarButtons(
     toolbarShowBack: Boolean,
     toolbarShowForward: Boolean,
     toolbarShowRefresh: Boolean,
-    toolbarShowConsole: Boolean = true,
-    toolbarShowFind: Boolean = true
+    toolbarShowConsole: Boolean,
+    toolbarShowFind: Boolean
 ): ToolbarButtonVisibility {
     val customizedSlim = hideBrowserToolbar && browserToolbarCustomized
     return ToolbarButtonVisibility(

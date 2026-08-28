@@ -2803,6 +2803,10 @@ fun WebViewScreen(
     val showToolbarInPreview = !hideToolbar || webApp?.webViewConfig?.showToolbarInFullscreen == true
 
     val toolbarCfg = webApp?.webViewConfig
+    // Native find-in-page drives WebView.findAllAsync — system WebView only.
+    // Declared here (not inside the toolbar actions) so the slim-toolbar predicate
+    // below can discount the find item on non-system engines, mirroring the shell.
+    val findInPageSupported = (webApp?.apkExportConfig?.engineType ?: "SYSTEM_WEBVIEW") == "SYSTEM_WEBVIEW"
     val hasAnyToolbarItem = toolbarCfg?.let {
         hasAnySlimToolbarItem(
             toolbarShowTitle = it.toolbarShowTitle,
@@ -2810,7 +2814,8 @@ fun WebViewScreen(
             toolbarShowBack = it.toolbarShowBack,
             toolbarShowForward = it.toolbarShowForward,
             toolbarShowRefresh = it.toolbarShowRefresh,
-            toolbarShowConsole = it.toolbarShowConsole
+            toolbarShowConsole = it.toolbarShowConsole,
+            toolbarShowFind = it.toolbarShowFind && findInPageSupported
         )
     } == true
     val showSlimToolbar = hideBrowserToolbar && toolbarCfg?.browserToolbarCustomized == true && hasAnyToolbarItem
@@ -2827,7 +2832,8 @@ fun WebViewScreen(
             toolbarShowBack = it.toolbarShowBack,
             toolbarShowForward = it.toolbarShowForward,
             toolbarShowRefresh = it.toolbarShowRefresh,
-            toolbarShowConsole = it.toolbarShowConsole
+            toolbarShowConsole = it.toolbarShowConsole,
+            toolbarShowFind = it.toolbarShowFind
         )
     }
 
@@ -2919,7 +2925,6 @@ fun WebViewScreen(
                         }
                         // Find-in-page button: opens the native bottom find bar. System
                         // WebView only — findAllAsync has no GeckoView equivalent here.
-                        val findInPageSupported = (webApp?.apkExportConfig?.engineType ?: "SYSTEM_WEBVIEW") == "SYSTEM_WEBVIEW"
                         if ((isTestMode || browserToolbarVisibility?.showFind == true) && (isTestMode || findInPageSupported)) {
                             com.webtoapp.ui.design.WtaIconButton(
                                 onClick = { showFindBar = !showFindBar },

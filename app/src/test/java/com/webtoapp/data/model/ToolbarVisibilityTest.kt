@@ -17,7 +17,9 @@ class ToolbarVisibilityTest {
             toolbarShowUrl = false,
             toolbarShowBack = false,
             toolbarShowForward = false,
-            toolbarShowRefresh = false
+            toolbarShowRefresh = false,
+            toolbarShowConsole = true,
+            toolbarShowFind = true
         )
 
         assertThat(visibility.showTitle).isTrue()
@@ -37,7 +39,9 @@ class ToolbarVisibilityTest {
             toolbarShowUrl = false,
             toolbarShowBack = false,
             toolbarShowForward = true,
-            toolbarShowRefresh = false
+            toolbarShowRefresh = false,
+            toolbarShowConsole = true,
+            toolbarShowFind = true
         )
 
         assertThat(visibility.showTitle).isTrue()
@@ -59,7 +63,9 @@ class ToolbarVisibilityTest {
             toolbarShowUrl = false,
             toolbarShowBack = false,
             toolbarShowForward = false,
-            toolbarShowRefresh = false
+            toolbarShowRefresh = false,
+            toolbarShowConsole = true,
+            toolbarShowFind = true
         )
 
         assertThat(visibility.showTitle).isFalse()
@@ -80,7 +86,8 @@ class ToolbarVisibilityTest {
             toolbarShowBack = true,
             toolbarShowForward = true,
             toolbarShowRefresh = true,
-            toolbarShowConsole = false
+            toolbarShowConsole = false,
+            toolbarShowFind = true
         )
 
         assertThat(visibility.showConsoleButton).isFalse()
@@ -97,6 +104,7 @@ class ToolbarVisibilityTest {
             toolbarShowBack = true,
             toolbarShowForward = true,
             toolbarShowRefresh = true,
+            toolbarShowConsole = true,
             toolbarShowFind = false
         )
 
@@ -113,6 +121,7 @@ class ToolbarVisibilityTest {
             toolbarShowBack = false,
             toolbarShowForward = false,
             toolbarShowRefresh = false,
+            toolbarShowConsole = true,
             toolbarShowFind = false
         )
 
@@ -129,7 +138,8 @@ class ToolbarVisibilityTest {
             toolbarShowBack = false,
             toolbarShowForward = false,
             toolbarShowRefresh = false,
-            toolbarShowConsole = false
+            toolbarShowConsole = false,
+            toolbarShowFind = true
         )
 
         assertThat(visibility.showConsoleButton).isTrue()
@@ -146,7 +156,9 @@ class ToolbarVisibilityTest {
             toolbarShowUrl = false,
             toolbarShowBack = false,
             toolbarShowForward = false,
-            toolbarShowRefresh = false
+            toolbarShowRefresh = false,
+            toolbarShowConsole = true,
+            toolbarShowFind = true
         )
 
         assertThat(visibility.showTitle).isTrue()
@@ -166,7 +178,8 @@ class ToolbarVisibilityTest {
             toolbarShowBack = false,
             toolbarShowForward = false,
             toolbarShowRefresh = false,
-            toolbarShowConsole = true
+            toolbarShowConsole = true,
+            toolbarShowFind = false
         )
 
         assertThat(hasContent).isTrue()
