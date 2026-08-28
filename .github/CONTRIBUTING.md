@@ -91,9 +91,9 @@ both `:app` and `:shell` to compile.
 Run the checks before submitting:
 
 ```bash
-./gradlew :app:compileDebugKotlin
+./gradlew :app:compileStandardDebugKotlin
 ./gradlew :shell:compileDebugKotlin
-./gradlew :app:testDebugUnitTest
+./gradlew :app:testStandardDebugUnitTest
 ```
 
 > Native code (`node_launcher`, `go_exec_loader`, the APK optimizer) builds
@@ -187,7 +187,7 @@ an hour as authoritative; the refresh button always bypasses the cache.
 - Branch from `main`. Keep PRs focused — one logical change per PR.
 - Describe the user-visible effect in the PR body, not just the code change.
 - If your PR touches the build system, native code, or APK packaging, attach
-  the output of `./gradlew :app:assembleDebug` (or note the failure if it
+  the output of `./gradlew :app:assembleStandardDebug` (or note the failure if it
   fails on your machine).
 - CI runs on every PR. A green CI is required before merge.
 
@@ -288,9 +288,9 @@ cd web-to-app
 提交前请跑通：
 
 ```bash
-./gradlew :app:compileDebugKotlin
+./gradlew :app:compileStandardDebugKotlin
 ./gradlew :shell:compileDebugKotlin
-./gradlew :app:testDebugUnitTest
+./gradlew :app:testStandardDebugUnitTest
 ```
 
 > 原生代码（`node_launcher`、`go_exec_loader`、APK 优化器）按 ABI 经 CMake
@@ -358,7 +358,7 @@ cd web-to-app
 
 - 从 `main` 分出分支，每个 PR 只解决一件事
 - PR 描述写"用户看得到的效果"，不只是代码 diff
-- 改动涉及构建系统、原生代码或 APK 打包时，附上 `./gradlew :app:assembleDebug`
+- 改动涉及构建系统、原生代码或 APK 打包时，附上 `./gradlew :app:assembleStandardDebug`
   的结果
 - CI 必须绿色才会合并
 
