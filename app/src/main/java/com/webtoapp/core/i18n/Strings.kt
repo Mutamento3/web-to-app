@@ -2346,7 +2346,6 @@ object Strings {
     val statusBarLightModeLabel: String get() = StringsC.statusBarLightModeLabel
     val statusBarDarkModeLabel: String get() = StringsC.statusBarDarkModeLabel
     val browserToolbarLabel: String get() = StringsC.browserToolbarLabel
-    val browserToolbarHint: String get() = StringsC.browserToolbarHint
     val toolbarShowTitleLabel: String get() = StringsC.toolbarShowTitleLabel
     val toolbarShowTitleHint: String get() = StringsC.toolbarShowTitleHint
     val toolbarShowUrlLabel: String get() = StringsC.toolbarShowUrlLabel
@@ -34251,19 +34250,6 @@ object StringsC {
         AppLanguage.RUSSIAN -> "Панель инструментов"
         AppLanguage.JAPANESE -> "ツールバー"
         AppLanguage.KOREAN -> "도구 모음"
-    }
-
-    val browserToolbarHint: String get() = when (Strings.lang) {
-        AppLanguage.CHINESE -> "开启后显示浏览器工具栏，可单独开关各按钮；关闭时页面全屏显示"
-        AppLanguage.ENGLISH -> "Show the browser toolbar with per-button toggles. Off keeps the page fullscreen"
-        AppLanguage.ARABIC -> "يعرض شريط أدوات المتصفح مع مفاتيح لكل زر. عند الإيقاف تبقى الصفحة بملء الشاشة"
-        AppLanguage.PORTUGUESE -> "Mostra a barra de ferramentas do navegador com botões individuais. Desligada, a página fica em tela cheia"
-        AppLanguage.SPANISH -> "Muestra la barra de herramientas del navegador con botones individuales. Apagada, la página queda a pantalla completa"
-        AppLanguage.FRENCH -> "Affiche la barre d'outils du navigateur avec des boutons individuels. Désactivée, la page reste en plein écran"
-        AppLanguage.GERMAN -> "Zeigt die Browser-Symbolleiste mit einzelnen Schaltern. Aus bleibt die Seite Vollbild"
-        AppLanguage.RUSSIAN -> "Показывает панель инструментов браузера с отдельными кнопками. Выключено — страница во весь экран"
-        AppLanguage.JAPANESE -> "ブラウザツールバーを表示し、ボタンごとに切り替えられます。オフの場合はページが全画面表示になります"
-        AppLanguage.KOREAN -> "브라우저 도구 모음을 표시하고 버튼별로 켜고 끌 수 있습니다. 끄면 페이지가 전체 화면으로 표시됩니다"
     }
 
     val toolbarShowTitleLabel: String get() = when (Strings.lang) {
