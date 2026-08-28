@@ -2280,75 +2280,76 @@ fun BrowserToolbarCard(
         WtaToggleRow(
             icon = Icons.Outlined.WebAsset,
             title = Strings.browserToolbarLabel,
-            subtitle = Strings.browserToolbarHint,
             checked = enabled,
             onCheckedChange = onEnabledChange
         )
-        WtaSectionDivider()
-        WtaToggleRow(
-            title = Strings.toolbarShowTitleLabel,
-            subtitle = Strings.toolbarShowTitleHint,
-            checked = webViewConfig.toolbarShowTitle,
-            enabled = enabled,
-            onCheckedChange = {
-                onWebViewConfigChange(webViewConfig.copy(toolbarShowTitle = it))
+
+        AnimatedVisibility(
+            visible = enabled,
+            enter = CardExpandTransition,
+            exit = CardCollapseTransition
+        ) {
+            Column {
+                WtaSectionDivider()
+                WtaToggleRow(
+                    title = Strings.toolbarShowTitleLabel,
+                    subtitle = Strings.toolbarShowTitleHint,
+                    checked = webViewConfig.toolbarShowTitle,
+                    onCheckedChange = {
+                        onWebViewConfigChange(webViewConfig.copy(toolbarShowTitle = it))
+                    }
+                )
+                WtaSectionDivider()
+                WtaToggleRow(
+                    title = Strings.toolbarShowUrlLabel,
+                    subtitle = Strings.toolbarShowUrlHint,
+                    checked = webViewConfig.toolbarShowUrl,
+                    onCheckedChange = {
+                        onWebViewConfigChange(webViewConfig.copy(toolbarShowUrl = it))
+                    }
+                )
+                WtaSectionDivider()
+                WtaToggleRow(
+                    title = Strings.toolbarShowBackLabel,
+                    checked = webViewConfig.toolbarShowBack,
+                    onCheckedChange = {
+                        onWebViewConfigChange(webViewConfig.copy(toolbarShowBack = it))
+                    }
+                )
+                WtaSectionDivider()
+                WtaToggleRow(
+                    title = Strings.toolbarShowForwardLabel,
+                    checked = webViewConfig.toolbarShowForward,
+                    onCheckedChange = {
+                        onWebViewConfigChange(webViewConfig.copy(toolbarShowForward = it))
+                    }
+                )
+                WtaSectionDivider()
+                WtaToggleRow(
+                    title = Strings.toolbarShowRefreshLabel,
+                    checked = webViewConfig.toolbarShowRefresh,
+                    onCheckedChange = {
+                        onWebViewConfigChange(webViewConfig.copy(toolbarShowRefresh = it))
+                    }
+                )
+                WtaSectionDivider()
+                WtaToggleRow(
+                    title = Strings.toolbarShowConsoleLabel,
+                    checked = webViewConfig.toolbarShowConsole,
+                    onCheckedChange = {
+                        onWebViewConfigChange(webViewConfig.copy(toolbarShowConsole = it))
+                    }
+                )
+                WtaSectionDivider()
+                WtaToggleRow(
+                    title = Strings.toolbarShowFindLabel,
+                    checked = webViewConfig.toolbarShowFind,
+                    onCheckedChange = {
+                        onWebViewConfigChange(webViewConfig.copy(toolbarShowFind = it))
+                    }
+                )
             }
-        )
-        WtaSectionDivider()
-        WtaToggleRow(
-            title = Strings.toolbarShowUrlLabel,
-            subtitle = Strings.toolbarShowUrlHint,
-            checked = webViewConfig.toolbarShowUrl,
-            enabled = enabled,
-            onCheckedChange = {
-                onWebViewConfigChange(webViewConfig.copy(toolbarShowUrl = it))
-            }
-        )
-        WtaSectionDivider()
-        WtaToggleRow(
-            title = Strings.toolbarShowBackLabel,
-            checked = webViewConfig.toolbarShowBack,
-            enabled = enabled,
-            onCheckedChange = {
-                onWebViewConfigChange(webViewConfig.copy(toolbarShowBack = it))
-            }
-        )
-        WtaSectionDivider()
-        WtaToggleRow(
-            title = Strings.toolbarShowForwardLabel,
-            checked = webViewConfig.toolbarShowForward,
-            enabled = enabled,
-            onCheckedChange = {
-                onWebViewConfigChange(webViewConfig.copy(toolbarShowForward = it))
-            }
-        )
-        WtaSectionDivider()
-        WtaToggleRow(
-            title = Strings.toolbarShowRefreshLabel,
-            checked = webViewConfig.toolbarShowRefresh,
-            enabled = enabled,
-            onCheckedChange = {
-                onWebViewConfigChange(webViewConfig.copy(toolbarShowRefresh = it))
-            }
-        )
-        WtaSectionDivider()
-        WtaToggleRow(
-            title = Strings.toolbarShowConsoleLabel,
-            checked = webViewConfig.toolbarShowConsole,
-            enabled = enabled,
-            onCheckedChange = {
-                onWebViewConfigChange(webViewConfig.copy(toolbarShowConsole = it))
-            }
-        )
-        WtaSectionDivider()
-        WtaToggleRow(
-            title = Strings.toolbarShowFindLabel,
-            checked = webViewConfig.toolbarShowFind,
-            enabled = enabled,
-            onCheckedChange = {
-                onWebViewConfigChange(webViewConfig.copy(toolbarShowFind = it))
-            }
-        )
+        }
     }
 }
 
