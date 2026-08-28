@@ -18,6 +18,9 @@ class HideBrowserToolbarToggleTest {
         assertThat(result.toolbarShowBack).isFalse()
         assertThat(result.toolbarShowForward).isFalse()
         assertThat(result.toolbarShowRefresh).isFalse()
+        // Console and find default OFF like every other item — no special-cased survivors.
+        assertThat(result.toolbarShowConsole).isFalse()
+        assertThat(result.toolbarShowFind).isFalse()
     }
 
     @Test
@@ -30,6 +33,8 @@ class HideBrowserToolbarToggleTest {
             toolbarShowBack = false,
             toolbarShowForward = false,
             toolbarShowRefresh = false,
+            toolbarShowConsole = false,
+            toolbarShowFind = false,
             browserToolbarCustomized = true
         )
         val result = config.withHideBrowserToolbar(false)
@@ -41,6 +46,8 @@ class HideBrowserToolbarToggleTest {
         assertThat(result.toolbarShowBack).isTrue()
         assertThat(result.toolbarShowForward).isTrue()
         assertThat(result.toolbarShowRefresh).isTrue()
+        assertThat(result.toolbarShowConsole).isTrue()
+        assertThat(result.toolbarShowFind).isTrue()
     }
 
     @Test
