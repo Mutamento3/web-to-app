@@ -157,7 +157,7 @@ WebToApp has a large number of switches. The sections below group them by use ca
 
 - **Splash screens** — image or video, with skip behavior, trim ranges, and fixed orientation.
 - **Background music** — playlists with synced LRC lyrics, lyric animations, custom font/color/stroke/shadow, and online music search.
-- **Toolbar, status bar (light & dark), navigation, floating-window mode, and long-press menu styles.** Status bar color can follow theme, a custom color, full transparency, or **PAGE_TOP** (sample the page’s top pixels so the chrome matches the content). The runtime toolbar also offers a per-app **page-zoom preset** (saved across cold starts), a native **find-in-page** bottom bar, and a **console** panel for on-device debugging.
+- **Toolbar, status bar (light & dark), navigation, floating-window mode, and long-press menu styles.** The browser toolbar is a master toggle (off by default) with per-item buttons for title/URL/back/forward/refresh plus a native **find-in-page** bottom bar and a **console** panel for on-device debugging. Status bar color can follow theme, a custom color, full transparency, or **PAGE_TOP** (sample the page’s top pixels so the chrome matches the content).
 - **Download location mode** — system Downloads, app-private directory, or a custom SAF folder picked by the user.
 - **Announcement templates** for launch, interval, and no-network moments.
 - **Host app language** — switch the entire builder UI among 10 languages (中文 / English / العربية / Português / Español / Français / Deutsch / Русский / 日本語 / 한국어); Arabic is full RTL.

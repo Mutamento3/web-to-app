@@ -39,7 +39,8 @@ Compatibility polyfills, bridges, and other specialized toggles. This card colle
 - **Performance optimization** — `performanceOptimization`.
 - **PWA offline** — offline cache strategy (`pwaOfflineEnabled`, `pwaOfflineStrategy`).
 - **Floating back button** — `showFloatingBackButton`.
-- **Keyboard adjust mode** — `keyboardAdjustMode` (resize, …).
+- **Keyboard adjust mode** — `keyboardAdjustMode` (resize, …). On Android 10 and below, the RESIZE mode uses the classic window-resize path (the window is not edge-to-edge), so the keyboard resizes content reliably.
+- **Fullscreen video orientation** — how fullscreen video orients (`fullscreenVideoOrientation`), e.g. auto sensor landscape.
 - **Hide URL preview** — `hideUrlPreview`.
 
 ## Notes
