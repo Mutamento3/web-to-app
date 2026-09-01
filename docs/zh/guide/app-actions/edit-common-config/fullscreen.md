@@ -19,5 +19,5 @@
 ## 说明
 
 - 当状态栏可见时,启动倒计时/跳过胶囊会落在其下方,绝不被遮挡。
-- 全屏**视频**方向(全屏视频播放的横屏/传感器方向,`fullscreenVideoOrientation`)在[特殊设置](/zh/guide/app-actions/edit-common-config/special-settings)中配置。
+- 全屏**视频**方向(全屏视频播放的横屏/传感器方向,`fullscreenVideoOrientation`)在[特殊设置](/zh/guide/app-actions/edit-common-config/special-settings)中配置。同一卡片还有"视频全屏时隐藏状态栏"(`hideStatusBarInVideoFullscreen`,默认开启):网页视频进入 HTML5 全屏时,即使"全屏显示状态栏"开启也会强制隐藏状态栏。
 - Android 10 及以下的键盘避让走经典窗口缩放路径;键盘调整模式见[特殊设置](/zh/guide/app-actions/edit-common-config/special-settings)。
