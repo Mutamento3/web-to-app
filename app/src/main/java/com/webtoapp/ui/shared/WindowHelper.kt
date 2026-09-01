@@ -288,6 +288,18 @@ object WindowHelper {
         return window.attributes.softInputMode and WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE != 0
     }
 
+    /**
+     * Runtime truth for "this window does not draw behind the status bar and
+     * [androidx.compose.foundation.layout.WindowInsets.statusBars] cannot be used to size a
+     * status-bar band": on the classic pre-API-30 resize path the decor fits system windows,
+     * the insets value is 0 whether or not a bar is actually shown, and nothing renders behind
+     * the bar area. Compose callers must not fall back to a made-up 24dp band there (issue
+     * #683: fullscreen + "show status bar" left a blank strip because the content padding and
+     * the overlay each guessed an independent height).
+     */
+    fun isClassicSystemBarsWindow(activity: Activity): Boolean =
+        isClassicKeyboardResizeWindow(activity.window)
+
     private fun applyKeyboardMode(
         activity: Activity,
         keyboardAdjustMode: KeyboardAdjustMode?,

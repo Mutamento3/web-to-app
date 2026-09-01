@@ -103,6 +103,22 @@ class WindowHelperKeyboardModePreApi30Test {
         assertThat(mode and WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING).isNotEqualTo(0)
         assertThat(isEdgeToEdge(activity)).isTrue()
     }
+
+    @Test
+    fun `classic system bars window reports true below API 30 in resize mode`() {
+        val activity = Robolectric.setupActivity(Activity::class.java)
+
+        WindowHelper.applyImmersiveFullscreen(
+            activity,
+            enabled = false,
+            keyboardAdjustMode = KeyboardAdjustMode.RESIZE
+        )
+
+        // Issue #683: Compose callers key their status-bar padding / overlay decisions off
+        // this flag, because WindowInsets.statusBars reports 0 on this path whether or not a
+        // bar is drawn — a fabricated 24dp fallback band is what left the blank strip.
+        assertThat(WindowHelper.isClassicSystemBarsWindow(activity)).isTrue()
+    }
 }
 
 @RunWith(RobolectricTestRunner::class)
@@ -122,5 +138,18 @@ class WindowHelperKeyboardModeApi30Test {
         val mode = activity.window.attributes.softInputMode
         assertThat(mode and WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING).isNotEqualTo(0)
         assertThat(isEdgeToEdge(activity)).isTrue()
+    }
+
+    @Test
+    fun `classic system bars window reports false on API 30 and above`() {
+        val activity = Robolectric.setupActivity(Activity::class.java)
+
+        WindowHelper.applyImmersiveFullscreen(
+            activity,
+            enabled = false,
+            keyboardAdjustMode = KeyboardAdjustMode.RESIZE
+        )
+
+        assertThat(WindowHelper.isClassicSystemBarsWindow(activity)).isFalse()
     }
 }

@@ -578,10 +578,15 @@ fun ShellScreen(
     val effectiveBgColor = resolveStatusBarOverlayColor(isDarkTheme)
     val effectiveBgImage = if (isDarkTheme) statusBarBackgroundImageDark else statusBarBackgroundImage
     val effectiveBgAlpha = if (isDarkTheme) statusBarBackgroundAlphaDark else statusBarBackgroundAlpha
-    val showOverlay = (hideToolbar && config.webViewConfig.showStatusBarInFullscreen) ||
+    // On the classic pre-API-30 resize path nothing draws behind the status bar and the bar
+    // itself is chrome-owned, so a Compose overlay would only paint a floating band over the
+    // web content (issue #683). Reserve space is already handled by the content padding; the
+    // window-level bar color comes from WindowHelper.
+    val classicSystemBars = com.webtoapp.ui.shared.WindowHelper.isClassicSystemBarsWindow(activity)
+    val showOverlay = !classicSystemBars && ((hideToolbar && config.webViewConfig.showStatusBarInFullscreen) ||
             (!hideToolbar && (effectiveBgType != "COLOR" ||
                 effectiveColorMode == com.webtoapp.data.model.StatusBarColorMode.CUSTOM.name ||
-                effectiveColorMode == com.webtoapp.data.model.StatusBarColorMode.PAGE_TOP.name))
+                effectiveColorMode == com.webtoapp.data.model.StatusBarColorMode.PAGE_TOP.name)))
     if (showOverlay) {
         com.webtoapp.ui.components.StatusBarOverlay(
             show = true,

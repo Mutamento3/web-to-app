@@ -2945,11 +2945,21 @@ fun WebViewScreen(
 
         val density = LocalDensity.current
 
-        val topInsetPx = WindowInsets.statusBars.getTop(density)
-        val systemStatusBarHeightDp = if (topInsetPx > 0) {
-            with(density) { topInsetPx.toDp() }
+        // On the classic pre-API-30 resize path the decor fits system windows: the status-bar
+        // inset is 0 whether or not a bar is drawn, and nothing renders behind the bar area
+        // (issue #683). Never pad the content by a guessed status-bar band there — only the
+        // user's explicit statusBarHeightDp override may reserve space.
+        val classicSystemBars = com.webtoapp.ui.shared.WindowHelper.isClassicSystemBarsWindow(activity)
+
+        val systemStatusBarHeightDp = if (classicSystemBars) {
+            0.dp
         } else {
-            24.dp
+            val topInsetPx = WindowInsets.statusBars.getTop(density)
+            if (topInsetPx > 0) {
+                with(density) { topInsetPx.toDp() }
+            } else {
+                0.dp
+            }
         }
 
         val actualStatusBarPadding = if (statusBarHeightDp >= 0) statusBarHeightDp.dp else systemStatusBarHeightDp
@@ -3517,7 +3527,12 @@ fun WebViewScreen(
         }
     }
 
-    if (hideToolbar && webApp?.webViewConfig?.showStatusBarInFullscreen == true) {
+    // On the classic pre-API-30 resize path nothing draws behind the status bar and the bar
+    // itself is chrome-owned, so a Compose overlay would only paint a floating band over the
+    // web content (issue #683); the window-level bar color comes from WindowHelper instead.
+    if (!com.webtoapp.ui.shared.WindowHelper.isClassicSystemBarsWindow(activity) &&
+        hideToolbar && webApp?.webViewConfig?.showStatusBarInFullscreen == true
+    ) {
         val overlayIsDark = com.webtoapp.ui.theme.LocalIsDarkTheme.current
         com.webtoapp.ui.components.StatusBarOverlay(
             show = true,
