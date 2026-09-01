@@ -28,14 +28,19 @@ fun StatusBarBackground(
     val context = LocalContext.current
     val density = LocalDensity.current
 
+    // Never guess a status-bar height when the insets report 0: on the classic pre-API-30
+    // path the value is 0 because the decor fits system windows, and a fabricated 24dp band
+    // shows up as a blank strip over the content (issue #683). The callers skip rendering on
+    // that path; the fallback below only covers transient first-frame inset dispatch.
     val topInsetPx = WindowInsets.statusBars.getTop(density)
     val systemStatusBarHeight = if (topInsetPx > 0) {
         with(density) { topInsetPx.toDp() }
     } else {
-        24.dp
+        0.dp
     }
 
     val actualHeight = if (heightDp >= 0) heightDp.dp else systemStatusBarHeight
+    if (actualHeight <= 0.dp) return
 
     val imageBitmap = remember(backgroundImagePath) {
         if (backgroundType == "IMAGE" && !backgroundImagePath.isNullOrEmpty()) {
@@ -115,14 +120,19 @@ fun StatusBarOverlay(
     val context = LocalContext.current
     val density = LocalDensity.current
 
+    // Never guess a status-bar height when the insets report 0: on the classic pre-API-30
+    // path the value is 0 because the decor fits system windows, and a fabricated 24dp band
+    // shows up as a blank strip over the content (issue #683). The callers skip rendering on
+    // that path; the fallback below only covers transient first-frame inset dispatch.
     val topInsetPx = WindowInsets.statusBars.getTop(density)
     val systemStatusBarHeight = if (topInsetPx > 0) {
         with(density) { topInsetPx.toDp() }
     } else {
-        24.dp
+        0.dp
     }
 
     val actualHeight = if (heightDp >= 0) heightDp.dp else systemStatusBarHeight
+    if (actualHeight <= 0.dp) return
 
     val imageBitmap = remember(backgroundImagePath) {
         if (backgroundType == "IMAGE" && !backgroundImagePath.isNullOrEmpty()) {

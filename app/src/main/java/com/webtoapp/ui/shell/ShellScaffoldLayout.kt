@@ -166,11 +166,23 @@ fun BoxScope.ShellScaffoldLayout(
 
         val density = LocalDensity.current
 
-        val topInsetPx = WindowInsets.statusBars.getTop(density)
-        val systemStatusBarHeightDp = if (topInsetPx > 0) {
-            with(density) { topInsetPx.toDp() }
+        // On the classic pre-API-30 resize path the decor fits system windows: the status-bar
+        // inset is 0 whether or not a bar is drawn, and nothing renders behind the bar area
+        // (issue #683). Never pad the content by a guessed status-bar band there — only the
+        // user's explicit statusBarHeightDp override may reserve space.
+        val classicSystemBars = LocalContext.current.let { ctx ->
+            (ctx as? android.app.Activity)?.let { com.webtoapp.ui.shared.WindowHelper.isClassicSystemBarsWindow(it) } ?: false
+        }
+
+        val systemStatusBarHeightDp = if (classicSystemBars) {
+            0.dp
         } else {
-            24.dp
+            val topInsetPx = WindowInsets.statusBars.getTop(density)
+            if (topInsetPx > 0) {
+                with(density) { topInsetPx.toDp() }
+            } else {
+                0.dp
+            }
         }
 
         val actualStatusBarPadding = if (statusBarHeightDp >= 0) statusBarHeightDp.dp else systemStatusBarHeightDp
