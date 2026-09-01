@@ -34,6 +34,7 @@ Compatibility polyfills, bridges, and other specialized toggles. This card colle
 
 - **Cross-origin isolation** — `enableCrossOriginIsolation`.
 - **Anti-capture** — block screen capture (`antiCapture`).
+- **Hide status bar in video fullscreen** — force-hide the status bar while a web video plays in HTML5 fullscreen, restoring it on exit (`hideStatusBarInVideoFullscreen`, on by default). Overrides the [Fullscreen Mode](/guide/app-actions/edit-common-config/fullscreen) "show status bar in fullscreen" option while the video holds the screen.
 - **File access from file URLs** — `allowFileAccessFromFileURLs`, `allowUniversalAccessFromFileURLs`.
 - **Error page** — custom error page config (`errorPageConfig`).
 - **Performance optimization** — `performanceOptimization`.

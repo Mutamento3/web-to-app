@@ -24,7 +24,7 @@ Tap [Create](/guide/main-screen/create-app) on My Apps to open the app-type pick
 Every type follows the same shape:
 
 1. **Type-specific form** — e.g. Web asks for a URL; Node.js asks for the project and start command; Gallery asks for media and layout. Runtime types link to the [Linux Environment](/guide/more-features/linux-environment) for toolchain setup.
-2. **Basic info** — name and icon.
+2. **Basic info** — name and icon. The icon can be fetched from the website's favicon, picked from the **Icon Library** (AI-generated or your own uploaded images — uploads go through a crop step with square / free / circle modes, WeChat-avatar style), or selected directly from the gallery.
 3. **Save** — the app is created and appears on [My Apps](/guide/main-screen/my-apps).
 
 After creation, use the app's ⋮ menu: [Edit Core Config](/guide/app-actions/edit-core-config) returns to the type-specific form; [Edit Common Config](/guide/app-actions/edit-common-config/) opens the shared options.

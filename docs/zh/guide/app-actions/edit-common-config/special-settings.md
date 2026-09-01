@@ -34,6 +34,7 @@
 
 - **跨源隔离** —— `enableCrossOriginIsolation`。
 - **防截屏** —— 阻止屏幕截取(`antiCapture`)。
+- **视频全屏时隐藏状态栏** —— 网页视频进入 HTML5 全屏播放时强制隐藏状态栏,退出全屏后恢复(`hideStatusBarInVideoFullscreen`,默认开启)。视频全屏期间优先于[全屏模式](/zh/guide/app-actions/edit-common-config/fullscreen)中的"全屏显示状态栏"选项。
 - **文件 URL 的文件访问** —— `allowFileAccessFromFileURLs`、`allowUniversalAccessFromFileURLs`。
 - **错误页** —— 自定义错误页配置(`errorPageConfig`)。
 - **性能优化** —— `performanceOptimization`。
