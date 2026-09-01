@@ -684,6 +684,20 @@ class AdBlocker {
 
     private val exceptionAnchorDomainIndex = HashMap<String, MutableList<Int>>()
 
+    /**
+     * Indices of filters without an [NetworkFilter.anchorDomain] per filter list, so
+     * [matchesAnyNetworkFilter] walks only the un-indexed remainder instead of scanning
+     * the whole list (including anchored rules) on every request.
+     */
+    private val unanchoredFilterIndex = HashMap<List<NetworkFilter>, List<Int>>()
+
+    private fun rebuildUnanchoredIndex() {
+        unanchoredFilterIndex[networkBlockFilters] = networkBlockFilters
+            .withIndex().filter { it.value.anchorDomain == null }.map { it.index }
+        unanchoredFilterIndex[networkExceptionFilters] = networkExceptionFilters
+            .withIndex().filter { it.value.anchorDomain == null }.map { it.index }
+    }
+
     @Suppress("serial")
     private val blockResultCache = object : LinkedHashMap<Int, Boolean>(256, 0.75f, true) {
         override fun removeEldestEntry(eldest: MutableMap.MutableEntry<Int, Boolean>?): Boolean = size > 512
@@ -733,6 +747,7 @@ class AdBlocker {
         }
 
         customRules.forEach { parseAndAddRule(it) }
+        rebuildUnanchoredIndex()
     }
 
     fun shouldBlock(
@@ -757,7 +772,7 @@ class AdBlocker {
 
         if (ESSENTIAL_RESOURCE_REGEX.containsMatchIn(lowerUrl)) return false
 
-        val cacheKey = lowerUrl.hashCode() xor (if (isThirdParty) 0x9e3779b9.toInt() else 0)
+        val cacheKey = url.hashCode() xor (if (isThirdParty) 0x9e3779b9.toInt() else 0)
         synchronized(blockResultCache) {
             val cached = blockResultCache[cacheKey]
             if (cached != null) {
@@ -1016,6 +1031,7 @@ class AdBlocker {
             val count = parseFilterContent(content)
             sourceRuleCounts[sourceKey] = count
         }
+        rebuildUnanchoredIndex()
     }
 
     fun getStats(): Map<String, Int> = mapOf(
@@ -1038,6 +1054,7 @@ class AdBlocker {
         cosmeticBlockFilters.clear()
         cosmeticExceptionFilters.clear()
         scriptletRules.clear()
+        unanchoredFilterIndex.clear()
         synchronized(blockResultCache) { blockResultCache.clear() }
     }
 
@@ -1121,6 +1138,7 @@ class AdBlocker {
 
     fun addRule(rule: String) {
         parseAndAddRule(rule)
+        rebuildUnanchoredIndex()
         synchronized(blockResultCache) { blockResultCache.clear() }
     }
 
@@ -1130,6 +1148,7 @@ class AdBlocker {
         networkExceptionFilters.removeAll { it.rawRule == rule }
         cosmeticBlockFilters.removeAll { it.rawRule == rule }
         cosmeticExceptionFilters.removeAll { it.rawRule == rule }
+        rebuildUnanchoredIndex()
         synchronized(blockResultCache) { blockResultCache.clear() }
     }
 
@@ -1343,20 +1362,25 @@ class AdBlocker {
             rawRule = rule
         )
 
-        if (isException) {
-            val idx = networkExceptionFilters.size
-            networkExceptionFilters.add(filter)
-
-            if (anchorDomain != null && !anchorDomain.contains('*')) {
+        if (anchorDomain != null && !anchorDomain.contains('*')) {
+            if (isException) {
+                val idx = networkExceptionFilters.size
+                networkExceptionFilters.add(filter)
                 exceptionAnchorDomainIndex.getOrPut(anchorDomain) { mutableListOf() }.add(idx)
-            }
-        } else {
-            val idx = networkBlockFilters.size
-            networkBlockFilters.add(filter)
-
-            if (anchorDomain != null && !anchorDomain.contains('*')) {
+            } else {
+                val idx = networkBlockFilters.size
+                networkBlockFilters.add(filter)
                 anchorDomainIndex.getOrPut(anchorDomain) { mutableListOf() }.add(idx)
             }
+            return
+        }
+
+        if (isException) {
+            networkExceptionFilters.add(filter)
+            unanchoredFilterIndex.remove(networkExceptionFilters)
+        } else {
+            networkBlockFilters.add(filter)
+            unanchoredFilterIndex.remove(networkBlockFilters)
         }
     }
 
@@ -1446,10 +1470,24 @@ class AdBlocker {
             }
         }
 
-        for (filter in filters) {
-            if (filter.anchorDomain != null && domainIndex != null) continue
-            if (matchesNetworkFilter(filter, url, urlHost, pageHost, resType, isThirdParty)) {
-                return true
+        if (domainIndex != null) {
+            // With an anchor index in place, every rule carrying an anchorDomain was
+            // already consulted above; walk only the un-indexed remainder instead of
+            // re-scanning the full list and skipping them one by one.
+            val fallback = unanchoredFilterIndex[filters]
+            if (fallback != null) {
+                for (idx in fallback) {
+                    val filter = filters[idx]
+                    if (matchesNetworkFilter(filter, url, urlHost, pageHost, resType, isThirdParty)) {
+                        return true
+                    }
+                }
+            }
+        } else {
+            for (filter in filters) {
+                if (matchesNetworkFilter(filter, url, urlHost, pageHost, resType, isThirdParty)) {
+                    return true
+                }
             }
         }
         return false
@@ -1832,6 +1870,9 @@ class AdBlocker {
                 t.startsWith("@@") || t.contains("##") || t.contains("#@#")
         }
 
+        unanchoredFilterIndex.remove(networkBlockFilters)
+        unanchoredFilterIndex.remove(networkExceptionFilters)
+
         val lines = content.lineSequence().iterator()
         while (lines.hasNext()) {
             val trimmed = lines.next().trim()
@@ -2042,6 +2083,7 @@ class AdBlocker {
         cosmeticBlockFilters.addAll(state.cosmeticBlockFilters)
         cosmeticExceptionFilters.addAll(state.cosmeticExceptionFilters)
         scriptletRules.addAll(state.scriptletRules)
+        rebuildUnanchoredIndex()
     }
 
     private fun NetworkFilter.toSerializable() = AdBlockFilterCache.SerializableNetworkFilter(

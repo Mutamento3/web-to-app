@@ -180,15 +180,26 @@ class SessionStore(
      * message is normalised here so callers can rely on empty lists instead of
      * tripping NPEs deep in the UI/VM (issue #712: restoring a pre-Agent backup
      * then opening Agent crashed on `userAttachments.isNotEmpty()`).
+     *
+     * Normalisation is keyed on the raw JSON so repeated decodes of an unchanged blob
+     * (sessionsFlow re-emits after every write, and [get] re-reads mid-turn) reuse the
+     * previous result instead of copying every session and message again. The blob is
+     * the source of truth; a content-keyed cache cannot go stale.
      */
     private fun decode(raw: String?): List<AgentSession> {
         if (raw.isNullOrBlank()) return emptyList()
-        return runCatching {
+        lastDecodeCache[raw]?.let { return it }
+        val decoded = runCatching {
             val sessions: List<AgentSession> =
                 gson.fromJson(raw, object : TypeToken<List<AgentSession>>() {}.type)
             sessions.map(::normalize)
         }.getOrElse { emptyList() }
+        lastDecodeCache.clear()
+        if (decoded.isNotEmpty()) lastDecodeCache[raw] = decoded
+        return decoded
     }
+
+    private val lastDecodeCache = HashMap<String, List<AgentSession>>()
 
     private fun normalize(session: AgentSession): AgentSession = session.copy(
         config = session.config.let { c ->

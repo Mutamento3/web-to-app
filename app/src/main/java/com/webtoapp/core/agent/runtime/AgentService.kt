@@ -593,7 +593,10 @@ private class TurnAccumulator(private val sessionId: String) {
     }
 
     companion object {
-        private const val FLUSH_INTERVAL_MS = 200L
+        // Draft persistence cadence: each flush rewrites the whole sessions blob in
+        // DataStore, so this trades crash-recovery granularity against streaming-time
+        // serialization cost (500ms keeps at most ~1s of output at risk).
+        private const val FLUSH_INTERVAL_MS = 500L
         private const val PREVIEW_CAP = 2000
     }
 }

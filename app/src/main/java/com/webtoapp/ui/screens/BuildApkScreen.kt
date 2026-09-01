@@ -1161,18 +1161,32 @@ internal data class BuildFailureReport(
 
 internal fun readBuildLogTail(path: String?, maxChars: Int = 20000): String {
     return try {
-        path
+        val file = path
             ?.takeIf { it.isNotBlank() }
             ?.let { java.io.File(it) }
             ?.takeIf { it.exists() && it.isFile }
-            ?.readText()
-            ?.let { content ->
-                if (content.length <= maxChars) content else content.takeLast(maxChars)
+            ?: return "<build log unavailable>"
+        // Build logs can reach multiple MB; read only the tail instead of loading the
+        // whole file into memory just to drop all but the last 20k chars.
+        val length = file.length()
+        if (length <= maxChars) {
+            file.readText()
+        } else {
+            val start = length - maxChars
+            java.io.RandomAccessFile(file, "r").use { raf ->
+                raf.seek(start)
+                val buffer = ByteArray(maxChars)
+                raf.readFully(buffer)
+                val tail = String(buffer, Charsets.UTF_8)
+                // Cut to the first newline so the report starts at a clean line.
+                val firstNl = tail.indexOf('\n')
+                if (firstNl >= 0 && firstNl < tail.length - 1) tail.substring(firstNl + 1) else tail
             }
+        }
     } catch (e: Exception) {
         AppLogger.e("BuildApkScreen", "读取 APK 构建日志失败", e)
         Strings.readBuildLogFailed.format(e.message ?: "Unknown error")
-    } ?: "<build log unavailable>"
+    }
 }
 
 internal fun buildActionFailureReport(

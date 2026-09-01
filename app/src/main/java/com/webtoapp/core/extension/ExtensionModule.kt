@@ -7,6 +7,7 @@ import java.util.UUID
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
+import kotlin.text.RegexOption
 
 private const val REGEX_TIMEOUT_MS = 200L
 
@@ -31,6 +32,25 @@ private fun safeRegexMatch(pattern: String, input: String): Boolean {
         false
     } catch (e: Exception) {
         false
+    }
+}
+
+/**
+ * Cache of compiled glob→regex translations for [ExtensionModule.matchRule]. URL
+ * matching runs per page load per injection phase per rule, so compiling a fresh
+ * Regex each time is measurable jank; reuses [regexCache] so the compiled pattern
+ * from [safeRegexMatch] and glob translation live in one bounded LRU.
+ */
+private fun cachedRegex(pattern: String, ignoreCase: Boolean): Regex? {
+    val key = if (ignoreCase) "i:$pattern" else "c:$pattern"
+    return synchronized(regexCache) {
+        regexCache.getOrPut(key) {
+            try {
+                Regex(pattern, if (ignoreCase) setOf(RegexOption.IGNORE_CASE) else emptySet())
+            } catch (e: Exception) {
+                null
+            } ?: return@synchronized null
+        }
     }
 }
 
@@ -649,16 +669,21 @@ data class ExtensionModule(
     fun matchesUrl(url: String): Boolean {
         if (urlMatches.isEmpty()) return true
 
-        val includeRules = urlMatches.filter { !it.exclude }
-        val excludeRules = urlMatches.filter { it.exclude }
-
-        for (rule in excludeRules) {
-            if (matchRule(url, rule)) return false
+        var hasInclude = false
+        for (rule in urlMatches) {
+            if (rule.exclude) {
+                if (matchRule(url, rule)) return false
+            } else {
+                hasInclude = true
+            }
         }
 
-        if (includeRules.isEmpty()) return true
+        if (!hasInclude) return true
 
-        return includeRules.any { matchRule(url, it) }
+        for (rule in urlMatches) {
+            if (!rule.exclude && matchRule(url, rule)) return true
+        }
+        return false
     }
 
     private fun matchRule(url: String, rule: UrlMatchRule): Boolean {
@@ -700,7 +725,9 @@ data class ExtensionModule(
                 append("$")
             }
             try {
-                Regex(regexPattern, RegexOption.IGNORE_CASE).matches(url)
+                val compiled = cachedRegex(regexPattern, ignoreCase = true)
+                    ?: return url.contains(pattern, ignoreCase = true)
+                compiled.matches(url)
             } catch (e: Exception) {
 
                 url.contains(pattern, ignoreCase = true)

@@ -227,9 +227,17 @@ class ExtensionManager private constructor(private val context: Context) {
     }
 
     fun reloadBuiltInModules() {
+        // Re-materialising the 8 built-in module graphs and re-reading the states file
+        // twice at startup (init + first InitializeLanguage) is wasted main-thread work;
+        // the language only affects display strings, which Strings.lang serves live.
+        // Only rebuild if built-ins were never loaded (defensive) or were cleared.
+        if (_builtInModules.value.isNotEmpty()) {
+            AppLogger.d(TAG, "Built-in modules already loaded; skipping reload")
+            return
+        }
         loadBuiltInModules()
         rebuildAllModulesCache()
-        AppLogger.d(TAG, "Reloaded built-in modules for language change")
+        AppLogger.d(TAG, "Reloaded built-in modules")
     }
 
     private fun loadBuiltInStates(): Map<String, Boolean> {
