@@ -335,6 +335,10 @@ Release 构建请通过 `local.properties` 和 `app/build.gradle.kts` 配置签�
 
 设备伪装等高级功能仅用于技术演示,必须在用户知情同意下使用。
 
+## 鸣谢
+
+- [daoxe.com](https://daoxe.com) — 自用中转站。
+
 <div align="center">
 
 **开源 · 为 Android 高阶用户打造 · Star 一下支持项目**

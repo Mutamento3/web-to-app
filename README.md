@@ -335,6 +335,10 @@ Developed by **shiaho**.
 
 Advanced features such as device disguise are intended for technical demonstration and must only be used with informed user consent.
 
+## Acknowledgements
+
+- [daoxe.com](https://daoxe.com) — AI API relay for personal use.
+
 <div align="center">
 
 **Open source · Built for Android power users · Star to support the project**
