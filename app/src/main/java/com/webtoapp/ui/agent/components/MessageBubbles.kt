@@ -181,11 +181,11 @@ fun MessageBubble(
             modifier = Modifier.widthIn(max = 560.dp)
         ) {
             if (isUser) {
-                if (message.userAttachments.isNotEmpty()) {
-                    UserAttachmentList(message.userAttachments)
+                if (message.userAttachmentsSafe.isNotEmpty()) {
+                    UserAttachmentList(message.userAttachmentsSafe)
                     if (message.content.isNotBlank()) Spacer(Modifier.height(WtaSpacing.Small))
                 }
-                if (message.content.isNotBlank() || message.userAttachments.isEmpty()) {
+                if (message.content.isNotBlank() || message.userAttachmentsSafe.isEmpty()) {
                     SelectionContainer {
                         Text(
                             text = message.content.ifBlank { Strings.agentNoOutput },
