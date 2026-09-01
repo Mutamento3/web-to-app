@@ -962,8 +962,8 @@ class AgentViewModel(application: Application) : AndroidViewModel(application) {
                     availableContextApps = apps,
                     availableContextModules = modules,
                     availableCategories = categories,
-                    contextAppIds = session.config.contextAppIds,
-                    contextModuleIds = session.config.contextModuleIds
+                    contextAppIds = session.config.contextAppIdsSafe,
+                    contextModuleIds = session.config.contextModuleIdsSafe
                 )
             }
         }
@@ -994,26 +994,26 @@ class AgentViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private suspend fun buildSelectedContext(config: SessionConfig): String {
-        if (config.contextAppIds.isEmpty() && config.contextModuleIds.isEmpty()) return ""
+        if (config.contextAppIdsSafe.isEmpty() && config.contextModuleIdsSafe.isEmpty()) return ""
         val sb = StringBuilder()
         sb.appendLine("# Selected apps & modules (current context)")
         sb.appendLine("The user selected these as the working context. Use GetApp/UpdateApp and GetModule/UpdateModule with these ids to inspect or edit them.")
-        if (config.contextAppIds.isNotEmpty()) {
+        if (config.contextAppIdsSafe.isNotEmpty()) {
             sb.appendLine()
             sb.appendLine("## Apps")
-            config.contextAppIds.forEach { id ->
+            config.contextAppIdsSafe.forEach { id ->
                 val app = webAppRepository.getWebApp(id) ?: return@forEach
                 sb.appendLine()
                 sb.appendLine("### App id=${app.id} name=\"${app.name}\" type=${app.appType}")
                 sb.appendLine(app.toManifestJson())
             }
         }
-        if (config.contextModuleIds.isNotEmpty()) {
+        if (config.contextModuleIdsSafe.isNotEmpty()) {
             val mgr = com.webtoapp.core.extension.ExtensionManager.getInstance(ctx)
             mgr.awaitLoaded()
             sb.appendLine()
             sb.appendLine("## Modules")
-            config.contextModuleIds.forEach { id ->
+            config.contextModuleIdsSafe.forEach { id ->
                 val module = mgr.getModuleById(id)?.let { mgr.ensureCodeLoaded(it) } ?: return@forEach
                 sb.appendLine()
                 sb.appendLine("### Module id=${module.id} name=\"${module.name}\" type=${module.sourceType}")
@@ -1168,7 +1168,7 @@ class AgentViewModel(application: Application) : AndroidViewModel(application) {
             when (m.role) {
                 AgentMessage.Role.USER -> {
                     val out = mutableListOf<LlmMessage>()
-                    val images = m.userAttachments.filter { it.isImage }.mapNotNull { att ->
+                    val images = m.userAttachmentsSafe.filter { it.isImage }.mapNotNull { att ->
                         val bytes = files.readBytes(workingSession.id, att.path) ?: return@mapNotNull null
                         com.webtoapp.core.agent.tool.ImageAttachment(bytes, att.mimeType, att.path)
                     }
@@ -1608,7 +1608,7 @@ class AgentViewModel(application: Application) : AndroidViewModel(application) {
                 val sid0 = sid
                 viewModelScope.launch {
                     val session = sessionStore.get(sid0) ?: return@launch
-                    val existing = session.config.builtApks.filterNot { it.appId == ev.info.appId }
+                    val existing = session.config.builtApksSafe.filterNot { it.appId == ev.info.appId }
                     val updated = existing + PersistedApk(
                         appId = ev.info.appId,
                         apkName = ev.info.apkName,
@@ -1780,7 +1780,7 @@ class AgentViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private fun synthesiseReadCallsFor(m: AgentMessage, sessionId: String): List<LlmMessage> {
-        val textUploads = m.userAttachments
+        val textUploads = m.userAttachmentsSafe
             .filter { !it.isImage && isTextUpload(it.mimeType) }
             .map { it.path }
         val pathsToRead = (m.mentionedFiles + textUploads).distinct()
