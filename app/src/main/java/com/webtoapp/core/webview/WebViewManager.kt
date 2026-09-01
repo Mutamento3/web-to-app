@@ -1846,6 +1846,9 @@ class WebViewManager(
                     }
 
                     val resType = if (url.startsWith("http://") || url.startsWith("https://")) inferResourceType(it) else null
+                    // One Uri.parse + host extraction per request; the initiator domain
+                    // is constant across every check in this callback.
+                    val initiatorDomain = try { android.net.Uri.parse(currentMainFrameUrl ?: "").host ?: "" } catch (_: Exception) { "" }
                     if (resType != null) {
 
                         if (com.webtoapp.core.extension.WebRequestBridge.shouldBlock(url, resType)) {
@@ -1856,7 +1859,7 @@ class WebViewManager(
                         val dnrResult = com.webtoapp.core.extension.DeclarativeNetRequestEngine.evaluate(
                             url = url,
                             resourceType = resType,
-                            initiatorDomain = try { android.net.Uri.parse(currentMainFrameUrl ?: "").host ?: "" } catch (_: Exception) { "" },
+                            initiatorDomain = initiatorDomain,
                             method = it.method ?: "GET"
                         )
                         if (dnrResult != null) {
@@ -1883,7 +1886,7 @@ class WebViewManager(
                             val headerMods = com.webtoapp.core.extension.DeclarativeNetRequestEngine.collectHeaderModifications(
                                 url = url,
                                 resourceType = resType,
-                                initiatorDomain = try { android.net.Uri.parse(currentMainFrameUrl ?: "").host ?: "" } catch (_: Exception) { "" },
+                                initiatorDomain = initiatorDomain,
                                 method = it.method ?: "GET"
                             )
                             if (headerMods != null) {
@@ -1961,12 +1964,6 @@ class WebViewManager(
                             return adBlocker.createEmptyResponse(adResType)
                         }
                     }
-
-                    val isOAuthRequest = if (isHttpOrHttps) isOAuthServiceRequest(url) else false
-
-                    val mainFrameUrl = currentMainFrameUrl
-                    val isOAuthPageSubResource = !isOAuthRequest && isHttpOrHttps &&
-                        mainFrameUrl != null && isOAuthServiceRequest(mainFrameUrl)
                 }
 
                 return super.shouldInterceptRequest(view, request)
