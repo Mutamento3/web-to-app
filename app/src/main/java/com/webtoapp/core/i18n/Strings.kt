@@ -4147,6 +4147,8 @@ object Strings {
     val proxySectionSubtitle: String get() = StringsE.proxySectionSubtitle
     val tlsFingerprintTitle: String get() = StringsE.tlsFingerprintTitle
     val antiCaptureTitle: String get() = StringsE.antiCaptureTitle
+    val hideStatusBarInVideoFullscreenTitle: String get() = StringsE.hideStatusBarInVideoFullscreenTitle
+    val hideStatusBarInVideoFullscreenDesc: String get() = StringsE.hideStatusBarInVideoFullscreenDesc
     val vpnBlockTitle: String get() = StringsE.vpnBlockTitle
     val vpnBlockMessage: String get() = StringsE.vpnBlockMessage
     val vpnBlockRetry: String get() = StringsE.vpnBlockRetry
@@ -56816,6 +56818,32 @@ object StringsE {
         AppLanguage.JAPANESE -> "有効にすると、一般的なパケットキャプチャツール（例：Charles、Fiddler）はウェブコンテンツを傍受できなくなります。アプリはシステムプロキシを無視し、キャプチャ証明書を拒否します。アプリ内部のプロキシには影響しません。"
         AppLanguage.KOREAN -> "활성화하면 일반적인 패킷 캡처 도구(예: Charles, Fiddler)가 웹 콘텐츠를 가로채지 못합니다. 앱은 시스템 프록시를 무시하고 캡처 인증서를 거부합니다. 앱 내부 프록시에는 영향을 주지 않습니다."
     }
+    val hideStatusBarInVideoFullscreenTitle: String get() = when (Strings.lang) {
+        AppLanguage.CHINESE -> "视频全屏时隐藏状态栏"
+        AppLanguage.ENGLISH -> "Hide Status Bar in Video Fullscreen"
+        AppLanguage.ARABIC -> "إخفاء شريط الحالة في وضع ملء الشاشة للفيديو"
+        AppLanguage.PORTUGUESE -> "Ocultar Barra de Status em Tela Cheia de Vídeo"
+        AppLanguage.SPANISH -> "Ocultar Barra de Estado en Pantalla Completa de Vídeo"
+        AppLanguage.FRENCH -> "Masquer la Barre d'État en Plein Écran Vidéo"
+        AppLanguage.GERMAN -> "Statusleiste im Video-Vollbild ausblenden"
+        AppLanguage.RUSSIAN -> "Скрывать строку состояния в полноэкранном видео"
+        AppLanguage.JAPANESE -> "動画全画面時にステータスバーを非表示"
+        AppLanguage.KOREAN -> "동영상 전체 화면 시 상태 표시줄 숨기기"
+    }
+
+    val hideStatusBarInVideoFullscreenDesc: String get() = when (Strings.lang) {
+        AppLanguage.CHINESE -> "网页视频进入全屏播放时自动隐藏状态栏，退出全屏后恢复（默认开启）"
+        AppLanguage.ENGLISH -> "Automatically hide the status bar when a web video enters fullscreen playback and restore it on exit (on by default)"
+        AppLanguage.ARABIC -> "إخفاء شريط الحالة تلقائيًا عند دخول فيديو الويب في وضع ملء الشاشة واستعادته عند الخروج (مفعّل افتراضيًا)"
+        AppLanguage.PORTUGUESE -> "Oculta automaticamente a barra de status quando um vídeo da web entra em tela cheia e a restaura ao sair (ativado por padrão)"
+        AppLanguage.SPANISH -> "Oculta automáticamente la barra de estado cuando un vídeo web entra en pantalla completa y la restaura al salir (activado de forma predeterminada)"
+        AppLanguage.FRENCH -> "Masque automatiquement la barre d'état lorsqu'une vidéo Web passe en plein écran et la restaure à la sortie (activé par défaut)"
+        AppLanguage.GERMAN -> "Blendet die Statusleiste automatisch aus, wenn ein Webvideo in den Vollbildmodus wechselt, und stellt sie beim Beenden wieder her (standardmäßig aktiviert)"
+        AppLanguage.RUSSIAN -> "Автоматически скрывает строку состояния, когда веб-видео переходит в полноэкранный режим, и восстанавливает её после выхода (включено по умолчанию)"
+        AppLanguage.JAPANESE -> "ウェブ動画が全画面再生になるとステータスバーを自動的に非表示にし、終了すると復元します（デフォルトで有効）"
+        AppLanguage.KOREAN -> "웹 동영상이 전체 화면 재생에 들어가면 상태 표시줄을 자동으로 숨기고 종료 시 복원합니다(기본적으로 켜짐)"
+    }
+
     val tlsFingerprintSubtitle: String get() = when (Strings.lang) {
         AppLanguage.CHINESE -> "伪装 TLS 握手指纹，绕过 JA3/JA4 检测"
         AppLanguage.ENGLISH -> "Spoof TLS handshake fingerprint to bypass JA3/JA4 detection"

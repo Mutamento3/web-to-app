@@ -156,6 +156,7 @@ class WebViewActivity : AppCompatActivity() {
 
     private var immersiveFullscreenEnabled: Boolean = false
     private var showStatusBarInFullscreen: Boolean = false
+    internal var hideStatusBarInVideoFullscreen: Boolean = true
     internal var showNavigationBarInFullscreen: Boolean = false
 
     private var originalOrientationBeforeFullscreen: Int = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
@@ -225,12 +226,17 @@ class WebViewActivity : AppCompatActivity() {
         val effectiveColorMode = if (isDarkTheme) statusBarColorModeDark else statusBarColorMode
         val effectiveCustomColor = if (isDarkTheme) statusBarCustomColorDark else statusBarCustomColor
         val resolved = resolveStatusBarColor(effectiveColorMode, effectiveCustomColor)
+        // Issue #711: while a web video holds HTML5 fullscreen (custom view showing), the
+        // status bar is force-hidden regardless of the static "show status bar in fullscreen"
+        // preference; the flag is cleared in hideCustomView() when the video exits fullscreen.
+        val effectiveShowStatusBar = showStatusBarInFullscreen &&
+            !(hideStatusBarInVideoFullscreen && customView != null)
         WindowHelper.applyImmersiveFullscreen(
             activity = this,
             enabled = enabled,
             hideNavBar = shouldHideNavBar,
             isDarkTheme = isDarkTheme,
-            showStatusBar = showStatusBarInFullscreen,
+            showStatusBar = effectiveShowStatusBar,
             statusBarColorMode = resolved.mode,
             statusBarCustomColor = resolved.color,
             statusBarDarkIcons = if (isDarkTheme) statusBarDarkIconsDark else statusBarDarkIcons,
@@ -1253,6 +1259,7 @@ fun WebViewScreen(
 
             (context as? WebViewActivity)?.let { activity ->
                 activity.showNavigationBarInFullscreen = app.webViewConfig.showNavigationBarInFullscreen
+                activity.hideStatusBarInVideoFullscreen = app.webViewConfig.hideStatusBarInVideoFullscreen
                 activity.keyboardAdjustMode = app.webViewConfig.keyboardAdjustMode
                 activity.geolocationPolicy = app.webViewConfig.geolocationPolicy.name
                 activity.geolocationAccuracy = app.webViewConfig.geolocationAccuracy.name

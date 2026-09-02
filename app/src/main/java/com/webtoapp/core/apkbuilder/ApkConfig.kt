@@ -483,6 +483,7 @@ data class WebViewBlock(
     val toolbarShowConsole: Boolean = true,
     val toolbarShowFind: Boolean = true,
     val showStatusBarInFullscreen: Boolean = false,
+    val hideStatusBarInVideoFullscreen: Boolean = true,
     val showNavigationBarInFullscreen: Boolean = false,
     val showToolbarInFullscreen: Boolean = false,
     val fullscreenContentPaddingDp: Int = 0,

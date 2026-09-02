@@ -301,6 +301,9 @@ data class WebViewConfig(
     val toolbarShowFind: Boolean = true,
     val hideToolbar: Boolean = false,
     val showStatusBarInFullscreen: Boolean = false,
+    // Issue #711: when video goes HTML5-fullscreen (onShowCustomView), force-hide the
+    // status bar even if showStatusBarInFullscreen is on; restore it on exit fullscreen.
+    val hideStatusBarInVideoFullscreen: Boolean = true,
     val showNavigationBarInFullscreen: Boolean = false,
     val showToolbarInFullscreen: Boolean = false,
     val fullscreenContentPaddingDp: Int = 0,

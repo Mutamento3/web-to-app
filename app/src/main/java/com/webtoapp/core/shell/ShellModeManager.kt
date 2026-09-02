@@ -1152,6 +1152,9 @@ data class WebViewShellConfig(
     @SerializedName("showStatusBarInFullscreen")
     val showStatusBarInFullscreen: Boolean = false,
 
+    @SerializedName("hideStatusBarInVideoFullscreen")
+    val hideStatusBarInVideoFullscreen: Boolean = true,
+
     @SerializedName("showNavigationBarInFullscreen")
     val showNavigationBarInFullscreen: Boolean = false,
 

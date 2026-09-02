@@ -3363,6 +3363,14 @@ fun SpecialSettingsCard(
                                 checked = config.antiCapture,
                                 onCheckedChange = { onConfigChange(config.copy(antiCapture = it)) }
                             )
+                            WtaSectionDivider()
+                            WtaToggleRow(
+                                title = Strings.hideStatusBarInVideoFullscreenTitle,
+                                subtitle = Strings.hideStatusBarInVideoFullscreenDesc,
+                                icon = Icons.Outlined.HideImage,
+                                checked = config.hideStatusBarInVideoFullscreen,
+                                onCheckedChange = { onConfigChange(config.copy(hideStatusBarInVideoFullscreen = it)) }
+                            )
                         }
                     }
 

@@ -42,6 +42,7 @@ class ShellActivity : AppCompatActivity() {
 
     private var immersiveFullscreenEnabled: Boolean = false
     private var showStatusBarInFullscreen: Boolean = false
+    private var hideStatusBarInVideoFullscreen: Boolean = true
     private var showNavigationBarInFullscreen: Boolean = false
     private var translateBridge: TranslateBridge? = null
     private var clearBrowsingDataOnLaunch: Boolean = false
@@ -126,12 +127,17 @@ class ShellActivity : AppCompatActivity() {
         val effectiveColorMode = if (systemDark) statusBarColorModeDark else statusBarColorMode
         val effectiveCustomColor = if (systemDark) statusBarCustomColorDark else statusBarCustomColor
         val resolved = resolveStatusBarColorMode(effectiveColorMode, effectiveCustomColor)
+        // Issue #711: while a web video holds HTML5 fullscreen (custom view showing), the
+        // status bar is force-hidden regardless of the static "show status bar in fullscreen"
+        // preference; the flag is cleared in hideCustomView() when the video exits fullscreen.
+        val effectiveShowStatusBar = showStatusBarInFullscreen &&
+            !(hideStatusBarInVideoFullscreen && customView != null)
         WindowHelper.applyImmersiveFullscreen(
             activity = this,
             enabled = enabled,
             hideNavBar = shouldHideNavBar,
             isDarkTheme = isDarkTheme,
-            showStatusBar = showStatusBarInFullscreen,
+            showStatusBar = effectiveShowStatusBar,
             forceHideSystemUi = forceHideSystemUi,
             statusBarColorMode = resolved.first,
             statusBarCustomColor = resolved.second,
@@ -396,6 +402,7 @@ class ShellActivity : AppCompatActivity() {
         statusBarBackgroundImageDark = config.webViewConfig.statusBarBackgroundImageDark
         statusBarBackgroundAlphaDark = config.webViewConfig.statusBarBackgroundAlphaDark
         showStatusBarInFullscreen = config.webViewConfig.showStatusBarInFullscreen
+        hideStatusBarInVideoFullscreen = config.webViewConfig.hideStatusBarInVideoFullscreen
         showNavigationBarInFullscreen = config.webViewConfig.showNavigationBarInFullscreen
 
         keyboardAdjustMode = try {

@@ -180,6 +180,7 @@ internal object ApkConfigJsonFactory {
         "toolbarShowConsole" to webView.toolbarShowConsole,
         "toolbarShowFind" to webView.toolbarShowFind,
         "showStatusBarInFullscreen" to webView.showStatusBarInFullscreen,
+        "hideStatusBarInVideoFullscreen" to webView.hideStatusBarInVideoFullscreen,
         "showNavigationBarInFullscreen" to webView.showNavigationBarInFullscreen,
         "showToolbarInFullscreen" to webView.showToolbarInFullscreen,
         "fullscreenContentPaddingDp" to webView.fullscreenContentPaddingDp,
