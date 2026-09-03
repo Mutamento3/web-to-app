@@ -32,7 +32,7 @@
   <a href="https://www.swiftproxy.net/?ref=shiaho">
     <img src=".github/assets/sponsors/swiftproxy-logo-full.png" alt="Swiftproxy" width="220" />
   </a><br/>
-  <a href="https://www.swiftproxy.net/?ref=shiaho"><b>Sponsored by Swiftproxy</b></a>
+  <a href="https://www.swiftproxy.net/?ref=shiaho"><b>Sponsored by Swiftproxy</b></a> — Swiftproxy · Reliable Residential Proxies for Web Automation
 </p>
 
 <p align="center">

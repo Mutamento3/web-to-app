@@ -21,7 +21,7 @@
   <a href="https://www.swiftproxy.net/?ref=shiaho">
     <img src="../assets/sponsors/swiftproxy-logo-full.png" alt="Swiftproxy" width="220" />
   </a><br/>
-  <a href="https://www.swiftproxy.net/?ref=shiaho"><b>由 Swiftproxy 赞助</b></a>
+  <a href="https://www.swiftproxy.net/?ref=shiaho"><b>由 Swiftproxy 赞助</b></a> —— 高质量纯净住宅IP提供商
 </p>
 
 <p align="center">
