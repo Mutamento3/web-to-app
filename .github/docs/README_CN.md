@@ -18,7 +18,7 @@
 </div>
 
 <a href="https://www.swiftproxy.net/?ref=shiaho">
-  <img src="../assets/sponsors/swiftproxy-banner-zh.png" width="90%" alt="Swiftproxy —— 全球高质量纯净住宅IP,动态流量不过期,支持HTTP(S)/SOCKS5,九折优惠码:PROXY90" />
+  <img src="../assets/sponsors/swiftproxy-banner-zh.png" width="640" alt="Swiftproxy —— 全球高质量纯净住宅IP,动态流量不过期,支持HTTP(S)/SOCKS5,九折优惠码:PROXY90" />
 </a>
 
 <p align="center">

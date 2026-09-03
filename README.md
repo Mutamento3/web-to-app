@@ -29,7 +29,7 @@
 </p>
 
 <a href="https://www.swiftproxy.net/?ref=shiaho">
-  <img src=".github/assets/sponsors/swiftproxy-banner-en.png" width="90%" alt="Swiftproxy — Residential Proxies from $0.7/GB, ISP Proxies $6/IP, 10% off code: PROXY90" />
+  <img src=".github/assets/sponsors/swiftproxy-banner-en.png" width="640" alt="Swiftproxy — Residential Proxies from $0.7/GB, ISP Proxies $6/IP, 10% off code: PROXY90" />
 </a>
 
 <p align="center">
