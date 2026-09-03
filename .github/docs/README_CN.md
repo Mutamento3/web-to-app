@@ -344,6 +344,8 @@ Release 构建请通过 `local.properties` 和 `app/build.gradle.kts` 配置签�
 </a><br/>
 <a href="https://www.swiftproxy.net/?ref=shiaho"><b>由 Swiftproxy 赞助</b></a> —— 高性能轮换住宅代理提供商,专注反封禁解决方案,提升数据采集成功率。
 
+---
+
 <div align="center">
 
 **开源 · 为 Android 高阶用户打造 · Star 一下支持项目**

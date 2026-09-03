@@ -344,6 +344,8 @@ Advanced features such as device disguise are intended for technical demonstrati
 </a><br/>
 <a href="https://www.swiftproxy.net/?ref=shiaho"><b>Sponsored by Swiftproxy</b></a> — high-performance rotating residential proxies with anti-ban solutions that boost data-collection success rates.
 
+---
+
 <div align="center">
 
 **Open source · Built for Android power users · Star to support the project**
