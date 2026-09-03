@@ -30,12 +30,9 @@
 
 <p align="center">
   <a href="https://www.swiftproxy.net/?ref=shiaho">
-    <img src=".github/assets/sponsors/swiftproxy-banner-en.png" width="640" alt="Swiftproxy — Residential Proxies from $0.7/GB, ISP Proxies $6/IP, 10% off code: PROXY90" />
-  </a>
-</p>
-
-<p align="center">
-  <a href="https://www.swiftproxy.net/?ref=shiaho"><b>Sponsored by Swiftproxy</b></a> — Swiftproxy provides 90M+ clean residential IPs across 220+ locations, supporting HTTP(S) and SOCKS5 proxies, flexible targeting, rotating and sticky sessions, and non-expiring traffic. It helps WebToApp users with reliable global access, location-based testing, web automation, and data collection. Free testing is available, with 10% off using code <code>PROXY90</code>.
+    <img src=".github/assets/sponsors/swiftproxy-logo-full.png" alt="Swiftproxy" width="220" />
+  </a><br/>
+  <a href="https://www.swiftproxy.net/?ref=shiaho"><b>Sponsored by Swiftproxy</b></a>
 </p>
 
 <p align="center">
@@ -349,10 +346,15 @@ Advanced features such as device disguise are intended for technical demonstrati
 
 [daoxe.com](https://daoxe.com) — AI API relay for personal use.
 
-<a href="https://www.swiftproxy.net/?ref=shiaho">
-  <img src=".github/assets/sponsors/swiftproxy-logo-full.png" alt="Swiftproxy" width="220" />
-</a><br/>
-<a href="https://www.swiftproxy.net/?ref=shiaho"><b>Sponsored by Swiftproxy</b></a> — high-performance rotating residential proxies with anti-ban solutions that boost data-collection success rates.
+<p align="center">
+  <a href="https://www.swiftproxy.net/?ref=shiaho">
+    <img src=".github/assets/sponsors/swiftproxy-banner-en.png" width="640" alt="Swiftproxy — Residential Proxies from $0.7/GB, ISP Proxies $6/IP, 10% off code: PROXY90" />
+  </a>
+</p>
+
+<p align="center">
+  <a href="https://www.swiftproxy.net/?ref=shiaho"><b>Sponsored by Swiftproxy</b></a> — Swiftproxy provides 90M+ clean residential IPs across 220+ locations, supporting HTTP(S) and SOCKS5 proxies, flexible targeting, rotating and sticky sessions, and non-expiring traffic. It helps WebToApp users with reliable global access, location-based testing, web automation, and data collection. Free testing is available, with 10% off using code <code>PROXY90</code>.
+</p>
 
 ---
 
