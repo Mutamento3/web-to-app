@@ -337,7 +337,7 @@ Advanced features such as device disguise are intended for technical demonstrati
 
 ## Acknowledgements
 
-- [daoxe.com](https://daoxe.com) — AI API relay for personal use.
+[daoxe.com](https://daoxe.com) — AI API relay for personal use.
 
 <a href="https://www.swiftproxy.net/?ref=shiaho">
   <img src=".github/assets/sponsors/swiftproxy-logo-full.png" alt="Swiftproxy" width="220" />

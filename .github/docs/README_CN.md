@@ -337,7 +337,7 @@ Release 构建请通过 `local.properties` 和 `app/build.gradle.kts` 配置签�
 
 ## 鸣谢
 
-- [daoxe.com](https://daoxe.com) — 自用中转站。
+[daoxe.com](https://daoxe.com) — 自用中转站。
 
 <a href="https://www.swiftproxy.net/?ref=shiaho">
   <img src="../assets/sponsors/swiftproxy-logo-full.png" alt="Swiftproxy" width="220" />
