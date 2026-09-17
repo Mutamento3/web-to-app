@@ -1040,14 +1040,17 @@ class AxmlRebuilder {
         }
     }
 
+    /**
+     * Rewrite package name + expand relative class names.
+     * FAIL-LOUD: an unparseable or unrewritable manifest throws instead of
+     * returning the original bytes — shipping an unmodified manifest would
+     * silently export/clone the template's identity.
+     */
     fun expandAndModify(axmlData: ByteArray, originalPackage: String, newPackage: String): ByteArray {
-        return try {
-            val parsed = parseAxml(axmlData)
-            if (parsed == null) {
-                AppLogger.e(TAG, "Failed to parse AXML")
-                return axmlData
-            }
+        val parsed = parseAxml(axmlData)
+            ?: throw IllegalStateException("Failed to parse AndroidManifest.xml (package rewrite)")
 
+        return try {
             val expansions = findRelativeClassNames(parsed, originalPackage)
             AppLogger.d(TAG, "Found ${expansions.size} relative class names to expand")
 
@@ -1061,10 +1064,9 @@ class AxmlRebuilder {
 
             AppLogger.d(TAG, "AXML rebuild complete: original=${axmlData.size}, new=${result.size}")
             result
-
         } catch (e: Exception) {
             AppLogger.e(TAG, "AXML rebuild failed", e)
-            axmlData
+            throw IllegalStateException("AndroidManifest.xml rewrite failed: ${e.message}", e)
         }
     }
 
@@ -1090,13 +1092,10 @@ class AxmlRebuilder {
          */
         shareReceiveMimeTypes: List<String> = emptyList()
     ): ByteArray {
-        return try {
-            val parsed = parseAxml(axmlData)
-            if (parsed == null) {
-                AppLogger.e(TAG, "Failed to parse AXML for full modification")
-                return axmlData
-            }
+        val parsed = parseAxml(axmlData)
+            ?: throw IllegalStateException("Failed to parse AndroidManifest.xml (full modification)")
 
+        return try {
             val expansions = findRelativeClassNames(parsed, originalPackage)
             AppLogger.d(TAG, "Found ${expansions.size} relative class names to expand")
 
@@ -1134,51 +1133,9 @@ class AxmlRebuilder {
 
             AppLogger.d(TAG, "AXML full rebuild complete: original=${axmlData.size}, new=${result.size}, deepLinkHosts=${deepLinkHosts.size}, deepLinkSchemes=${deepLinkSchemes.size}, shareReceiveMimeTypes=${shareReceiveMimeTypes.size}")
             result
-
         } catch (e: Exception) {
             AppLogger.e(TAG, "AXML full rebuild failed", e)
-            axmlData
-        }
-    }
-
-    fun expandAndModifyWithVersion(
-        axmlData: ByteArray,
-        originalPackage: String,
-        newPackage: String,
-        versionCode: Int,
-        versionName: String,
-        permissions: List<String> = BASELINE_RUNTIME_PERMISSIONS
-    ): ByteArray {
-        return try {
-            val parsed = parseAxml(axmlData)
-            if (parsed == null) {
-                AppLogger.e(TAG, "Failed to parse AXML for version modification")
-                return axmlData
-            }
-
-            val expansions = findRelativeClassNames(parsed, originalPackage)
-            AppLogger.d(TAG, "Found ${expansions.size} relative class names to expand")
-
-            if (expansions.isNotEmpty()) {
-                expandClassNames(parsed, expansions)
-            }
-
-            replacePackageString(parsed, originalPackage, newPackage)
-
-            modifyVersionInfo(parsed, versionCode, versionName)
-
-            stripTestOnlyFlag(parsed)
-
-            ensureUsesPermissions(parsed, permissions)
-
-            val result = rebuildAxml(parsed)
-
-            AppLogger.d(TAG, "AXML rebuild with version complete: original=${axmlData.size}, new=${result.size}")
-            result
-
-        } catch (e: Exception) {
-            AppLogger.e(TAG, "AXML rebuild with version failed", e)
-            axmlData
+            throw IllegalStateException("AndroidManifest.xml full rewrite failed: ${e.message}", e)
         }
     }
 

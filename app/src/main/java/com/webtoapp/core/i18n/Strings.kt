@@ -4021,6 +4021,7 @@ object Strings {
     val downloadFailedHttp: String get() = StringsE.downloadFailedHttp
     val downloadReturnedEmpty: String get() = StringsE.downloadReturnedEmpty
     val downloadNameFailed: String get() = StringsE.downloadNameFailed
+    val downloadIntegrityFailed: String get() = StringsE.downloadIntegrityFailed
     val sizeUnknown: String get() = StringsE.sizeUnknown
     val saveFailedNoHtmlInZip: String get() = StringsE.saveFailedNoHtmlInZip
     val suggestUseRelativePath: String get() = StringsE.suggestUseRelativePath
