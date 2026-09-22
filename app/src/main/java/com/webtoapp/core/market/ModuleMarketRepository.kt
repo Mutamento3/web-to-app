@@ -4,16 +4,10 @@ import android.content.Context
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.webtoapp.BuildConfig
-import com.webtoapp.core.extension.ConfigItemType
-import com.webtoapp.core.extension.ExtensionManager
-import com.webtoapp.core.extension.ExtensionModule
-import com.webtoapp.core.extension.ModuleCategory
-import com.webtoapp.core.extension.ModuleConfigItem
-import com.webtoapp.core.extension.ModulePermission
-import com.webtoapp.core.extension.ModuleRunTime
-import com.webtoapp.core.extension.ModuleSourceType
-import com.webtoapp.core.extension.ModuleVersion
 import com.webtoapp.core.extension.ExtensionFileManager
+import com.webtoapp.core.plugin.Plugin
+import com.webtoapp.core.plugin.PluginKind
+import com.webtoapp.core.plugin.PluginManifest
 import com.webtoapp.core.i18n.Strings
 import com.webtoapp.core.logging.AppLogger
 import com.webtoapp.core.network.NetworkModule
@@ -28,8 +22,7 @@ import java.io.File
 import java.io.IOException
 
 class ModuleMarketRepository private constructor(
-    private val context: Context,
-    private val extensionManager: ExtensionManager
+    private val context: Context
 ) {
 
     companion object {
@@ -49,9 +42,9 @@ class ModuleMarketRepository private constructor(
         @Volatile
         private var INSTANCE: ModuleMarketRepository? = null
 
-        fun getInstance(context: Context, extensionManager: ExtensionManager): ModuleMarketRepository {
+        fun getInstance(context: Context): ModuleMarketRepository {
             return INSTANCE ?: synchronized(this) {
-                INSTANCE ?: ModuleMarketRepository(context.applicationContext, extensionManager).also { INSTANCE = it }
+                INSTANCE ?: ModuleMarketRepository(context.applicationContext).also { INSTANCE = it }
             }
         }
 
@@ -74,7 +67,11 @@ class ModuleMarketRepository private constructor(
     val state: StateFlow<MarketState> = _state.asStateFlow()
 
     val views: kotlinx.coroutines.flow.Flow<List<MarketModuleView>> =
-        combine(_state, extensionManager.modules, extensionManager.builtInModules) { st, user, builtIn ->
+        combine(
+            _state,
+            com.webtoapp.core.plugin.PluginStore.getInstance(context).plugins,
+            com.webtoapp.core.plugin.PluginStore.getInstance(context).builtInPlugins
+        ) { st, user, builtIn ->
             val loaded = st as? MarketState.Loaded
             val entries = loaded?.entries ?: emptyList()
             val submissions = loaded?.submissions ?: emptyMap()
@@ -92,9 +89,9 @@ class ModuleMarketRepository private constructor(
                 if (local == null) {
                     MarketModuleView(entry, MarketInstallState.NotInstalled, null, submission)
                 } else {
-                    val cmp = compareSemver(entry.version, local.version.name)
+                    val cmp = compareSemver(entry.version, local.versionName)
                     val state = if (cmp > 0) MarketInstallState.UpdateAvailable else MarketInstallState.UpToDate
-                    MarketModuleView(entry, state, local.version.name, submission)
+                    MarketModuleView(entry, state, local.versionName, submission)
                 }
             }
         }
@@ -167,63 +164,59 @@ class ModuleMarketRepository private constructor(
     suspend fun install(
         entry: ModuleMarketEntry,
         onProgress: (InstallProgress) -> Unit = {}
-    ): Result<ExtensionModule> = withContext(Dispatchers.IO) {
+    ): Result<Plugin> = withContext(Dispatchers.IO) {
         try {
             if (entry.sourceType == "CHROME_EXTENSION" && entry.storeId != null) {
                 return@withContext installChromeExtension(entry, onProgress)
             }
 
-            val totalSteps = if (entry.hasCss) 4 else 3
-            var step = 0
-
-            onProgress(InstallProgress(Strings.moduleMarketDlManifest, ++step, totalSteps))
-            val manifestRaw = fetchRaw("${entry.path}/module.json")
-                ?: return@withContext Result.failure(IOException("module.json download failed"))
-
-            onProgress(InstallProgress(Strings.moduleMarketDlCode, ++step, totalSteps))
-            val mainJs = fetchRaw("${entry.path}/main.js")
-                ?: return@withContext Result.failure(IOException("main.js download failed"))
-
-            val styleCss = if (entry.hasCss) {
-                onProgress(InstallProgress(Strings.moduleMarketDlStyle, ++step, totalSteps))
-                fetchRaw("${entry.path}/style.css").orEmpty()
-            } else ""
-
-            onProgress(InstallProgress(Strings.moduleMarketInstalling, ++step, totalSteps))
-            val manifest = try {
-                gson.fromJson(manifestRaw, RemoteManifest::class.java)
-            } catch (e: Exception) {
-                return@withContext Result.failure(IllegalStateException("module.json is malformed", e))
-            }
-
-            val effectiveId = manifest.id?.takeIf { it.isNotBlank() } ?: entry.id
-            val existing = extensionManager.getAllModules().firstOrNull { it.id == effectiveId }
-            val preservedConfig: Map<String, String> = if (existing != null) {
-                val newKeys = manifest.configItems.map { it.key }.toSet()
-                existing.configValues.filterKeys { it in newKeys }
-            } else {
-                emptyMap()
-            }
-
-            val module = manifest.toExtensionModule(
-                fallbackId = entry.id,
-                fallbackName = entry.name,
-                code = mainJs,
-                cssCode = styleCss,
-                preservedConfig = preservedConfig
-            )
-
-            extensionManager.addModule(module)
+            // Catalog protocol: plugin.json package only. The retired
+            // module.json format is no longer served or installed.
+            val pluginJson = fetchRaw("${entry.path}/plugin.json")
+                ?: return@withContext Result.failure(IOException("plugin.json download failed"))
+            installPluginPackage(entry, pluginJson, onProgress)
         } catch (e: Exception) {
             AppLogger.e(TAG, "Install failed for ${entry.id}", e)
             Result.failure(e)
         }
     }
 
+    /**
+     * Install a `plugin.json` package straight from the catalog. Files map to
+     * the package convention; `plugin.json` itself is written by
+     * [com.webtoapp.core.plugin.PluginStore.installPackage].
+     */
+    private suspend fun installPluginPackage(
+        entry: ModuleMarketEntry,
+        pluginJson: String,
+        onProgress: (InstallProgress) -> Unit
+    ): Result<Plugin> {
+        val manifest = PluginManifest.fromJson(pluginJson)
+            ?: return Result.failure(IllegalStateException("plugin.json is malformed"))
+
+        onProgress(InstallProgress(Strings.moduleMarketDlCode, 1, 3))
+        val mainJs = fetchRaw("${entry.path}/main.js")
+            ?: return Result.failure(IOException("main.js download failed"))
+
+        onProgress(InstallProgress(Strings.moduleMarketDlStyle, 2, 3))
+        val styleCss = fetchRaw("${entry.path}/style.css").orEmpty()
+        val panelHtml = fetchRaw("${entry.path}/panel.html").orEmpty()
+
+        onProgress(InstallProgress(Strings.moduleMarketInstalling, 3, 3))
+        val files = linkedMapOf<String, String>()
+        files[com.webtoapp.core.plugin.PluginStore.MAIN_FILE] = mainJs
+        if (styleCss.isNotBlank()) files[com.webtoapp.core.plugin.PluginStore.CSS_FILE] = styleCss
+        if (panelHtml.isNotBlank()) files[com.webtoapp.core.plugin.PluginStore.PANEL_FILE] = panelHtml
+
+        val effective = manifest.copy(id = manifest.id.takeIf { it.isNotBlank() } ?: entry.id)
+        return com.webtoapp.core.plugin.PluginStore.getInstance(context)
+            .installPackage(effective, PluginKind.HCJ, files)
+    }
+
     private suspend fun installChromeExtension(
         entry: ModuleMarketEntry,
         onProgress: (InstallProgress) -> Unit
-    ): Result<ExtensionModule> {
+    ): Result<Plugin> {
         val fileManager = ExtensionFileManager(context)
         val result = fileManager.installChromeExtensionFromStore(entry.storeId!!) { dl ->
             onProgress(
@@ -243,21 +236,15 @@ class ModuleMarketRepository private constructor(
                 if (modules.isEmpty()) {
                     Result.failure(IllegalStateException("No modules parsed from extension"))
                 } else {
-                    onProgress(InstallProgress(Strings.cwsDlIcon, 1, 1))
-                    val iconUrl = resolveIconUrl(entry)
-                    val localIcon = if (iconUrl != null) {
-                        fileManager.downloadIconForExtension(iconUrl, result.extractedDir)
-                    } else null
                     onProgress(InstallProgress(Strings.cwsDlTags, 1, 1))
-                    val tags = CwsTags.fromName(entry.name).map { it.label }
-                    modules.forEach { module ->
-                        val enriched = module.copy(
-                            storeIconPath = localIcon?.absolutePath ?: "",
-                            storeTags = tags
-                        )
-                        extensionManager.addModule(enriched)
+                    when (val r = com.webtoapp.core.plugin.PluginImporter(context)
+                        .installChromeRecords(modules)
+                    ) {
+                        is com.webtoapp.core.plugin.PluginImporter.ImportResult.Success ->
+                            Result.success(r.plugin)
+                        is com.webtoapp.core.plugin.PluginImporter.ImportResult.Error ->
+                            Result.failure(IllegalStateException(r.message))
                     }
-                    Result.success(modules.first())
                 }
             }
             is ExtensionFileManager.ImportResult.Error -> {
@@ -369,56 +356,6 @@ class ModuleMarketRepository private constructor(
         return entries.filter { it.minAppVersion <= BuildConfig.VERSION_CODE }
     }
 
-    private data class RemoteManifest(
-        val id: String? = null,
-        val name: String? = null,
-        val description: String? = null,
-        val icon: String? = null,
-        val category: String? = null,
-        val tags: List<String> = emptyList(),
-        val version: ModuleVersion? = null,
-        val author: com.webtoapp.core.extension.ModuleAuthor? = null,
-        val runAt: String? = null,
-        val urlMatches: List<com.webtoapp.core.extension.UrlMatchRule> = emptyList(),
-        val permissions: List<String> = emptyList(),
-        val configItems: List<ModuleConfigItem> = emptyList()
-    ) {
-        fun toExtensionModule(
-            fallbackId: String,
-            fallbackName: String,
-            code: String,
-            cssCode: String,
-            preservedConfig: Map<String, String> = emptyMap()
-        ): ExtensionModule {
-            return ExtensionModule(
-                id = id?.takeIf { it.isNotBlank() } ?: fallbackId,
-                name = name?.takeIf { it.isNotBlank() } ?: fallbackName,
-                description = description.orEmpty(),
-                icon = icon ?: "package",
-                category = parseEnum(category, ModuleCategory.OTHER),
-                tags = tags,
-                version = version ?: ModuleVersion(),
-                author = author,
-                code = code,
-                cssCode = cssCode,
-                runAt = parseEnum(runAt, ModuleRunTime.DOCUMENT_END),
-                urlMatches = urlMatches,
-                permissions = permissions.mapNotNull { p ->
-                    runCatching { ModulePermission.valueOf(p) }.getOrNull()
-                },
-                configItems = configItems,
-                configValues = preservedConfig,
-                enabled = true,
-                builtIn = false,
-                sourceType = ModuleSourceType.CUSTOM
-            )
-        }
-
-        private inline fun <reified T : Enum<T>> parseEnum(value: String?, default: T): T {
-            if (value.isNullOrBlank()) return default
-            return runCatching { enumValueOf<T>(value) }.getOrElse { default }
-        }
-    }
 }
 
 sealed class MarketState {
@@ -445,5 +382,3 @@ internal fun compareSemver(a: String, b: String): Int {
     return 0
 }
 
-@Suppress("unused")
-private val configItemTypeAnchor: Class<ConfigItemType> = ConfigItemType::class.java

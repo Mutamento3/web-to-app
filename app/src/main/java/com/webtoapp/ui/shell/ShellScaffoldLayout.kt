@@ -162,7 +162,8 @@ fun BoxScope.ShellScaffoldLayout(
                     consoleErrorCount = consoleMessages.count { it.level == ConsoleLevel.ERROR },
                     showFindButton = toolbarVisibility.showFind,
                     showFindBar = showFindBar,
-                    onToggleFindBar = onToggleFindBar
+                    onToggleFindBar = onToggleFindBar,
+                    showPluginButton = config.pluginsEnabled
                 )
             }
         }
@@ -313,6 +314,18 @@ fun BoxScope.ShellScaffoldLayout(
                     onClose = onToggleFindBar
                 )
             }
+
+            // Unified plugin surface: sheet, panel host and the floating handle
+            // (entry style TOOLBAR mounts inside ShellTopAppBar instead).
+            if (config.pluginsEnabled) {
+                com.webtoapp.ui.plugin.PluginSurfaceHost(
+                    entryStyle = com.webtoapp.core.plugin.PluginEntryStyle.parse(config.pluginEntryStyle),
+                    toolbarVisible = showToolbar,
+                    floatingHandleModifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(bottom = 24.dp)
+                )
+            }
         }
     }
 }
@@ -338,7 +351,8 @@ private fun ShellTopAppBar(
     consoleErrorCount: Int = 0,
     showFindButton: Boolean = true,
     showFindBar: Boolean = false,
-    onToggleFindBar: () -> Unit = {}
+    onToggleFindBar: () -> Unit = {},
+    showPluginButton: Boolean = false
 ) {
     val context = LocalContext.current
 
@@ -424,6 +438,13 @@ private fun ShellTopAppBar(
                     onClick = onToggleFindBar,
                     icon = if (showFindBar) Icons.Filled.Search else Icons.Outlined.Search,
                     contentDescription = Strings.nativeBridgeCapsFindInPage
+                )
+            }
+            // Plugin slot — per-plugin toolbar icons plus the sheet entry for
+            // menu/handle-style plugins.
+            if (showPluginButton) {
+                com.webtoapp.ui.plugin.PluginToolbarEntries(
+                    onOpenSheet = { com.webtoapp.core.plugin.PluginHostState.openPluginSheet() }
                 )
             }
         },

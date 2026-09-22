@@ -3045,6 +3045,13 @@ fun WebViewScreen(
         )
     }
 
+    // Plugin host surface: per-plugin styles ride on each plugin record; these
+    // are only the app-level fallbacks for plugins without their own choice.
+    val previewPluginEntryStyle = com.webtoapp.core.plugin.PluginEntryStyle.TOOLBAR
+    val previewPluginPanelStyle = com.webtoapp.core.plugin.PluginPanelStyle.BOTTOM_SHEET
+    val previewPluginsEnabled = webApp?.pluginsEnabled == true ||
+        (isTestMode && !testModuleIds.isNullOrEmpty())
+
     LaunchedEffect(hideToolbar) {
 
         onFullscreenModeChanged(hideToolbar)
@@ -3144,6 +3151,13 @@ fun WebViewScreen(
                                 onClick = { showFindBar = !showFindBar },
                                 icon = if (showFindBar) Icons.Filled.Search else Icons.Outlined.Search,
                                 contentDescription = Strings.nativeBridgeCapsFindInPage
+                            )
+                        }
+                        // Plugin slot — per-plugin toolbar icons plus the sheet
+                        // entry for menu/handle-style plugins.
+                        if (previewPluginsEnabled) {
+                            com.webtoapp.ui.plugin.PluginToolbarEntries(
+                                onOpenSheet = { com.webtoapp.core.plugin.PluginHostState.openPluginSheet() }
                             )
                         }
                     },
@@ -3283,6 +3297,26 @@ fun WebViewScreen(
                 val mwApp = webApp
                 val multiWebConfig = mwApp?.multiWebConfig
                 if (mwApp != null && multiWebConfig != null && multiWebConfig.sites.isNotEmpty()) {
+                    // App-level plugins: resolve the multi-web app's attached
+                    // set into embedded records so site configs consume the same
+                    // payload shape as a generated APK.
+                    val mwEmbeddedPlugins by androidx.compose.runtime.produceState<List<com.webtoapp.core.shell.EmbeddedShellPlugin>?>(
+                        initialValue = null,
+                        mwApp.pluginIds
+                    ) {
+                        value = if (mwApp.pluginIds.isEmpty() || !mwApp.pluginsEnabled) {
+                            emptyList()
+                        } else {
+                            kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+                                val store = com.webtoapp.core.plugin.PluginStore.getInstance(context)
+                                store.awaitLoaded()
+                                store.resolveForInjection(mwApp.pluginIds)
+                                    .map { com.webtoapp.core.shell.EmbeddedShellPlugin.fromResolved(it) }
+                            }
+                        }
+                    }
+                    val readyEmbeddedPlugins = mwEmbeddedPlugins
+                    if (readyEmbeddedPlugins != null) {
                     val shellConfig = com.webtoapp.core.shell.ShellConfig(
                         appName = mwApp.name,
                         appType = "MULTI_WEB",
@@ -3330,8 +3364,11 @@ fun WebViewScreen(
                                 )
                             }
                         ),
-                        extensionModuleIds = mwApp.extensionModuleIds,
-                        extensionFabIcon = mwApp.extensionFabIcon.orEmpty(),
+                        pluginsEnabled = mwApp.pluginsEnabled,
+                        pluginIds = mwApp.pluginIds,
+                        embeddedPlugins = readyEmbeddedPlugins,
+                        pluginEntryStyle = previewPluginEntryStyle.name,
+                        pluginPanelStyle = previewPluginPanelStyle.name,
                         browserDisguiseConfig = mwApp.browserDisguiseConfig,
                         deviceDisguiseConfig = mwApp.deviceDisguiseConfig
                     )
@@ -3382,6 +3419,7 @@ fun WebViewScreen(
                             }
                         }
                     )
+                    }
                 } else {
 
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -3435,16 +3473,16 @@ fun WebViewScreen(
                                     WebScrollTracker.scrollUpBlocked(wv, wv.scrollY)
                                 }
 
-                                val moduleIds = if (isTestMode && !testModuleIds.isNullOrEmpty()) {
+                                val pluginIds = if (isTestMode && !testModuleIds.isNullOrEmpty()) {
                                     testModuleIds
                                 } else {
-                                    webApp?.extensionModuleIds ?: emptyList()
+                                    webApp?.pluginIds ?: emptyList()
                                 }
 
-                                val extensionMasterEnabled = if (isTestMode && !testModuleIds.isNullOrEmpty()) {
+                                val pluginsEnabled = if (isTestMode && !testModuleIds.isNullOrEmpty()) {
                                     true
                                 } else {
-                                    webApp?.extensionEnabled == true
+                                    webApp?.pluginsEnabled == true
                                 }
 
                                 val previewEngineType = webApp?.apkExportConfig?.engineType
@@ -3456,15 +3494,28 @@ fun WebViewScreen(
                                     webViewManager = webViewManager,
                                     callbacks = webViewCallbacks,
                                     adBlocker = com.webtoapp.WebToAppApplication.adBlock,
-                                    extensionModuleIds = moduleIds,
-                                    embeddedExtensionModules = emptyList(),
-                                    extensionFabIcon = webApp?.extensionFabIcon.orEmpty(),
-                                    allowGlobalModuleFallback = false,
-                                    extensionEnabled = extensionMasterEnabled,
+                                    pluginsEnabled = pluginsEnabled,
+                                    pluginEntryStyle = previewPluginEntryStyle,
+                                    pluginPanelStyle = previewPluginPanelStyle,
+                                    expectLatePluginPayloads = pluginsEnabled,
                                     browserDisguiseConfig = webApp?.browserDisguiseConfig,
                                     deviceDisguiseConfig = webApp?.deviceDisguiseConfig,
                                     appOriginUrl = webApp?.url.orEmpty()
                                 )
+                                // Plugin code resolution does package IO; resolve off the main
+                                // thread and push payloads into the session once ready. The
+                                // session is already attached so late payloads still inject.
+                                val previewWebView = surface.webView
+                                if (pluginsEnabled && pluginIds.isNotEmpty() && previewWebView != null) {
+                                    kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
+                                        com.webtoapp.core.plugin.PluginStore.getInstance(ctx).awaitLoaded()
+                                        val payloads = com.webtoapp.core.plugin.PluginStore.getInstance(ctx)
+                                            .resolveForInjection(pluginIds)
+                                        kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main) {
+                                            webViewManager.updatePluginPayloads(previewWebView, payloads)
+                                        }
+                                    }
+                                }
                                 tag = surface
                                 browserSurfaceRef = surface
                                 (context as? WebViewActivity)?.browserSurface = surface
@@ -3824,6 +3875,19 @@ fun WebViewScreen(
                         }
                     }
                 }
+            }
+
+            // Unified plugin surface: sheet, panel host, floating handle.
+            // TOOLBAR/MENU entries live in the top app bar; FLOATING_HANDLE
+            // renders the draggable launcher here.
+            if (previewPluginsEnabled || webApp?.appType == com.webtoapp.data.model.AppType.MULTI_WEB) {
+                com.webtoapp.ui.plugin.PluginSurfaceHost(
+                    entryStyle = previewPluginEntryStyle,
+                    toolbarVisible = shouldShowTopBar,
+                    floatingHandleModifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(bottom = 24.dp)
+                )
             }
 
         }
